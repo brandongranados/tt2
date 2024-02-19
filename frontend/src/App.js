@@ -1,8 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import { useDispatch } from 'react-redux';
+import { Provider } from "react-redux";
+
+import { getAutenticacion } from './services/Autenticacion';
+import { getDatosUsuario } from './services/DatosUsuario';
+import Store from "./services/Store";
+
 import Inicio from "./Inicio";
-import { ProveedorAutenticar } from "./services/Autenticacion";
-import { ProvedorDatosUsuario } from "./services/DatosUsuario";
+import { useEffect } from "react";
 
 let App = () => {
   return (
@@ -14,17 +20,23 @@ let App = () => {
 
 let Envolver = () => {
   return(
-    <ProveedorAutenticar>
+    <Provider store={Store}>
       <EnvolverDos/>
-    </ProveedorAutenticar>
+    </Provider>
   )
 };
 
 let EnvolverDos = () => {
+
+  const despacha = useDispatch();
+
+  useEffect( () => {
+    despacha(getAutenticacion());
+    despacha(getDatosUsuario());
+  }, [] );
+
   return(
-    <ProvedorDatosUsuario>
-      <Inicio />
-    </ProvedorDatosUsuario>
+    <Inicio />
   )
 };
 

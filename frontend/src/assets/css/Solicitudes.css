@@ -1,0 +1,61 @@
+.globalSolicitudes{
+    margin: 3%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+@media screen and ( max-width: 575px ) {
+    .msm-solitar-constancia{
+        font-size: 20px;
+    }
+    .msm-constancias{
+        font-size: 17px;
+    }
+    .msm-btn-opcion-solicitar{
+        font-size: 15px;
+    }
+}
+@media screen and ( min-width: 576px ) and (max-width: 767px) {
+    .msm-solitar-constancia{
+        font-size: 40px;
+    }
+    .msm-constancias{
+        font-size: 27px;
+    }
+    .msm-btn-opcion-solicitar{
+        font-size: 20px;
+    }
+}
+@media screen and (min-width: 768px) and (max-width: 991px) {
+    .msm-solitar-constancia{
+        font-size: 50px;
+    }
+    .msm-constancias{
+        font-size: 32px;
+    }
+    .msm-btn-opcion-solicitar{
+        font-size: 25px;
+    }
+}
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+    .msm-solitar-constancia{
+        font-size: 50px;
+    }
+    .msm-constancias{
+        font-size: 32px;
+    }
+    .msm-btn-opcion-solicitar{
+        font-size: 25px;
+    }
+}
+@media screen and (min-width: 1200px) {
+    .msm-solitar-constancia{
+        font-size: 60px;
+    }
+    .msm-constancias{
+        font-size: 38px;
+    }
+    .msm-btn-opcion-solicitar{
+        font-size: 29px;
+    }
+}

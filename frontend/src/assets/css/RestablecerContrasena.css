@@ -1,0 +1,29 @@
+.titulo-restablecer-contrasena{
+    text-align: justify;
+}
+
+@media screen and ( max-width: 575px ) {
+    .titulo-restablecer-contrasena{
+        font-size: 20px!important;
+    }
+}
+@media screen and ( min-width: 576px ) and (max-width: 767px) {
+    .titulo-restablecer-contrasena{
+        font-size: 40px!important;
+    }
+}
+@media screen and (min-width: 768px) and (max-width: 991px) {
+    .titulo-restablecer-contrasena{
+        font-size: 50px!important;
+    }
+}
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+    .titulo-restablecer-contrasena{
+        font-size: 50px!important;
+    }
+}
+@media screen and (min-width: 1200px) {
+    .titulo-restablecer-contrasena{
+        font-size: 60px!important;
+    }
+}

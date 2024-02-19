@@ -1,24 +1,26 @@
-import { createContext, useContext, useState } from "react";
+import { createSlice } from '@reduxjs/toolkit';
 
-const ContextoAuten = createContext();
+export const AutenticacionSlice = createSlice({
+    name: "Autenticacion",
+    initialState: {
+        Autenticacion: ""
+    },
+    reducers:{
+        getAutenticacion: state => {
+            let cabecera = sessionStorage.getItem("Authorization");
 
-const useAtenticar = () => useContext(ContextoAuten);
+            if( cabecera )
+                state.Autenticacion = cabecera;
+            else
+                state.Autenticacion = "";
+        },
+        setAutenticacion: (state, action) => {
+            state.Autenticacion = action.payload;
+            sessionStorage.setItem("Authorization", action.payload);
+        }
+    }
+})
 
-const ProveedorAutenticar = ({children}) => {
-    const [sesionIniciada, setSesionIniciada] = useState(false);
+export const {getAutenticacion, setAutenticacion} = AutenticacionSlice.actions;
 
-    let iniciarSesion = () => setSesionIniciada(true);
-    let cerrarSesion = () => setSesionIniciada(false);
-
-    return(
-        <ContextoAuten.Provider value={{sesionIniciada, iniciarSesion, cerrarSesion}} >
-            {children}
-        </ContextoAuten.Provider>
-    )
-
-};
-
-export { 
-    useAtenticar,
-    ProveedorAutenticar
-};
+export default AutenticacionSlice.reducer;

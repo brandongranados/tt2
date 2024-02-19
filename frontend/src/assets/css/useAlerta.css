@@ -1,0 +1,35 @@
+
+
+@media screen and (max-width: 991px) {
+    .swal2-title{
+        font-size: 1.9rem!important;
+    }
+    .swal2-html-container{
+        font-size: 1.2rem!important;
+    }
+    .swal2-cancel, .swal2-confirm{
+        font-size: 1rem!important;
+    }
+}
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+    .swal2-title{
+        font-size: 2.1rem!important;
+    }
+    .swal2-html-container{
+        font-size: 1.4rem!important;
+    }
+    .swal2-cancel, .swal2-confirm{
+        font-size: 1.2rem!important;
+    }
+}
+@media screen and (min-width: 1200px) {
+    .swal2-title{
+        font-size: 2.3rem!important;
+    }
+    .swal2-html-container{
+        font-size: 1.6rem!important;
+    }
+    .swal2-cancel, .swal2-confirm{
+        font-size: 1.4rem!important;
+    }
+}
