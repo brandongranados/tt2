@@ -1,31 +1,36 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-import Inicio from "./Inicio";
-import { ProveedorAutenticar } from "./services/Autenticacion";
-import { ProvedorDatosUsuario } from "./services/DatosUsuario";
+import { Provider } from "react-redux";
+import Store from "./services/Store";
+import InicioSesion from "./components/InicioSesion";
+import RestablecerContrasena from "./components/RestablecerContrasena";
+import ValidacionUsuarios from "./components/ValidacionUsuarios";
+import ValidarUsuario from "./components/ValidarUsuario";
+import RegistroUsuario from "./components/RegistroUsuario";
+import Solicitudes from "./components/Solicitudes";
 
 let App = () => {
   return (
-    <BrowserRouter>
-      <Envolver/>
-    </BrowserRouter>
+    <Provider store={Store}>
+      <BrowserRouter>
+        <Inicio />
+      </BrowserRouter>
+    </Provider>
   );
 }
 
-let Envolver = () => {
-  return(
-    <ProveedorAutenticar>
-      <EnvolverDos/>
-    </ProveedorAutenticar>
-  )
-};
+let Inicio = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<InicioSesion />} />
+      <Route path="/restablecer" element={<RestablecerContrasena/>} />
+      <Route path="/registro" element={<RegistroUsuario/>} />
+      
+      <Route path="/administrador/validacionUsuarios" element={<ValidacionUsuarios/>} />
+      <Route path="/administrador/validarUsuario" element={<ValidarUsuario />} />
 
-let EnvolverDos = () => {
-  return(
-    <ProvedorDatosUsuario>
-      <Inicio />
-    </ProvedorDatosUsuario>
-  )
+      <Route path="/estudiante/solicitudes" element={<Solicitudes />} />
+    </Routes>
+  );
 };
 
 export default App;
