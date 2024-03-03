@@ -4,35 +4,32 @@ import Swal from "sweetalert2";
 import '../../assets/css/useAlerta.css';
 
 let useAlerta = () => {
-    const [iconoValor, setIconoValor] = useState("success");
-
-    let cambiarIcono = (icono) => {
-        switch(icono)
-        {
-            case 1:
-                setIconoValor("success");
-                break;
-            case 2:
-                setIconoValor("error");
-                break;
-            case 3:
-                setIconoValor("warning");
-                break;
-            case 4:
-                setIconoValor("info");
-                break;
-            case 5:
-                setIconoValor("question");
-                break;
-            default:
-                setIconoValor("success");
-                break;
-        }
-    };
 
     let activarAlerta = async(opciones) => {
 
-        cambiarIcono(opciones.icono);
+        let iconoValor = "success";
+
+        switch(opciones.icono)
+        {
+            case 1:
+                iconoValor = "success";
+                break;
+            case 2:
+                iconoValor = "error";
+                break;
+            case 3:
+                iconoValor = "warning";
+                break;
+            case 4:
+                iconoValor = "info";
+                break;
+            case 5:
+                iconoValor = "question";
+                break;
+            default:
+                iconoValor = "success";
+                break;
+        }
 
         return await Swal.fire({
             title: opciones.titulo,

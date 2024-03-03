@@ -1,27 +1,34 @@
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import styled from '@mui/material/styles/styled';
+import { useState } from "react";
 
-let InputTextBorderGris = () => {
-    const TextoGris = styled(TextField)({
+let InputTextBorderAzul = ( { etiqueta, value, onChange, onKeyDown, sx } ) => {
+
+    const TextoAzul = styled(TextField)({
         width: "100%",
         fontFamily:"Arial",
+        "&:hover":{
+            borderColor:"#006699",
+        },
         ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":{
             borderStyle:"solid",
-            borderColor:"black",
+            borderColor:"#006699",
             borderWidth:"2px"
         },
         ".MuiOutlinedInput-notchedOutline.css-1d3z3hw-MuiOutlinedInput-notchedOutline":{
-            borderColor:"black",
+            borderColor:"#006699",
             borderWidth:"2px"
         },
         ".css-1jy569b-MuiFormLabel-root-MuiInputLabel-root.Mui-focused":{
-            color:"black"
+            color:"#006699"
         },
         ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":{
             borderStyle:"solid"
         },
         ".MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1pysi21-MuiFormLabel-root-MuiInputLabel-root":{
-            border:"solid black"
+            border:"solid #006699"
         },
         '@media screen and ( max-width: 575px )':{
             ".css-1pysi21-MuiFormLabel-root-MuiInputLabel-root":{
@@ -79,13 +86,24 @@ let InputTextBorderGris = () => {
             }
         }
     });
+    const [foco, setFoco] = useState(false);
+
+    let cambiarFoco = (bool) => setFoco(bool);
 
     return(
-        <TextoGris
-        label="Usuario"
-        size="small"
-        helperText="Ingrese su usuario" />
+        <Box sx={sx}>
+            <Typography variant={"h7"} 
+            component={"span"} 
+            color={"#006699"}>{etiqueta}</Typography>
+            <TextoAzul size="small"
+                value={value} 
+                onChange={onChange}
+                onKeyDown={onKeyDown}
+                onClick={ () => { cambiarFoco(true) } }
+                onBlur={ () => { cambiarFoco(false) } }
+                autoFocus={foco} />
+        </Box>
     )
 };
 
-export default InputTextBorderGris;
+export default InputTextBorderAzul;
