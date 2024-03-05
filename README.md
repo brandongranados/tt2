@@ -19,3 +19,5 @@ let opciones = {
     opcionesMensajeConfirmar,   "Enviar"
     opcionesMensajeCancel       "Cancelar"
 }
+
+#HOLA
