@@ -394,3 +394,4 @@ CREATE TABLE bit_grupo_est
     fecha_ejecuta DATETIME DEFAULT GETDATE(),
     tip_ejec SMALLINT DEFAULT 0
 );
+
