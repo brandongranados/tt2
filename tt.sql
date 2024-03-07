@@ -395,3 +395,5 @@ CREATE TABLE bit_grupo_est
     tip_ejec SMALLINT DEFAULT 0
 );
 
+
+
