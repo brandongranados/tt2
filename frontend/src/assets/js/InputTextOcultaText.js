@@ -8,28 +8,40 @@ import styled from '@mui/material/styles/styled';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-let InputTextOcultaText = ( { etiqueta, value, onChange, onKeyDown, sx  } ) => {
+let InputTextOcultaText = ( { etiqueta, value, onChange, onKeyDown, sx, onCopy, onPaste  } ) => {
 
     const TextoAzul = styled(TextField)({
         width: "96%",
         fontFamily:"Arial",
         ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":{
             borderStyle:"solid",
-            borderColor:"white",
-            borderWidth:"2px"
+            borderColor:"transparent",
+            paddingTop: "7.5px",
+            paddingBottom: "7.5px"
         },
         ".MuiOutlinedInput-notchedOutline.css-1d3z3hw-MuiOutlinedInput-notchedOutline":{
-            borderColor:"white",
-            borderWidth:"2px"
+            borderStyle:"solid",
+            borderColor:"transparent",
+            paddingTop: "7.5px",
+            paddingBottom: "7.5px"
         },
         ".css-1jy569b-MuiFormLabel-root-MuiInputLabel-root.Mui-focused":{
-            color:"white"
+            borderStyle:"solid",
+            borderColor:"transparent",
+            paddingTop: "7.5px",
+            paddingBottom: "7.5px"
         },
         ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":{
-            borderStyle:"solid"
+            borderStyle:"solid",
+            borderColor:"transparent",
+            paddingTop: "7.5px",
+            paddingBottom: "7.5px"
         },
         ".MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1pysi21-MuiFormLabel-root-MuiInputLabel-root":{
-            border:"solid white"
+            borderStyle:"solid",
+            borderColor:"transparent",
+            paddingTop: "7.5px",
+            paddingBottom: "7.5px"
         },
         '@media screen and ( max-width: 575px )':{
             ".css-1pysi21-MuiFormLabel-root-MuiInputLabel-root":{
@@ -101,8 +113,9 @@ let InputTextOcultaText = ( { etiqueta, value, onChange, onKeyDown, sx  } ) => {
                 component={"span"} 
                 color={"#006699"}>{etiqueta}</Typography>
             <Box sx={{display:"flex", 
-                border:"solid #006699 2px", 
-                borderRadius:"4px"}}>
+            border:"solid #006699 2px", 
+            borderRadius:"4px",
+            boxSizing:"border-box"}}>
                 <TextoAzul 
                 size="small"
                 type={verContra ? 'text' : 'password'}
@@ -111,13 +124,15 @@ let InputTextOcultaText = ( { etiqueta, value, onChange, onKeyDown, sx  } ) => {
                 value={value}
                 onClick={ () => { cambiarFoco(true) } }
                 onBlur={ () => { cambiarFoco(false) } }
-                autoFocus={foco} />
+                autoFocus={foco}
+                onCopy={onCopy}
+                onPaste={onPaste} />
                 <Box 
                 onClick={cambioVisulizacionContra}
                 sx={{display:"flex", 
                 alignItems:"center", 
                 justifyContent:"left", 
-                width:"4%"}}>
+                width:"28px"}}>
                     { verContra ? 
                         <VisibilityIcon /> : 
                         <VisibilityOffIcon /> }

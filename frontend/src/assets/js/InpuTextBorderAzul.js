@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 import styled from '@mui/material/styles/styled';
 import { useState } from "react";
 
-let InputTextBorderAzul = ( { etiqueta, value, onChange, onKeyDown, sx } ) => {
+let InputTextBorderAzul = ( { etiqueta, value, onChange, onKeyDown, sx, onCopy, onPaste } ) => {
 
     const TextoAzul = styled(TextField)({
         width: "100%",
@@ -101,7 +101,9 @@ let InputTextBorderAzul = ( { etiqueta, value, onChange, onKeyDown, sx } ) => {
                 onKeyDown={onKeyDown}
                 onClick={ () => { cambiarFoco(true) } }
                 onBlur={ () => { cambiarFoco(false) } }
-                autoFocus={foco} />
+                autoFocus={foco}
+                onCopy={onCopy}
+                onPaste={onPaste} />
         </Box>
     )
 };

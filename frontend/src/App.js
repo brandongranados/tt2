@@ -7,6 +7,8 @@ import ValidacionUsuarios from "./components/ValidacionUsuarios";
 import ValidarUsuario from "./components/ValidarUsuario";
 import RegistroUsuario from "./components/RegistroUsuario";
 import Solicitudes from "./components/Solicitudes";
+import RegistroEstudiante from "./components/RegistroEstudiante";
+import ValidarToken from "./components/ValidarToken";
 
 let App = () => {
   return (
@@ -23,7 +25,11 @@ let Inicio = () => {
     <Routes>
       <Route path="/" element={<InicioSesion />} />
       <Route path="/restablecer" element={<RestablecerContrasena/>} />
-      <Route path="/registro" element={<RegistroUsuario/>} />
+      <Route path="/registroEstudiante" element={<RegistroEstudiante/>} />
+      <Route path="/validarToken" element={<ValidarToken/>} />
+
+
+      <Route path="/otro" element={<RegistroUsuario/>} />
       
       <Route path="/administrador/validacionUsuarios" element={<ValidacionUsuarios/>} />
       <Route path="/administrador/validarUsuario" element={<ValidarUsuario />} />

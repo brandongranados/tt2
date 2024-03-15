@@ -90,7 +90,7 @@ let InicioSesion = () => {
                         dir={"/restablecer"} texto={"Restablecer contraseña"} />
                         <LinkLetras 
                         sx={{width:"50%", textAlign:"center"}} 
-                        dir={"/registro"} texto={"Registro de usuario"} />
+                        dir={"/registroEstudiante"} texto={"Registro de usuario"} />
                     </Box>
                     <BotonAzul 
                     sx={{marginTop:"1.5%", width:"100%"}}

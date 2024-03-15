@@ -16,7 +16,9 @@ const rutas = {
     VERIFICACION_MASIVA_ESTUDIANTES : "/verificarMasivaEstudiante",
     LEER_EXCEL_VERIFICACION_MASIVA_ESTUDIANTES : "/leerExcelVerificarMasivaEstudiante",
     EJEMPLO_EXCEL_MASIVA_EST : "/ejemploExcelMasivaEst",
-    VALIDAR_ESTUDIANTE : "/validarEstudiante"
+    VALIDAR_ESTUDIANTE : "/validarEstudiante",
+    REGISTRO_ESTUDIANTE: "/registroEstudiante",
+    REGISTRO_ESTUDIANTE_TOKEN: "/registroEstudianteToken"
 };
 
 const ajax = axios.create({
@@ -265,13 +267,160 @@ let useAjax = () => {
         }
     };
 
+    //REGISTRAR USUARIO Y VALIDACION DE TOKEN
+
+    let registrarEstudiante = async (datos, setEspera) => {
+        try {
+
+            let pregunta = await creaAlerta({
+                titulo : "Advertencia",
+                mensaje : "Está seguro de enviar la informacion.",
+                icono : 4,
+                boolBtnCancel: true,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "#dc3741",
+                MensajeConfirmar : "Continuar",
+                MensajeCancel : "Cancelar"
+            });
+
+            if( !pregunta )
+            {
+                await creaAlerta({
+                    titulo : "Cancelado",
+                    mensaje : "Operación cancelada.",
+                    icono : 2,
+                    boolBtnCancel: false,
+                    ColorConfirmar: "#2e7d32",
+                    ColorCancel : "#dc3741",
+                    MensajeConfirmar : "OK",
+                    MensajeCancel : "Cancelar"
+                });
+                return;
+            }
+
+            setEspera(true);
+
+            await ajax.post(rutas.REGISTRO_ESTUDIANTE, datos, {
+                headers:{
+                    'Content-Type': 'application/json',
+                    Authorization: Authorization
+                }
+            });
+
+            setEspera(false);
+
+            await creaAlerta({
+                titulo : "OK",
+                mensaje : "Se envio un token a la direccion de correo electronico registrada. "
+                            +"Debera ingresar el token en la ventana donde se le redireccionara para verificar la direccion de correo electronico. ",
+                icono : 1,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "",
+                MensajeConfirmar : "OK",
+                MensajeCancel : ""
+            });
+
+            return true;
+
+        } catch (error) {
+            setEspera(false);
+
+            await creaAlerta({
+                titulo : "Error",
+                mensaje : "Datos incorrectos",
+                icono : 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "",
+                MensajeConfirmar : "OK",
+                MensajeCancel : ""
+            });
+
+            return false;
+        }
+    };
+
+    let registrarEstudianteToken = async (datos, setEspera) => {
+        try {
+
+            let pregunta = await creaAlerta({
+                titulo : "Advertencia",
+                mensaje : "Está seguro de enviar la informacion.",
+                icono : 4,
+                boolBtnCancel: true,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "#dc3741",
+                MensajeConfirmar : "Continuar",
+                MensajeCancel : "Cancelar"
+            });
+
+            if( !pregunta )
+            {
+                await creaAlerta({
+                    titulo : "Cancelado",
+                    mensaje : "Operación cancelada.",
+                    icono : 2,
+                    boolBtnCancel: false,
+                    ColorConfirmar: "#2e7d32",
+                    ColorCancel : "#dc3741",
+                    MensajeConfirmar : "OK",
+                    MensajeCancel : "Cancelar"
+                });
+                return;
+            }
+
+            setEspera(true);
+
+            await ajax.post(rutas.REGISTRO_ESTUDIANTE_TOKEN, datos, {
+                headers:{
+                    'Content-Type': 'application/json',
+                    Authorization: Authorization
+                }
+            });
+
+            setEspera(false);
+
+            await creaAlerta({
+                titulo : "OK",
+                mensaje : "Se auntentico el correo electronico correctamente ya puede iniciar sesion. ",
+                icono : 1,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "",
+                MensajeConfirmar : "OK",
+                MensajeCancel : ""
+            });
+
+            return true;
+
+        } catch (error) {
+            setEspera(false);
+
+            await creaAlerta({
+                titulo : "Error",
+                mensaje : "Usuario o token incorrectos o token expirado",
+                icono : 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "",
+                MensajeConfirmar : "OK",
+                MensajeCancel : ""
+            });
+
+            return false;
+        }
+    };
+
     return {
         iniciarConexion,
         restablecerContrasena,
         interpretarExcelMasivo,
         verificacionMasivaEstudiantes,
         descargarEjemploExcel,
-        cargarEstudiante
+        cargarEstudiante,
+        registrarEstudiante,
+        registrarEstudianteToken
     };
 };
 

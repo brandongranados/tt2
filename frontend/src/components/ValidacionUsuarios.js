@@ -15,8 +15,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Paper from "@mui/material/Paper";
 import TablePagination from "@mui/material/TablePagination";
 
-import BorderColorIcon from '@mui/icons-material/BorderColor';
-import DeleteIcon from '@mui/icons-material/Delete';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 import BotonAzul from "../assets/js/BotonAzul";
 import Navegacion from "./Navegacion";
@@ -249,12 +248,7 @@ let ValidacionUsuarios = () => {
 
     let cargaDeDocExcel = () => document.getElementById("excelCargar").click();
 
-    let eliminaElementos = (elemento) => {
-        let izquierda = datosExcel.filter( (iterador) => iterador.boleta < elemento.boleta );
-        let derecha = datosExcel.filter( (iterador) => iterador.boleta > elemento.boleta );
-
-        setDatosExcel([ ...izquierda, ...derecha ]);
-    };
+    let editarEstudiante = (estudiante) => {};
 
     return(
         <>
@@ -357,12 +351,9 @@ let ValidacionUsuarios = () => {
                                                     </TableCell>
                                                     <TableCell>
                                                         <Button>
-                                                            <BorderColorIcon sx={{color:"black"}}/>
-                                                        </Button>
-                                                        <Button>
-                                                            <DeleteIcon 
+                                                            <CheckCircleOutlineIcon 
                                                             sx={{color:"black"}} 
-                                                            onClick={ () => { eliminaElementos(iterador) } } />
+                                                            onClick={ () => { editarEstudiante(iterador) } } />
                                                         </Button>
                                                     </TableCell>
                                                 </TableRow>
