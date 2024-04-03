@@ -63,7 +63,8 @@ let SelectAzul = ({ onChange, value, etiqueta, sx, onKeyDown, opciones }) => {
                 <Typography variant={"h7"} 
                 component={"span"} 
                 color={"#006699"}>{etiqueta}</Typography>
-                <SelAzul onChange={onChange} value={value}>
+                <SelAzul onChange={onChange} 
+                value={value}>
                 {
                     opciones.map( (iterador) => {
                         return(

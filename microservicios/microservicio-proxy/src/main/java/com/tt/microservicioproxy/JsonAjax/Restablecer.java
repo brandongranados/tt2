@@ -3,17 +3,17 @@ package com.tt.microservicioproxy.JsonAjax;
 import com.github.rkpunjal.sqlsafe.SQLInjectionSafe;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-public class RegEstuTokenAjax {
-
+public class Restablecer {
     @NotBlank
+    @NotNull
     @SQLInjectionSafe
     private String usuario;
-    
     @NotBlank
+    @NotNull
     @SQLInjectionSafe
     private String token;
-
     
     public String getUsuario() {
         return usuario;

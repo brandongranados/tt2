@@ -12,6 +12,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.tt.basedatos.JsonAjax.InicioSesionAjax;
 import com.tt.basedatos.JsonAjax.RegistroEstuAjax;
+import com.tt.basedatos.JsonAjax.Restablecer;
 import com.tt.basedatos.JsonAjax.ValidaTokenRegEstAjax;
 import com.tt.basedatos.Repositorios.RepoSp;
 import com.tt.basedatos.Repositorios.RepoVistas;
@@ -79,6 +80,60 @@ public class Sesiones {
                             datos.getUsuario(),
                             datos.getToken()
                         );
+
+            if( salida != 1 )
+                throw new Exception();
+
+            resp.put("bool", salida);
+
+        } catch (Exception e) {
+            resp.put("bool", salida);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(resp);
+    }
+
+    @Transactional(readOnly = false)
+    public ResponseEntity registroRestablecer(Restablecer datos)
+    {
+        Map<String, Object> resp = new HashMap<String, Object>();
+        Integer salida = 0;
+
+        try {
+            salida = sp.spRegistraRestableceContrasena
+            (
+                datos.getUsuario(),
+                datos.getToken()
+            );
+
+            if( salida != 1 )
+                throw new Exception();
+
+            resp.put("bool", salida);
+
+        } catch (Exception e) {
+            resp.put("bool", salida);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(resp);
+    }
+
+    @Transactional(readOnly = false)
+    public ResponseEntity validaRestablecer(Restablecer datos)
+    {
+        Map<String, Object> resp = new HashMap<String, Object>();
+        Integer salida = 0;
+
+        try {
+            salida = sp.spValidaRestableceContrasena
+            (
+                datos.getUsuario(),
+                datos.getToken()
+            );
 
             if( salida != 1 )
                 throw new Exception();

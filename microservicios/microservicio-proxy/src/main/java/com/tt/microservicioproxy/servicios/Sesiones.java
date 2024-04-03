@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.tt.microservicioproxy.JsonAjax.RegEstuTokenAjax;
 import com.tt.microservicioproxy.JsonAjax.RegistroEstuPetRest;
 import com.tt.microservicioproxy.JsonAjax.RegistroEstudianteAjax;
+import com.tt.microservicioproxy.JsonAjax.Restablecer;
+import com.tt.microservicioproxy.JsonAjax.RestablecerSolicitud;
 import com.tt.microservicioproxy.diccionarios.Rutas;
 
 @Service
@@ -70,6 +72,58 @@ public class Sesiones {
 
         try {
             resp = rest.getRespuestaRest(Rutas.VALIDA_TOKEN_REG_EST, datos);
+
+            if( !resp.isPresent() )
+                throw new Exception();
+            else
+                bd = (Map<String, Object>)resp.get();
+
+            if( ((Double) bd.get("bool")) != 1 )
+                throw new Exception();
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity registroRestablecer(RestablecerSolicitud datos)
+    {
+        Restablecer envia = new Restablecer();
+        Optional resp = null;
+        Map<String, Object> bd = null;
+        String token = "";
+
+        try {
+            token = crypto.crearTokenRestablecerHash512(datos.getUsuario()+System.currentTimeMillis());
+            envia.setUsuario(datos.getUsuario());
+            envia.setToken(token);
+            resp = rest.getRespuestaRest(Rutas.REGISTRO_RESTABLECER, datos);
+
+            if( !resp.isPresent() )
+                throw new Exception();
+            else
+                bd = (Map<String, Object>)resp.get();
+
+            if( ((Double) bd.get("bool")) != 1 )
+                throw new Exception();
+
+            correo.enviarCorreo(1, datos.getCorreo(), token);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity validaRestablecer(Restablecer datos)
+    {
+        Optional resp = null;
+        Map<String, Object> bd = null;
+
+        try {
+            resp = rest.getRespuestaRest(Rutas.VALIDA_RESTABLECER, datos);
 
             if( !resp.isPresent() )
                 throw new Exception();

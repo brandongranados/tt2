@@ -1,19 +1,8 @@
-package com.tt.microservicioproxy.JsonAjax;
+package com.tt.basedatos.JsonAjax;
 
-import com.github.rkpunjal.sqlsafe.SQLInjectionSafe;
-
-import jakarta.validation.constraints.NotBlank;
-
-public class RegEstuTokenAjax {
-
-    @NotBlank
-    @SQLInjectionSafe
+public class Restablecer {
     private String usuario;
-    
-    @NotBlank
-    @SQLInjectionSafe
     private String token;
-
     
     public String getUsuario() {
         return usuario;

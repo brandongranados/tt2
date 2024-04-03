@@ -1,5 +1,7 @@
 package com.tt.microservicioproxy.JsonAjax;
 
+import com.github.rkpunjal.sqlsafe.SQLInjectionSafe;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -9,16 +11,22 @@ public class RegistroEstudianteAjax {
 
     @Size(min = 10, max = 10, message = "Boleta no valida")
     @Pattern(regexp = "^[0-9]+$", message = "Boleta no valida")
+    @SQLInjectionSafe
     private String boleta;
     @NotBlank
+    @SQLInjectionSafe
     private String usuario;
     @Email(message = "Correo no valido")
+    @SQLInjectionSafe
     private String correo;
     @Email(message = "Correo no valido")
+    @SQLInjectionSafe
     private String conCorreo;
     @NotBlank
+    @SQLInjectionSafe
     private String contrasena;
     @NotBlank
+    @SQLInjectionSafe
     private String conContrasena;
 
 

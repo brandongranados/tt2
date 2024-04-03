@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { UseSelector } from 'react-redux';
 import { useEffect } from 'react';
 
 import axios from 'axios';
