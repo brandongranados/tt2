@@ -895,71 +895,6 @@ CREATE VIEW v_inicio_sesion AS
 /************************************************************************************/
 /************************************************************************************/
 
-CREATE PROCEDURE sp_almacenar_usuario_sesion
-	@usuario VARCHAR(MAX),
-	@bool SMALLINT OUTPUT
-	AS BEGIN
-
-		DECLARE @id BIGINT;
-
-		SELECT TOP 1 @id = id_usuario FROM
-		(
-			SELECT id_usuario, 
-					nombre_usuario
-					FROM usuario
-
-			UNION
-
-			SELECT id_usuario,
-					nombre_usuario
-					FROM bit_usuario
-		) AS usuarios
-		WHERE nombre_usuario = @usuario;
-
-		BEGIN TRY
-
-			CREATE TABLE #usuario_sesion
-			(
-				id INTEGER PRIMARY KEY IDENTITY,
-				id_usuario BIGINT
-			);
-
-			INSERT INTO #usuario_sesion
-			( id_usuario )VALUES( @id );
-
-			SET @bool = 1;
-
-		END TRY
-		BEGIN CATCH
-
-			SET @bool = 6;
-
-		END CATCH
-
-	END
-
-
-
-CREATE PROCEDURE sp_elimina_usuario_sesion
-	@bool SMALLINT OUTPUT
-	AS BEGIN
-
-		BEGIN TRY
-
-			DROP TABLE #usuario_sesion;
-			SET @bool = 1;
-
-		END TRY
-		BEGIN CATCH
-
-			SET @bool = 7;
-
-		END CATCH
-
-	END;
-
-
-
 CREATE PROCEDURE sp_registrar_estudiante
 	@num_boleta BIGINT,
 	@nombre_usuario VARCHAR(MAX),
@@ -1294,3 +1229,93 @@ CODIGO DE ERRORES BASE DE DATOS
 	11:Error al mintentrar ingresar el nuevo token mde restablcer contrasena
 
 */
+
+
+SELECT * FROM usuario;
+
+
+DECLARE @bool SMALLINT;
+
+EXEC sp_metodologia_bitacoras_internas
+'BRANDON',
+@bool OUTPUT;
+
+SELECT @bool;
+
+
+SELECT * FROM bit_estudiante;
+SELECT * FROM estudiante;
+
+SELECT * FROM usuario;
+
+
+
+CREATE PROCEDURE sp_metodologia_bitacoras_internas
+ @usuario VARCHAR(MAX),
+ @bool SMALLINT OUTPUT
+ AS BEGIN
+
+	/* CREACION DE TABLA TEMPORAL */
+
+	DECLARE @id BIGINT;
+
+	SELECT TOP 1 @id = id_usuario FROM
+	(
+		SELECT id_usuario, 
+				nombre_usuario
+				FROM usuario
+
+		UNION
+
+		SELECT id_usuario,
+				nombre_usuario
+				FROM bit_usuario
+	) AS usuarios
+	WHERE nombre_usuario = @usuario;
+
+	BEGIN TRY
+
+		CREATE TABLE #usuario_sesion
+		(
+			id INTEGER PRIMARY KEY IDENTITY,
+			id_usuario BIGINT
+		);
+
+		INSERT INTO #usuario_sesion
+		( id_usuario )VALUES( @id );
+
+		SET @bool = 1;
+
+	END TRY
+	BEGIN CATCH
+
+		SET @bool = 6;
+		RETURN;
+
+	END CATCH
+
+	/* TERMINA CREACION DE TABLA TEMPORAL */
+
+
+
+	UPDATE estudiante
+		SET apellido_paterno = 'JAJAJAJAJANACWKBVSJKD'
+	WHERE nombres = 'BRANDON';
+
+
+
+	/* ELIMINACION DE TABLA TEMPORAL */
+
+	BEGIN TRY
+
+		DROP TABLE #usuario_sesion;
+		SET @bool = 1;
+
+	END TRY
+	BEGIN CATCH
+
+		SET @bool = 7;
+
+	END CATCH
+
+ END;
