@@ -683,6 +683,1178 @@ CREATE TABLE bit_estudiante
 /************************************************************************************/
 /************************************************************************************/
 /************************************************************************************/
+CREATE TRIGGER d_ets
+	ON ets
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_ets
+			(
+				id_ets,
+				fecha_aplicacion,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_ets,
+                    deleted.fecha_aplicacion,
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_ets_plan_uni_apren_est_car
+	ON ets_plan_uni_apren_est_car
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_ets_plan_uni_apren_est_car
+			(
+				id_ets_plan_uni_apren_est_car,
+				id_ets,
+				id_plan,
+				id_uni_apren_inscrita,
+				id_est,
+				id_carrera,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_ets_plan_uni_apren_est_car,
+                    deleted.id_ets,
+					deleted.id_plan,
+					deleted.id_uni_apren_inscrita,
+					deleted.id_est,
+					deleted.id_carrera,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_carrera
+	ON carrera
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_carrera
+			(
+				id_carrera,
+				nom_carrera,
+				total_creditos,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_carrera,
+                    deleted.nom_carrera,
+					deleted.total_creditos,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_plan_estudios
+	ON plan_estudios
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_plan_estudios
+			(
+				id_plan,
+				nombre_plan,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_plan,
+                    deleted.nombre_plan,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_unidad_aprendizaje
+	ON unidad_aprendizaje
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_unidad_aprendizaje
+			(
+				id_uni_apren,
+				id_uni_apren_equi,
+				id_creditos,
+				nom_uni_apren,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_uni_apren,
+                    deleted.id_uni_apren_equi,
+					deleted.id_creditos,
+					deleted.nom_uni_apren,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_grupo_est
+	ON grupo_est
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_grupo_est
+			(
+				id_grupo_est,
+				id_grupo,
+				id_est,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_grupo_est,
+                    deleted.id_grupo,
+					deleted.id_est,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_grupo
+	ON grupo
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_grupo
+			(
+				id_grupo,
+				nom_grupo,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_grupo,
+                    deleted.nom_grupo,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_estudiante_carrera
+	ON estudiante_carrera
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_estudiante_carrera
+			(
+				id_estudiante_carrera,
+				id_est,
+				id_carrera,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_estudiante_carrera,
+                    deleted.id_est,
+					deleted.id_carrera,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_est_tip_sol_bit_gestion
+	ON est_tip_sol_bit_gestion
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_est_tip_sol_bit_gestion
+			(
+				id_est_tip_sol_bit_gestion,
+				id_est,
+				id_tipo_solicitud,
+				id_bitacora,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_est_tip_sol_bit_gestion,
+                    deleted.id_est,
+					deleted.id_tipo_solicitud,
+					deleted.id_bitacora,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_bitacora_gestion
+	ON bitacora_gestion
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_bitacora_gestion
+			(
+				id_bitacora,
+				fecha_resgistro_bd,
+				fecha_solicitud,
+				fecha_entrega,
+				estado,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_bitacora,
+                    deleted.fecha_resgistro_bd,
+					deleted.fecha_solicitud,
+					deleted.fecha_entrega,
+					deleted.estado,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_uni_apren_inscrita
+	ON uni_apren_inscrita
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_uni_apren_inscrita
+			(
+				id_uni_apren_inscrita,
+				id_uni_apren,
+				id_est,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_uni_apren_inscrita,
+                    deleted.id_uni_apren,
+					deleted.id_est,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_roles
+	ON roles
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_roles
+			(
+				id_rol,
+				nombre_rol,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_rol,
+                    deleted.nombre_rol,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_uni_apren_desfasada
+	ON uni_apren_desfasada
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_uni_apren_desfasada
+			(
+				id_uni_apren_desfasada,
+				id_uni_apren,
+				id_est,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_uni_apren_desfasada,
+                    deleted.id_uni_apren,
+					deleted.id_est,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_rol_personal_usuario
+	ON rol_personal_usuario
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_rol_personal_usuario
+			(
+				id_rol_personal_usuario,
+				id_personal,
+				id_rol,
+				id_usuario,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_rol_personal_usuario,
+                    deleted.id_personal,
+					deleted.id_rol,
+					deleted.id_usuario,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_personal
+	ON personal
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_personal
+			(
+				id_personal,
+				nombres,
+				apellido_paterno,
+				apellido_materno,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_personal,
+                    deleted.nombres,
+					deleted.apellido_paterno,
+					deleted.apellido_materno,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_expediente_est
+	ON expediente_est
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_expediente_est
+			(
+				id_expediente_est,
+				id_est,
+				id_tipo_solicitud,
+				ruta,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_expediente_est,
+                    deleted.id_est,
+					deleted.id_tipo_solicitud,
+					deleted.ruta,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_uni_apren_reprobada
+	ON uni_apren_reprobada
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_uni_apren_reprobada
+			(
+				id_uni_apren_reprobada,
+				id_uni_apren,
+				id_est,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_uni_apren_reprobada,
+                    deleted.id_uni_apren,
+					deleted.id_est,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_depto_personal_puesto
+	ON depto_personal_puesto
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_depto_personal_puesto
+			(
+				id_depto_personal_puesto,
+				id_puesto,
+				id_depto,
+				id_personal,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_depto_personal_puesto,
+                    deleted.id_puesto,
+					deleted.id_depto,
+					deleted.id_personal,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_departamento
+	ON departamento
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_departamento
+			(
+				id_depto,
+				nombre_depto,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_depto,
+                    deleted.nombre_depto,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_uni_apren_cursada
+	ON uni_apren_cursada
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_uni_apren_cursada
+			(
+				id_uni_apren_cursada,
+				id_uni_apren,
+				id_est,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_uni_apren_cursada,
+                    deleted.id_uni_apren,
+					deleted.id_est,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_puestos
+	ON puestos
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_puestos
+			(
+				id_puesto,
+				nombre_puesto,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_puesto,
+                    deleted.nombre_puesto,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
+
+CREATE TRIGGER d_tipo_solicitud
+	ON tipo_solicitud
+	AFTER UPDATE, DELETE
+	AS BEGIN
+
+		DECLARE @tipo SMALLINT;
+
+		SET @tipo = 0;
+
+		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*actuAlizacion*/
+			SET @tipo = 2;
+
+		END
+		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+		BEGIN
+
+			/*REGISTRO ELIMNADO*/
+			SET @tipo = 3;
+
+		END
+
+		BEGIN TRY
+
+			INSERT INTO bit_tipo_solicitud
+			(
+				id_tipo_solicitud,
+				nombre_solicitud,
+
+				id_user_ejecuta,
+				tip_ejec
+			)
+            SELECT deleted.id_tipo_solicitud,
+                    deleted.nombre_solicitud,
+
+                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
+                    @tipo AS tipo
+            FROM deleted
+
+		END TRY
+		BEGIN CATCH
+
+			SET @tipo = 0;
+
+		END CATCH
+
+	END;
+
 
 CREATE TRIGGER d_estudiante
 	ON estudiante
