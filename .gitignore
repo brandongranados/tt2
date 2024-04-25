@@ -21,3 +21,7 @@
 /frontend/npm-debug.log*
 /frontend/yarn-debug.log*
 /frontend/yarn-error.log*
+microservicios/microservicio-proxy/src/main/resources/application.properties
+microservicios/microservicio-proxy/src/main/resources/application.properties
+microservicios/base-datos/src/main/resources/application.properties
+microservicios/microservicio-proxy/src/main/resources/application.properties
