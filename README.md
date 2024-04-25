@@ -1,21 +1,91 @@
 # tt2
 
-Opciones de como usar componente de Alertas
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: proxy
+  template:
+    metadata:
+      labels:
+        app: proxy
+    spec:
+      containers:
+      - name: proxy-container
+        image: tu-imagen-del-proxy
+        ports:
+        - containerPort: 80
+        env:
+          - name: QR_SERVICE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: proxy-config
+                key: qr-service-url
 
-parametro con nombre "opciones"
-es un objeto json como el siguiente
 
-let opciones = {
-    titulo,                     "ADVERTENCIA"
-    mensaje,                    "MENSAJE NO SE LOGRO ENVIAR"
-    icono,                      "1 = Icono verde paloma, 2 = icono rojo X,
-                                3 = Icono amarillo advertencia, 
-                                4 = icono azul informativo,
-                                5 = icono gris ? pregunta"
 
-    boolBtnCancel,              "true o false"
-    opcionesColorConfirmar,     "green"
-    opcionesColorCancel,        "red"
-    opcionesMensajeConfirmar,   "Enviar"
-    opcionesMensajeCancel       "Cancelar"
-}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy-service
+spec:
+  selector:
+    app: proxy
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qr-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: qr
+  template:
+    metadata:
+      labels:
+        app: qr
+    spec:
+      containers:
+      - name: qr-container
+        image: tu-imagen-de-qr
+        ports:
+        - containerPort: 80
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: qr-service
+spec:
+  selector:
+    app: qr
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+
+
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: proxy-config
+data:
+  qr-service-url: "http://qr-service:80"

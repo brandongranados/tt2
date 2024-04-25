@@ -105,14 +105,17 @@ let RegistroEstudiante = () => {
 
     let ejecutaPeticion = async (e) => {
 
+        let contra = crearHash512(contrasena);
+        let contra2 = crearHash512(conContrasena);
+
         let datos = 
         {
             boleta: boleta,
             usuario: crearHash512(usuario),
             correo: correo,
             conCorreo: conCorreo,
-            contrasena: crearHash512(contrasena),
-            conContrasena: crearHash512(conContrasena)
+            contrasena: contra,
+            conContrasena: contra2
         };
 
         let validacion = validaFormulario();

@@ -112,6 +112,7 @@ public class Sesiones {
                 throw new Exception();
 
             resp.put("bool", salida);
+            resp.put("correo", vistas.getCorreo(datos.getUsuario()));
 
         } catch (Exception e) {
             resp.put("bool", salida);

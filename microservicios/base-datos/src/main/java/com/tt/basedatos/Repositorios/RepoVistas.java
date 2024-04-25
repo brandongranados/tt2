@@ -20,4 +20,17 @@ public interface RepoVistas extends CrudRepository<ComodinVistas, Integer>{
     (
         @Param("nombre_usuario") String nombreUsuario
     );
+
+    //OBTENER CORREO POR USUARIO
+    @Query
+    (
+        value = "SELECT TOP 1 correo_electronico FROM v_obtener_correos "+
+                "WHERE nombre_usuario  = :nombre_usuario",
+        nativeQuery = true
+    )
+    public String getCorreo
+    (
+        @Param("nombre_usuario") String nombreUsuario
+    );
+
 }

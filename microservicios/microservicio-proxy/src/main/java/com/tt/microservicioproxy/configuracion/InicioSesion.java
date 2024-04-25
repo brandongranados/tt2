@@ -38,9 +38,6 @@ public class InicioSesion implements UserDetailsService {
         else
             bd = (Map<String, Object>)op.get();
 
-        if( ( (Double)bd.get("autenticado") ) != 1 )
-            return null;
-
         aut.add(new SimpleGrantedAuthority((String)bd.get("nombre_rol")));
 
         return new User(usuario, (String)bd.get("contrasena"), 

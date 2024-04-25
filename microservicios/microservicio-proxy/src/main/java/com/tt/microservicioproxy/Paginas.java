@@ -29,10 +29,10 @@ public class Paginas {
     public ResponseEntity registroEstudiante(@Valid @RequestBody RegistroEstudianteAjax datos)
     {
 
-        datos.setBoleta(iny.getCadenaDepuradaInyecciones(datos.getBoleta()));
-        datos.setConContrasena(iny.getCadenaDepuradaInyecciones(datos.getConContrasena()));
-        datos.setContrasena(iny.getCadenaDepuradaInyecciones(datos.getContrasena()));
-        datos.setUsuario(iny.getCadenaDepuradaInyecciones(datos.getUsuario()));
+        //datos.setBoleta(iny.getCadenaDepuradaInyecciones(datos.getBoleta()));
+        //datos.setConContrasena(iny.getCadenaDepuradaInyecciones(datos.getConContrasena()));
+        //datos.setContrasena(iny.getCadenaDepuradaInyecciones(datos.getContrasena()));
+        //datos.setUsuario(iny.getCadenaDepuradaInyecciones(datos.getUsuario()));
 
         return sesion.getAutenticarCorreo(datos);
     }

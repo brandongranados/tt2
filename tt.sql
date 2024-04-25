@@ -1956,7 +1956,6 @@ CREATE TRIGGER d_usuario
 				id_usuario,
 				nombre_usuario,
 				contrasena,
-				autenticado ,
 
 				id_user_ejecuta ,
 				tip_ejec
@@ -1964,7 +1963,6 @@ CREATE TRIGGER d_usuario
             SELECT deleted.id_usuario,
                     deleted.nombre_usuario,
                     deleted.contrasena,
-                    deleted.autenticado,
                     ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
                     @tipo AS tipo
             FROM deleted
@@ -2046,8 +2044,7 @@ CREATE TRIGGER d_rol_usuario_est
 CREATE VIEW v_inicio_sesion AS
 	SELECT u.contrasena,
 			u.nombre_usuario,
-			r.nombre_rol,
-			u.autenticado
+			r.nombre_rol
 		FROM rol_usuario_est rue
 			INNER JOIN estudiante e
 				ON rue.id_est = e.id_est
@@ -2057,6 +2054,16 @@ CREATE VIEW v_inicio_sesion AS
 				ON rue.id_usuario = u.id_usuario;
 
 
+CREATE VIEW v_obtener_correos AS
+	SELECT u.nombre_usuario,
+			e.correo_electronico
+		FROM rol_usuario_est rue
+			INNER JOIN estudiante e
+				ON rue.id_est = e.id_est
+			INNER JOIN roles r
+				ON rue.id_rol = r.id_rol
+			INNER JOIN usuario u
+				ON rue.id_usuario = u.id_usuario;
 
 
 /************************************************************************************/
@@ -2400,6 +2407,10 @@ CODIGO DE ERRORES BASE DE DATOS
 	10:Error al eliminar token antiguo de restablecer contrasena
 	11:Error al mintentrar ingresar el nuevo token mde restablcer contrasena
 
+*/
+
+/*
+	PARA ABRIR ARCHIVOS openssl rsa -in hola.key -text
 */
 
 

@@ -109,7 +109,7 @@ public class Sesiones {
             if( ((Double) bd.get("bool")) != 1 )
                 throw new Exception();
 
-            correo.enviarCorreo(1, datos.getCorreo(), token);
+            correo.enviarCorreo(1, (String) bd.get("correo"), token);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
