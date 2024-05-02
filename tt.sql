@@ -22,13 +22,15 @@ CREATE TABLE carrera
 (
 	id_carrera BIGINT PRIMARY KEY IDENTITY,
 	nom_carrera VARCHAR(MAX) NOT NULL DEFAULT '',
-	total_creditos FLOAT NOT NULL DEFAULT 0
+	total_creditos FLOAT NOT NULL DEFAULT 0,
+	nom_carrera_num INTEGER DEFAULT 0
 );
 
 CREATE TABLE periodo
 (
 	id_periodo BIGINT PRIMARY KEY IDENTITY,
-	nom_periodo VARCHAR(MAX) NOT NULL DEFAULT ''
+	nom_periodo VARCHAR(MAX) NOT NULL DEFAULT '',
+	nom_periodo_num INTEGER DEFAULT 0
 );
 
 CREATE TABLE plan_estudios
@@ -372,11 +374,14 @@ CREATE TABLE bit_carrera
 	id_carrera BIGINT,
 	nom_carrera VARCHAR(MAX) DEFAULT '',
 	total_creditos FLOAT DEFAULT 0,
+	nom_carrera_num INTEGER DEFAULT 0,
 
     id_user_ejecuta BIGINT,
     fecha_ejecuta DATETIME DEFAULT GETDATE(),
     tip_ejec SMALLINT DEFAULT 0
 );
+
+ALTER TABLE 
 
 CREATE TABLE bit_plan_estudios
 (
@@ -2405,6 +2410,7 @@ CREATE PROCEDURE sp_alta_estudiante
 	@sexo SMALLINT,
 	@fecha_nacimiento DATE,
 	@boleta BIGINT,
+	@
 	@usuario_alta VARCHAR(MAX),
 	@bool SMALLINT OUTPUT
 	AS BEGIN
