@@ -19,6 +19,12 @@ public interface RepoSp extends CrudRepository<ComodinVistas, Integer> {
     @Procedure(procedureName = "sp_elimina_usuario_sesion")
     public Integer spEliminaUsuarioSesion();
 
+
+
+
+
+
+
     //VALIDACION CORREOS Y RESGITRO PARCIAL DESDE VENTANAS ESTUDIANTE
     @Procedure(procedureName = "sp_registrar_estudiante")
     public Integer spRegistrarEstudiante
@@ -37,6 +43,12 @@ public interface RepoSp extends CrudRepository<ComodinVistas, Integer> {
         @Param("token") String token
     );
 
+
+
+
+
+
+
     //RESTABLECER CONTRASENA
     @Procedure(procedureName = "sp_registra_restablece_contrasena")
     public Integer spRegistraRestableceContrasena
@@ -45,12 +57,35 @@ public interface RepoSp extends CrudRepository<ComodinVistas, Integer> {
         @Param("token") String token
     );
 
+
+
+
+
+
     //RESTABLECER CONTRASENA
     @Procedure(procedureName = "sp_valida_restablece_contrasena")
     public Integer spValidaRestableceContrasena
     (
         @Param("usuario") String usuario,
         @Param("token") String token
+    );
+
+
+
+
+
+    /* PROCEDIMIENTOS PARA PAAES */
+    @Procedure(procedureName = "sp_alta_estudiante")
+    public Integer spAltaEstudiante
+    (
+        @Param("paterno") String paterno,
+        @Param("materno") String materno,
+        @Param("nombre") String nombre,
+        @Param("curp") String curp,
+        @Param("sexo") Integer sexo,
+        @Param("fechaNacimiento") String fechaNacimiento,
+        @Param("boleta") Integer boleta,
+        @Param("usuarioAlta") String usuarioAlta
     );
 
 }

@@ -10,8 +10,12 @@ import BotonAzul from "../assets/js/BotonAzul";
 import Cargando from "./Cargando";
 
 import useAjax from '../services/useAjax';
+import useCadenaUnica from './hooks/useCadenaUnica';
 
 let RestablecerContrasena = () => {
+
+    //HOOKS PERSONALES
+    const [crearHash512] = useCadenaUnica();
 
     const [usuario, setUsuario] = useState("");
     const [tamTitulo, setTamTitulo] = useState("h3");
@@ -28,7 +32,7 @@ let RestablecerContrasena = () => {
             setTamTitulo("h3");
     };
 
-    let iniciar = async () => await ObjAjax.restablecerContrasena({ usuario : usuario }, setEspera);
+    let iniciar = async () => await ObjAjax.restablecerContrasena({ usuario : crearHash512(usuario) }, setEspera);
 
     let cambiarUsuario = (e) => setUsuario(e.target.value);
 

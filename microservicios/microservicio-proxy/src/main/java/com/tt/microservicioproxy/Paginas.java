@@ -29,11 +29,6 @@ public class Paginas {
     public ResponseEntity registroEstudiante(@Valid @RequestBody RegistroEstudianteAjax datos)
     {
 
-        //datos.setBoleta(iny.getCadenaDepuradaInyecciones(datos.getBoleta()));
-        //datos.setConContrasena(iny.getCadenaDepuradaInyecciones(datos.getConContrasena()));
-        //datos.setContrasena(iny.getCadenaDepuradaInyecciones(datos.getContrasena()));
-        //datos.setUsuario(iny.getCadenaDepuradaInyecciones(datos.getUsuario()));
-
         return sesion.getAutenticarCorreo(datos);
     }
 
@@ -41,7 +36,7 @@ public class Paginas {
     public ResponseEntity registroEstudianteToken(@Valid @RequestBody RegEstuTokenAjax datos)
     {
 
-        datos.setUsuario(iny.getCadenaDepuradaInyecciones(datos.getUsuario()));
+        datos.setUsuario(datos.getUsuario());
 
         return sesion.getValidaToken(datos);
     }
@@ -51,13 +46,22 @@ public class Paginas {
     public ResponseEntity registroRestablecer(@Valid @RequestBody RestablecerSolicitud datos)
     {
 
-        datos.setUsuario(iny.getCadenaDepuradaInyecciones(datos.getUsuario()));
+        datos.setUsuario(datos.getUsuario());
 
         return sesion.registroRestablecer(datos);
     }
 
     @PostMapping("/validaRestablecer")
     public ResponseEntity validaRestablecer(@Valid @RequestBody Restablecer datos)
+    {
+
+        datos.setUsuario(iny.getCadenaDepuradaInyecciones(datos.getUsuario()));
+        
+        return sesion.validaRestablecer(datos);
+    }
+
+    @PostMapping("/restablecer")
+    public ResponseEntity restablecer(@Valid @RequestBody Restablecer datos)
     {
 
         datos.setUsuario(iny.getCadenaDepuradaInyecciones(datos.getUsuario()));

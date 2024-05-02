@@ -2074,6 +2074,9 @@ CREATE VIEW v_obtener_correos AS
 /************************************************************************************/
 /************************************************************************************/
 
+
+/* SESIONES DE ESTUDIANTES*/
+
 CREATE PROCEDURE sp_registrar_estudiante
 	@num_boleta BIGINT,
 	@nombre_usuario VARCHAR(MAX),
@@ -2391,55 +2394,24 @@ CREATE PROCEDURE sp_valida_restablece_contrasena
 
 	END
 
-/*
-
-CODIGO DE ERRORES BASE DE DATOS
-
-	1: OPERACION EXITOSA OK
-	2: USUARIO DE REGISTRO DUPLICADO
-	3: ERROR AL ALMACENAR LSO DATOS DE AUTETICACION DEL TOKEN
-	4: ERROR AL REGISTRAR AL ESTUDIANTE CON SUS DATOS DE REGISTRO
-	5: RELACIONADO AL ERROR 3
-	6: NO EXISTE EL REGISTRO ACTIVO CON EL TOKEN, USUARIO ESPECIFICADOS
-	7: EL TOKEN EXPIRO 
-	8: ERROR AL INTENTAR ACTULIZAR ESTADO DEL TOKEN AUTENTICADO
-	9: el usuario no existe al intentar restablecer contrasena
-	10:Error al eliminar token antiguo de restablecer contrasena
-	11:Error al mintentrar ingresar el nuevo token mde restablcer contrasena
-
-*/
-
-/*
-	PARA ABRIR ARCHIVOS openssl rsa -in hola.key -text
-*/
+/* PAAE */
 
 
-SELECT * FROM usuario;
+CREATE PROCEDURE sp_alta_estudiante
+	@paterno VARCHAR(MAX),
+	@materno VARCHAR(MAX),
+	@nombre VARCHAR(MAX),
+	@curp VARCHAR(MAX),
+	@sexo SMALLINT,
+	@fecha_nacimiento DATE,
+	@boleta BIGINT,
+	@usuario_alta VARCHAR(MAX),
+	@bool SMALLINT OUTPUT
+	AS BEGIN
 
-
-DECLARE @bool SMALLINT;
-
-EXEC sp_metodologia_bitacoras_internas
-'BRANDON',
-@bool OUTPUT;
-
-SELECT @bool;
-
-
-SELECT * FROM bit_estudiante;
-SELECT * FROM estudiante;
-
-SELECT * FROM usuario;
-
-
-
-CREATE PROCEDURE sp_metodologia_bitacoras_internas
- @usuario VARCHAR(MAX),
- @bool SMALLINT OUTPUT
- AS BEGIN
+	DECLARE @id_est BIGINT;
 
 	/* CREACION DE TABLA TEMPORAL */
-
 	DECLARE @id BIGINT;
 
 	SELECT TOP 1 @id = id_usuario FROM
@@ -2454,7 +2426,7 @@ CREATE PROCEDURE sp_metodologia_bitacoras_internas
 				nombre_usuario
 				FROM bit_usuario
 	) AS usuarios
-	WHERE nombre_usuario = @usuario;
+	WHERE nombre_usuario = @usuario_alta;
 
 	BEGIN TRY
 
@@ -2473,26 +2445,49 @@ CREATE PROCEDURE sp_metodologia_bitacoras_internas
 	BEGIN CATCH
 
 		SET @bool = 6;
-		RETURN;
 
 	END CATCH
-
 	/* TERMINA CREACION DE TABLA TEMPORAL */
 
+	SELECT TOP 1 @id_est = id_est 
+	    FROM estudiante
+	WHERE num_boleta = @boleta;
 
+	IF EXISTS( SELECT * FROM estudiante WHERE num_boleta = @boleta ) AND @bool = 1
+    BEGIN
+		BEGIN TRY
+			
+			UPDATE estudiante
+			SET num_boleta = @boleta,
+				curp = @curp,
+				nombres = @nombre,
+				apellido_paterno = @paterno,
+				apellido_materno = @materno,
+				sexo = @sexo,
+				fecha_nacimiento = @fecha_nacimiento
+			WHERE id_est = @id_est ;
 
-	UPDATE estudiante
-		SET apellido_paterno = 'JAJAJAJAJANACWKBVSJKD'
-	WHERE nombres = 'BRANDON';
+			SET @bool = 1;
 
+		END TRY
+		BEGIN CATCH
 
+			SET @bool = 12;
+
+		END CATCH
+
+	END
+	ELSE
+	BEGIN
+
+		SET @bool = 12;
+
+	END
 
 	/* ELIMINACION DE TABLA TEMPORAL */
-
 	BEGIN TRY
 
 		DROP TABLE #usuario_sesion;
-		SET @bool = 1;
 
 	END TRY
 	BEGIN CATCH
@@ -2500,5 +2495,198 @@ CREATE PROCEDURE sp_metodologia_bitacoras_internas
 		SET @bool = 7;
 
 	END CATCH
+	/* ELIMINACION DE TABLA TEMPORAL */
 
- END;
+END
+
+CREATE PROCEDURE sp_edita_estudiante
+	@paterno VARCHAR(MAX),
+	@materno VARCHAR(MAX),
+	@nombre VARCHAR(MAX),
+	@curp VARCHAR(MAX),
+	@sexo SMALLINT,
+	@fecha_nacimiento DATE,
+	@boleta BIGINT,
+	@carrera VARCHAR(MAX),
+	@semestre INTEGER,
+	@nomPeriodo VARCHAR(MAX),
+	@correo VARCHAR(MAX),
+	@usuario_resp_edicion VARCHAR(MAX),
+	@bool SMALLINT OUTPUT
+	AS BEGIN
+
+	DECLARE @id_est BIGINT;
+	DECLARE @id_carrera BIGINT;
+	DECLARE @id_periodo BIGINT;
+
+	/* CREACION DE TABLA TEMPORAL */
+	DECLARE @id BIGINT;
+
+	SELECT TOP 1 @id = id_usuario FROM
+	(
+		SELECT id_usuario, 
+				nombre_usuario
+				FROM usuario
+
+		UNION
+
+		SELECT id_usuario,
+				nombre_usuario
+				FROM bit_usuario
+	) AS usuarios
+	WHERE nombre_usuario = @usuario_resp_edicion;
+
+	BEGIN TRY
+
+		CREATE TABLE #usuario_sesion
+		(
+			id INTEGER PRIMARY KEY IDENTITY,
+			id_usuario BIGINT
+		);
+
+		INSERT INTO #usuario_sesion
+		( id_usuario )VALUES( @id );
+
+		SET @bool = 1;
+
+	END TRY
+	BEGIN CATCH
+
+		SET @bool = 6;
+
+	END CATCH
+	/* TERMINA CREACION DE TABLA TEMPORAL */
+
+	SELECT TOP 1 @id_est = id_est 
+	    FROM estudiante
+	WHERE num_boleta = @boleta;
+
+	SELECT TOP 1 @id_carrera = carrera 
+		FROM carrera
+	WHERE nom_carrera = @carrera;
+
+	SELECT TOP 1 @id_periodo = id_periodo
+		FROM periodo
+	WHERE nom_periodo = @nomPeriodo;
+
+	IF @id_est IS NOT NULL AND @id_carrera IS NOT NULL AND @id_periodo IS NOT NULL AND @bool = 1
+    BEGIN
+		BEGIN TRY
+			
+			UPDATE estudiante
+			SET num_boleta = @boleta,
+				curp = @curp,
+				nombres = @nombre,
+				apellido_paterno = @paterno,
+				apellido_materno = @materno,
+				sexo = @sexo,
+				fecha_nacimiento = @fecha_nacimiento,
+				correo_electronico = @correo,
+				sexo = @sexo
+			WHERE id_est = @id_est ;
+
+			IF NOT EXISTS ( SELECT * FROM estudiante_carrera WHERE id_est =  @id_est )
+			BEGIN
+				INSERT INTO estudiante_carrera
+				(
+					id_est,
+					id_carrera
+				)VALUES
+				(
+					@id_est,
+					@id_carrera
+				);
+			ELSE
+			BEGIN
+				UPDATE estudiante_carrera
+					SET id_carrera = @id_carrera
+				WHERE id_est =  @id_est;
+			END
+
+			SET @bool = 1;
+
+		END TRY
+		BEGIN CATCH
+
+			SET @bool = 12;
+
+		END CATCH
+
+	END
+	ELSE
+	BEGIN
+
+		SET @bool = 12;
+
+	END
+
+	/* ELIMINACION DE TABLA TEMPORAL */
+	BEGIN TRY
+
+		DROP TABLE #usuario_sesion;
+
+	END TRY
+	BEGIN CATCH
+
+		SET @bool = 7;
+
+	END CATCH
+	/* ELIMINACION DE TABLA TEMPORAL */
+
+END
+/*
+
+CODIGO DE ERRORES BASE DE DATOS
+
+	1: OPERACION EXITOSA OK
+	2: USUARIO DE REGISTRO DUPLICADO
+	3: ERROR AL ALMACENAR LSO DATOS DE AUTETICACION DEL TOKEN
+	4: ERROR AL REGISTRAR AL ESTUDIANTE CON SUS DATOS DE REGISTRO
+	5: RELACIONADO AL ERROR 3
+	6: NO EXISTE EL REGISTRO ACTIVO CON EL TOKEN, USUARIO ESPECIFICADOS
+	7: EL TOKEN EXPIRO 
+	8: ERROR AL INTENTAR ACTULIZAR ESTADO DEL TOKEN AUTENTICADO
+	9: el usuario no existe al intentar restablecer contrasena
+	10:Error al eliminar token antiguo de restablecer contrasena
+	11:Error al mintentrar ingresar el nuevo token mde restablcer contrasena
+	12:ERROR AL ACTULIZAR AL ESTUDANITE DESDE UN USUARIO PAAE
+
+*/
+
+/*
+	PARA ABRIR ARCHIVOS openssl rsa -in hola.key -text
+*/
+
+
+/***********************************************************************/
+
+INSERT INTO roles(nombre_rol)
+VALUES(
+	'ROLE_ESTUDIANTE'
+);
+
+/***********************************************************************/
+
+
+SELECT * FROM estudiante;
+
+SELECT * FROM bit_estudiante;
+
+SELECT * FROM usuario;
+
+
+
+DECLARE @bool SMALLINT;
+
+EXEC sp_alta_estudiante
+'CASIANO',
+'GRANADOS',
+'BRANDON ANTONIO',
+'CAGB980704HMCSRR07',
+1,
+'1998-07-04',
+2020300476,
+'MTJhMjRhMmI4YjE1NzE2ZGU1ZGNmZjUzYTdkNjQwODkwNWQwMWI5MmY3MjRjMzc2NTIwY2VkNzg1YTE0MGIzZA==',
+@bool OUTPUT;
+
+SELECT @bool;

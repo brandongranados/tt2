@@ -42,9 +42,9 @@ let useAjax = () => {
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.INICIO_SESION, datos);
-            let datos = await resp.data;
+            let dat = await resp.data;
 
-            despacha(setAutenticacion(datos.token));
+            despacha(setAutenticacion(dat.token));
 
             setEspera(false);
 

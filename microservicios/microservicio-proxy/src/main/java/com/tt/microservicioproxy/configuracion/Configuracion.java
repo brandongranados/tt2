@@ -62,6 +62,8 @@ public class Configuracion {
                     .permitAll()
                 .requestMatchers(HttpMethod.POST, "/validaRestablecer")
                     .permitAll()
+                .requestMatchers(HttpMethod.POST, "/restablecer")
+                    .permitAll()
                 .anyRequest().authenticated()
                     .and()
                 .addFilter(new AutenticacionPlataforma(authenticationConfiguration.getAuthenticationManager()))

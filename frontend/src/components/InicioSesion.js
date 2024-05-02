@@ -13,8 +13,12 @@ import InputTextOcultaText from '../assets/js/InputTextOcultaText';
 import Cargando from "./Cargando";
 
 import useAjax from '../services/useAjax';
+import useCadenaUnica from './hooks/useCadenaUnica';
 
 let InicioSesion = () => {
+
+    //HOOKS PERSONALES
+    const [crearHash512] = useCadenaUnica();
 
     const [tamTitulo, setTamTitulo] = useState("h3");
     const [usuario, setUsuario] = useState("");
@@ -31,8 +35,8 @@ let InicioSesion = () => {
 
     let iniciar = async () => {
         let datos = {
-            usuario : usuario,
-            contrasena : contrasena
+            usuario : crearHash512(usuario),
+            contrasena : crearHash512(contrasena)
         };
 
         await ObjAjax.iniciarConexion(datos, setEspera);

@@ -6,10 +6,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tt.basedatos.JsonAjax.AltaEstudianteAjax;
 import com.tt.basedatos.JsonAjax.InicioSesionAjax;
 import com.tt.basedatos.JsonAjax.RegistroEstuAjax;
 import com.tt.basedatos.JsonAjax.Restablecer;
 import com.tt.basedatos.JsonAjax.ValidaTokenRegEstAjax;
+import com.tt.basedatos.servicios.Paae;
 import com.tt.basedatos.servicios.Sesiones;
 
 @RestController
@@ -17,6 +19,8 @@ public class Paginas {
     
     @Autowired
     private Sesiones sesion;
+    @Autowired
+    private Paae paae;
     
     //SESIONES
     @PostMapping("/datosInicioSesion")
@@ -24,6 +28,13 @@ public class Paginas {
     {
         return sesion.getContrasena(datos);
     }
+
+
+
+
+
+
+
 
     //VALIDACION CORREOS Y RESGITRO PARCIAL DESDE VENTANAS ESTUDIANTE
     @PostMapping("/registroEstudiante")
@@ -38,6 +49,14 @@ public class Paginas {
         return sesion.validarTokenCorreo(datos);
     }
 
+
+
+
+
+
+
+
+
     //RESTABLECER CONTRSENA
     @PostMapping("/registroRestablecer")
     public ResponseEntity registroRestablecer(@RequestBody Restablecer datos)
@@ -51,4 +70,15 @@ public class Paginas {
         return sesion.validaRestablecer(datos);
     }
 
+
+
+
+
+
+    //PAAE
+    @PostMapping("/setEstudiante")
+    public ResponseEntity setEstudiante(@RequestBody AltaEstudianteAjax estudiante)
+    {
+        return paae.setDatosEstudiante(estudiante);
+    }
 }
