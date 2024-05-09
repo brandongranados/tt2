@@ -1,6 +1,6 @@
 package com.tt.basedatos.JsonAjax;
 
-public class AltaEstudianteAjax {
+public class AltaEstudianteAjaxPAAE {
     private String paterno;
     private String materno;
     private String nombre;
@@ -8,6 +8,10 @@ public class AltaEstudianteAjax {
     private Integer sexo;
     private String fechaNacimiento;
     private Integer boleta;
+    private Integer carrera;
+    private Integer semestre;
+    private Integer plan;
+    private Integer estatus;
     private String usuario;
 
 
@@ -47,11 +51,35 @@ public class AltaEstudianteAjax {
     public void setFechaNacimiento(String fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
-    public Integer getBoleta() {
+    public int getBoleta() {
         return boleta;
     }
-    public void setBoleta(Integer boleta) {
+    public void setBoleta(int boleta) {
         this.boleta = boleta;
+    }
+    public int getCarrera() {
+        return carrera;
+    }
+    public void setCarrera(int carrera) {
+        this.carrera = carrera;
+    }
+    public int getSemestre() {
+        return semestre;
+    }
+    public void setSemestre(int semestre) {
+        this.semestre = semestre;
+    }
+    public int getPlan() {
+        return plan;
+    }
+    public void setPlan(int plan) {
+        this.plan = plan;
+    }
+    public int getEstatus() {
+        return estatus;
+    }
+    public void setEstatus(int estatus) {
+        this.estatus = estatus;
     }
     public String getUsuario() {
         return usuario;
