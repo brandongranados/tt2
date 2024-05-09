@@ -75,6 +75,14 @@ public interface RepoSp extends CrudRepository<ComodinVistas, Integer> {
 
 
     /* PROCEDIMIENTOS PARA PAAES */
+    @Procedure(procedureName = "sp_mapeo_materia_grupo_estudiante")
+    public Integer spMapeoMateriaGrupoEstudiante(
+        @Param("boleta") Integer boleta,
+        @Param("unidad_aprendizaje") String unidadAprendizaje,
+        @Param("grupo") String grupo,
+        @Param("usuario_alta") String usuarioAlta
+    );
+
     @Procedure(procedureName = "sp_alta_estudiante")
     public Integer spAltaEstudiante
     (
@@ -85,7 +93,32 @@ public interface RepoSp extends CrudRepository<ComodinVistas, Integer> {
         @Param("sexo") Integer sexo,
         @Param("fechaNacimiento") String fechaNacimiento,
         @Param("boleta") Integer boleta,
+        @Param("carrera") Integer carrera,
+        @Param("semestre") Integer semestre,
+        @Param("plan") Integer plan,
+        @Param("estatus") Integer estatus,
         @Param("usuarioAlta") String usuarioAlta
+    );
+
+
+    @Procedure(procedureName = "sp_edita_estudiante")
+    Integer spEditaEstudiante
+    (
+        @Param("boleta") Integer boleta,
+        @Param("carrera") Integer carrera,
+        @Param("plan") Integer plan,
+        @Param("turno") Integer turno,
+        @Param("estatus") Integer estatus,
+        @Param("usuario_alta") String usuarioAlta
+    );
+
+
+    @Procedure(procedureName = "sp_estatus_baja_estudiante")
+    public Integer spEstatusBajaEstudiante
+    (
+        @Param("boleta") Integer boleta,
+        @Param("estatus") Integer estatus,
+        @Param("usuario_alta") String usuarioAlta
     );
 
 }

@@ -15,7 +15,9 @@ CREATE TABLE estudiante
 	promedio FLOAT NOT NULL DEFAULT 0,
 	correo_electronico VARCHAR(MAX) NOT NULL DEFAULT '',
 	sexo SMALLINT NOT NULL DEFAULT 1,
-	fecha_nacimiento DATE NOT NULL DEFAULT GETDATE()
+	fecha_nacimiento DATE NOT NULL DEFAULT GETDATE(),
+	estatus SMALLINT DEFAULT 0,
+	turno SMALLINT DEFAULT 0
 );
 
 CREATE TABLE carrera
@@ -37,12 +39,7 @@ CREATE TABLE plan_estudios
 (
 	id_plan BIGINT PRIMARY KEY IDENTITY,
 	nombre_plan VARCHAR(MAX) NOT NULL DEFAULT '',
-);
-
-CREATE TABLE ets
-(
-	id_ets BIGINT PRIMARY KEY IDENTITY,
-	fecha_aplicacion DATETIME NOT NULL DEFAULT GETDATE()
+	nombre_plan_numero INTEGER DEFAULT 0
 );
 
 CREATE TABLE grupo
@@ -126,68 +123,15 @@ CREATE TABLE unidad_aprendizaje
 	    ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE uni_apren_inscrita
-(
-	id_uni_apren_inscrita BIGINT PRIMARY KEY IDENTITY,
-	id_uni_apren BIGINT,
-	id_est BIGINT,
-	FOREIGN KEY(id_uni_apren) REFERENCES unidad_aprendizaje(id_uni_apren)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY(id_est) REFERENCES estudiante(id_est)
-	    ON DELETE CASCADE ON UPDATE CASCADE
-);
 
-CREATE TABLE uni_apren_cursada
+CREATE TABLE uni_apren_plan_per_car_grup
 (
-	id_uni_apren_cursada BIGINT PRIMARY KEY IDENTITY,
-	id_uni_apren BIGINT,
-	id_est BIGINT,
-	FOREIGN KEY(id_uni_apren) REFERENCES unidad_aprendizaje(id_uni_apren)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY(id_est) REFERENCES estudiante(id_est)
-	    ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE uni_apren_reprobada
-(
-	id_uni_apren_reprobada BIGINT PRIMARY KEY IDENTITY,
-	id_uni_apren BIGINT,
-	id_est BIGINT,
-	FOREIGN KEY(id_uni_apren) REFERENCES unidad_aprendizaje(id_uni_apren)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY(id_est) REFERENCES estudiante(id_est)
-	 ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE uni_apren_desfasada
-(
-	id_uni_apren_desfasada BIGINT PRIMARY KEY IDENTITY,
-	id_uni_apren BIGINT,
-	id_est BIGINT,
-	FOREIGN KEY(id_uni_apren) REFERENCES unidad_aprendizaje(id_uni_apren)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY(id_est) REFERENCES estudiante(id_est)
-	 ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE estudiante_carrera
-(
-	id_estudiante_carrera BIGINT PRIMARY KEY IDENTITY,
-	id_est BIGINT,
-	id_carrera BIGINT,
-	FOREIGN KEY (id_est) REFERENCES estudiante(id_est)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (id_carrera) REFERENCES carrera(id_carrera)
-		ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE uni_apren_plan_per_car
-(
-	id_uni_apren_plan_per_car BIGINT PRIMARY KEY IDENTITY,
+	id_uni_apren_plan_per_car_grup BIGINT PRIMARY KEY IDENTITY,
 	id_uni_apren BIGINT,
 	id_plan BIGINT,
 	id_periodo BIGINT,
 	id_carrera BIGINT,
+	id_grupo BIGINT,
 	FOREIGN KEY (id_uni_apren) REFERENCES unidad_aprendizaje(id_uni_apren)
 		ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (id_plan) REFERENCES plan_estudios(id_plan)
@@ -195,59 +139,11 @@ CREATE TABLE uni_apren_plan_per_car
 	FOREIGN KEY (id_periodo) REFERENCES periodo(id_periodo)
 		ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (id_carrera) REFERENCES carrera(id_carrera)
-		ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE per_plan_grup_car
-(
-	id_per_plan_grup_car BIGINT PRIMARY KEY IDENTITY,
-	id_plan BIGINT,
-	id_periodo BIGINT,
-	id_carrera BIGINT,
-	id_grupo BIGINT,
+		ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo)
 		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (id_plan) REFERENCES plan_estudios(id_plan)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (id_periodo) REFERENCES periodo(id_periodo)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (id_carrera) REFERENCES carrera(id_carrera)
-		ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE ets_plan_uni_apren_est_car
-(
-	id_ets_plan_uni_apren_est_car BIGINT PRIMARY KEY IDENTITY,
-	id_ets BIGINT,
-	id_plan BIGINT,
-	id_uni_apren_inscrita BIGINT,
-	id_est BIGINT,
-	id_carrera BIGINT,
-	FOREIGN KEY (id_plan) REFERENCES plan_estudios(id_plan)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (id_carrera) REFERENCES carrera(id_carrera)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (id_uni_apren_inscrita) REFERENCES uni_apren_inscrita(id_uni_apren_inscrita)
-		ON DELETE NO ACTION ON UPDATE NO ACTION,
-	FOREIGN KEY (id_est) REFERENCES estudiante(id_est)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (id_ets) REFERENCES ets(id_ets)
-		ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE est_tip_sol_bit_gestion
-(
-	id_est_tip_sol_bit_gestion BIGINT PRIMARY KEY IDENTITY,
-	id_est BIGINT,
-	id_tipo_solicitud BIGINT,
-	id_bitacora BIGINT,
-	FOREIGN KEY (id_est) REFERENCES estudiante(id_est)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (id_tipo_solicitud) REFERENCES tipo_solicitud(id_tipo_solicitud)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (id_bitacora) REFERENCES bitacora_gestion (id_bitacora)
-		ON DELETE CASCADE ON UPDATE CASCADE
-);
 
 CREATE TABLE expediente_est
 (
@@ -303,15 +199,15 @@ CREATE TABLE depto_personal_puesto
 		ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE grupo_est
+CREATE TABLE estudiante_situacion_academica
 (
-    id_grupo_est BIGINT PRIMARY KEY IDENTITY,
-    id_grupo BIGINT,
-    id_est BIGINT,
-    FOREIGN KEY(id_grupo) REFERENCES grupo(id_grupo)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(id_est) REFERENCES estudiante(id_est)
-        ON DELETE CASCADE ON UPDATE CASCADE
+	id_estudiante_situacion_academica BIGINT PRIMARY KEY IDENTITY,
+	id_uni_apren_plan_per_car_grup BIGINT,
+	id_est BIGINT,
+	FOREIGN KEY (id_uni_apren_plan_per_car_grup) REFERENCES uni_apren_plan_per_car_grup(id_uni_apren_plan_per_car_grup)
+		ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (id_est) REFERENCES estudiante(id_est)
+		ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE validacion_correos
@@ -339,34 +235,6 @@ CREATE TABLE restablecer_contrasena
 /* BITACORAS TABLAS */
 
 
-CREATE TABLE bit_ets
-(
-    id_bitacora BIGINT PRIMARY KEY IDENTITY,
-
-	id_ets BIGINT,
-	fecha_aplicacion DATETIME NOT NULL DEFAULT GETDATE(),
-
-    id_user_ejecuta BIGINT,
-    fecha_ejecuta DATETIME DEFAULT GETDATE(),
-    tip_ejec SMALLINT DEFAULT 0
-);
-
-CREATE TABLE bit_ets_plan_uni_apren_est_car
-(
-    id_bitacora BIGINT PRIMARY KEY IDENTITY,
-
-	id_ets_plan_uni_apren_est_car BIGINT,
-	id_ets BIGINT,
-	id_plan BIGINT,
-	id_uni_apren_inscrita BIGINT,
-	id_est BIGINT,
-	id_carrera BIGINT,
-
-    id_user_ejecuta BIGINT,
-    fecha_ejecuta DATETIME DEFAULT GETDATE(),
-    tip_ejec SMALLINT DEFAULT 0
-);
-
 CREATE TABLE bit_carrera
 (
     id_bitacora BIGINT PRIMARY KEY IDENTITY,
@@ -379,9 +247,7 @@ CREATE TABLE bit_carrera
     id_user_ejecuta BIGINT,
     fecha_ejecuta DATETIME DEFAULT GETDATE(),
     tip_ejec SMALLINT DEFAULT 0
-);
-
-ALTER TABLE 
+); 
 
 CREATE TABLE bit_plan_estudios
 (
@@ -409,19 +275,6 @@ CREATE TABLE bit_unidad_aprendizaje
     tip_ejec SMALLINT DEFAULT 0
 );
 
-CREATE TABLE bit_grupo_est
-(
-    id_bitacora BIGINT PRIMARY KEY IDENTITY,
-
-    id_grupo_est BIGINT,
-    id_grupo BIGINT,
-    id_est BIGINT,
-    
-    id_user_ejecuta BIGINT,
-    fecha_ejecuta DATETIME DEFAULT GETDATE(),
-    tip_ejec SMALLINT DEFAULT 0
-);
-
 CREATE TABLE bit_grupo
 (
 	id_bitacora BIGINT PRIMARY KEY IDENTITY,
@@ -434,18 +287,6 @@ CREATE TABLE bit_grupo
     tip_ejec SMALLINT DEFAULT 0
 );
 
-CREATE TABLE bit_estudiante_carrera
-(
-	id_bitacora BIGINT PRIMARY KEY IDENTITY,
-
-	id_estudiante_carrera BIGINT,
-	id_est BIGINT,
-	id_carrera BIGINT,
-
-	id_user_ejecuta BIGINT,
-    fecha_ejecuta DATETIME DEFAULT GETDATE(),
-    tip_ejec SMALLINT DEFAULT 0
-);
 
 CREATE TABLE bit_est_tip_sol_bit_gestion
 (
@@ -476,18 +317,6 @@ CREATE TABLE bit_bitacora_gestion
     tip_ejec SMALLINT DEFAULT 0
 );
 
-CREATE TABLE bit_uni_apren_inscrita
-(
-	id_bitacora_bitacora BIGINT PRIMARY KEY IDENTITY,
-
-	id_uni_apren_inscrita BIGINT,
-	id_uni_apren BIGINT,
-	id_est BIGINT,
-
-	id_user_ejecuta BIGINT,
-    fecha_ejecuta DATETIME DEFAULT GETDATE(),
-    tip_ejec SMALLINT DEFAULT 0
-);
 
 CREATE TABLE bit_roles
 (
@@ -501,18 +330,6 @@ CREATE TABLE bit_roles
     tip_ejec SMALLINT DEFAULT 0
 );
 
-CREATE TABLE bit_uni_apren_desfasada
-(
-	id_bitacora_bitacora BIGINT PRIMARY KEY IDENTITY,
-
-	id_uni_apren_desfasada BIGINT,
-	id_uni_apren BIGINT,
-	id_est BIGINT,
-
-	id_user_ejecuta BIGINT,
-    fecha_ejecuta DATETIME DEFAULT GETDATE(),
-    tip_ejec SMALLINT DEFAULT 0
-);
 
 CREATE TABLE bit_rol_personal_usuario
 (
@@ -570,18 +387,6 @@ CREATE TABLE bit_rol_usuario_est
     tip_ejec SMALLINT DEFAULT 0
 );
 
-CREATE TABLE bit_uni_apren_reprobada
-(
-	id_bitacora_bitacora BIGINT PRIMARY KEY IDENTITY,
-
-	id_uni_apren_reprobada BIGINT,
-	id_uni_apren BIGINT,
-	id_est BIGINT,
-
-	id_user_ejecuta BIGINT,
-    fecha_ejecuta DATETIME DEFAULT GETDATE(),
-    tip_ejec SMALLINT DEFAULT 0
-);
 
 CREATE TABLE bit_depto_personal_puesto
 (
@@ -609,18 +414,6 @@ CREATE TABLE bit_departamento
     tip_ejec SMALLINT DEFAULT 0
 );
 
-CREATE TABLE bit_uni_apren_cursada
-(
-	id_bitacora_bitacora BIGINT PRIMARY KEY IDENTITY,
-
-	id_uni_apren_cursada BIGINT,
-	id_uni_apren BIGINT,
-	id_est BIGINT,
-
-	id_user_ejecuta BIGINT,
-    fecha_ejecuta DATETIME DEFAULT GETDATE(),
-    tip_ejec SMALLINT DEFAULT 0
-);
 
 CREATE TABLE bit_usuario
 (
@@ -675,6 +468,21 @@ CREATE TABLE bit_estudiante
 	correo_electronico VARCHAR(MAX),
 	sexo SMALLINT,
 	fecha_nacimiento DATE,
+	estatus SMALLINT,
+	turno SMALLINT DEFAULT 0,
+
+	id_user_ejecuta BIGINT,
+    fecha_ejecuta DATETIME DEFAULT GETDATE(),
+    tip_ejec SMALLINT DEFAULT 0
+);
+
+CREATE TABLE bit_estudiante_situacion_academica
+(
+	id_bitacora BIGINT PRIMARY KEY IDENTITY,
+
+	id_estudiante_situacion_academica BIGINT,
+	id_uni_apren_plan_per_car_grup BIGINT,
+	id_est BIGINT,
 
 	id_user_ejecuta BIGINT,
     fecha_ejecuta DATETIME DEFAULT GETDATE(),
@@ -688,8 +496,9 @@ CREATE TABLE bit_estudiante
 /************************************************************************************/
 /************************************************************************************/
 /************************************************************************************/
-CREATE TRIGGER d_ets
-	ON ets
+
+CREATE TRIGGER d_estudiante_situacion_academica
+	ON estudiante_situacion_academica
 	AFTER UPDATE, DELETE
 	AS BEGIN
 
@@ -714,74 +523,18 @@ CREATE TRIGGER d_ets
 
 		BEGIN TRY
 
-			INSERT INTO bit_ets
+			INSERT INTO bit_estudiante_situacion_academica
 			(
-				id_ets,
-				fecha_aplicacion,
+				id_estudiante_situacion_academica ,
+				id_uni_apren_plan_per_car_grup ,
+				id_est ,
 
 				id_user_ejecuta,
 				tip_ejec
 			)
-            SELECT deleted.id_ets,
-                    deleted.fecha_aplicacion,
-                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
-                    @tipo AS tipo
-            FROM deleted
-
-		END TRY
-		BEGIN CATCH
-
-			SET @tipo = 0;
-
-		END CATCH
-
-	END;
-
-
-CREATE TRIGGER d_ets_plan_uni_apren_est_car
-	ON ets_plan_uni_apren_est_car
-	AFTER UPDATE, DELETE
-	AS BEGIN
-
-		DECLARE @tipo SMALLINT;
-
-		SET @tipo = 0;
-
-		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*actuAlizacion*/
-			SET @tipo = 2;
-
-		END
-		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*REGISTRO ELIMNADO*/
-			SET @tipo = 3;
-
-		END
-
-		BEGIN TRY
-
-			INSERT INTO bit_ets_plan_uni_apren_est_car
-			(
-				id_ets_plan_uni_apren_est_car,
-				id_ets,
-				id_plan,
-				id_uni_apren_inscrita,
-				id_est,
-				id_carrera,
-
-				id_user_ejecuta,
-				tip_ejec
-			)
-            SELECT deleted.id_ets_plan_uni_apren_est_car,
-                    deleted.id_ets,
-					deleted.id_plan,
-					deleted.id_uni_apren_inscrita,
+            SELECT deleted.id_estudiante_situacion_academica,
+                    deleted.id_uni_apren_plan_per_car_grup,
 					deleted.id_est,
-					deleted.id_carrera,
 
                     ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
                     @tipo AS tipo
@@ -956,59 +709,6 @@ CREATE TRIGGER d_unidad_aprendizaje
 	END;
 
 
-CREATE TRIGGER d_grupo_est
-	ON grupo_est
-	AFTER UPDATE, DELETE
-	AS BEGIN
-
-		DECLARE @tipo SMALLINT;
-
-		SET @tipo = 0;
-
-		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*actuAlizacion*/
-			SET @tipo = 2;
-
-		END
-		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*REGISTRO ELIMNADO*/
-			SET @tipo = 3;
-
-		END
-
-		BEGIN TRY
-
-			INSERT INTO bit_grupo_est
-			(
-				id_grupo_est,
-				id_grupo,
-				id_est,
-
-				id_user_ejecuta,
-				tip_ejec
-			)
-            SELECT deleted.id_grupo_est,
-                    deleted.id_grupo,
-					deleted.id_est,
-
-                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
-                    @tipo AS tipo
-            FROM deleted
-
-		END TRY
-		BEGIN CATCH
-
-			SET @tipo = 0;
-
-		END CATCH
-
-	END;
-
-
 CREATE TRIGGER d_grupo
 	ON grupo
 	AFTER UPDATE, DELETE
@@ -1045,59 +745,6 @@ CREATE TRIGGER d_grupo
 			)
             SELECT deleted.id_grupo,
                     deleted.nom_grupo,
-
-                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
-                    @tipo AS tipo
-            FROM deleted
-
-		END TRY
-		BEGIN CATCH
-
-			SET @tipo = 0;
-
-		END CATCH
-
-	END;
-
-
-CREATE TRIGGER d_estudiante_carrera
-	ON estudiante_carrera
-	AFTER UPDATE, DELETE
-	AS BEGIN
-
-		DECLARE @tipo SMALLINT;
-
-		SET @tipo = 0;
-
-		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*actuAlizacion*/
-			SET @tipo = 2;
-
-		END
-		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*REGISTRO ELIMNADO*/
-			SET @tipo = 3;
-
-		END
-
-		BEGIN TRY
-
-			INSERT INTO bit_estudiante_carrera
-			(
-				id_estudiante_carrera,
-				id_est,
-				id_carrera,
-
-				id_user_ejecuta,
-				tip_ejec
-			)
-            SELECT deleted.id_estudiante_carrera,
-                    deleted.id_est,
-					deleted.id_carrera,
 
                     ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
                     @tipo AS tipo
@@ -1225,59 +872,6 @@ CREATE TRIGGER d_bitacora_gestion
 	END;
 
 
-CREATE TRIGGER d_uni_apren_inscrita
-	ON uni_apren_inscrita
-	AFTER UPDATE, DELETE
-	AS BEGIN
-
-		DECLARE @tipo SMALLINT;
-
-		SET @tipo = 0;
-
-		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*actuAlizacion*/
-			SET @tipo = 2;
-
-		END
-		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*REGISTRO ELIMNADO*/
-			SET @tipo = 3;
-
-		END
-
-		BEGIN TRY
-
-			INSERT INTO bit_uni_apren_inscrita
-			(
-				id_uni_apren_inscrita,
-				id_uni_apren,
-				id_est,
-
-				id_user_ejecuta,
-				tip_ejec
-			)
-            SELECT deleted.id_uni_apren_inscrita,
-                    deleted.id_uni_apren,
-					deleted.id_est,
-
-                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
-                    @tipo AS tipo
-            FROM deleted
-
-		END TRY
-		BEGIN CATCH
-
-			SET @tipo = 0;
-
-		END CATCH
-
-	END;
-
-
 CREATE TRIGGER d_roles
 	ON roles
 	AFTER UPDATE, DELETE
@@ -1314,59 +908,6 @@ CREATE TRIGGER d_roles
 			)
             SELECT deleted.id_rol,
                     deleted.nombre_rol,
-
-                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
-                    @tipo AS tipo
-            FROM deleted
-
-		END TRY
-		BEGIN CATCH
-
-			SET @tipo = 0;
-
-		END CATCH
-
-	END;
-
-
-CREATE TRIGGER d_uni_apren_desfasada
-	ON uni_apren_desfasada
-	AFTER UPDATE, DELETE
-	AS BEGIN
-
-		DECLARE @tipo SMALLINT;
-
-		SET @tipo = 0;
-
-		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*actuAlizacion*/
-			SET @tipo = 2;
-
-		END
-		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*REGISTRO ELIMNADO*/
-			SET @tipo = 3;
-
-		END
-
-		BEGIN TRY
-
-			INSERT INTO bit_uni_apren_desfasada
-			(
-				id_uni_apren_desfasada,
-				id_uni_apren,
-				id_est,
-
-				id_user_ejecuta,
-				tip_ejec
-			)
-            SELECT deleted.id_uni_apren_desfasada,
-                    deleted.id_uni_apren,
-					deleted.id_est,
 
                     ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
                     @tipo AS tipo
@@ -1547,59 +1088,6 @@ CREATE TRIGGER d_expediente_est
 	END;
 
 
-CREATE TRIGGER d_uni_apren_reprobada
-	ON uni_apren_reprobada
-	AFTER UPDATE, DELETE
-	AS BEGIN
-
-		DECLARE @tipo SMALLINT;
-
-		SET @tipo = 0;
-
-		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*actuAlizacion*/
-			SET @tipo = 2;
-
-		END
-		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*REGISTRO ELIMNADO*/
-			SET @tipo = 3;
-
-		END
-
-		BEGIN TRY
-
-			INSERT INTO bit_uni_apren_reprobada
-			(
-				id_uni_apren_reprobada,
-				id_uni_apren,
-				id_est,
-
-				id_user_ejecuta,
-				tip_ejec
-			)
-            SELECT deleted.id_uni_apren_reprobada,
-                    deleted.id_uni_apren,
-					deleted.id_est,
-
-                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
-                    @tipo AS tipo
-            FROM deleted
-
-		END TRY
-		BEGIN CATCH
-
-			SET @tipo = 0;
-
-		END CATCH
-
-	END;
-
-
 CREATE TRIGGER d_depto_personal_puesto
 	ON depto_personal_puesto
 	AFTER UPDATE, DELETE
@@ -1691,59 +1179,6 @@ CREATE TRIGGER d_departamento
 			)
             SELECT deleted.id_depto,
                     deleted.nombre_depto,
-
-                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
-                    @tipo AS tipo
-            FROM deleted
-
-		END TRY
-		BEGIN CATCH
-
-			SET @tipo = 0;
-
-		END CATCH
-
-	END;
-
-
-CREATE TRIGGER d_uni_apren_cursada
-	ON uni_apren_cursada
-	AFTER UPDATE, DELETE
-	AS BEGIN
-
-		DECLARE @tipo SMALLINT;
-
-		SET @tipo = 0;
-
-		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*actuAlizacion*/
-			SET @tipo = 2;
-
-		END
-		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*REGISTRO ELIMNADO*/
-			SET @tipo = 3;
-
-		END
-
-		BEGIN TRY
-
-			INSERT INTO bit_uni_apren_cursada
-			(
-				id_uni_apren_cursada,
-				id_uni_apren,
-				id_est,
-
-				id_user_ejecuta,
-				tip_ejec
-			)
-            SELECT deleted.id_uni_apren_cursada,
-                    deleted.id_uni_apren,
-					deleted.id_est,
 
                     ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
                     @tipo AS tipo
@@ -1900,6 +1335,8 @@ CREATE TRIGGER d_estudiante
 				correo_electronico,
 				sexo,
 				fecha_nacimiento,
+				estatus,
+				turno,
 
 				id_user_ejecuta,
 				tip_ejec
@@ -1915,6 +1352,8 @@ CREATE TRIGGER d_estudiante
                     deleted.correo_electronico,
                     deleted.sexo,
                     deleted.fecha_nacimiento,
+					deleted.estatus,
+					deleted.turno,
                     ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
                     @tipo AS tipo
             FROM deleted
@@ -2095,6 +1534,30 @@ CREATE PROCEDURE sp_registrar_estudiante
 		DECLARE @user BIGINT;
 		DECLARE @sal SMALLINT;
 
+		/* CREACION DE TABLA TEMPORAL */
+
+		BEGIN TRY
+
+			CREATE TABLE #usuario_sesion
+			(
+				id INTEGER PRIMARY KEY IDENTITY,
+				id_usuario BIGINT
+			);
+
+			INSERT INTO #usuario_sesion
+			( id_usuario )VALUES( NULL );
+
+			SET @bool = 1;
+
+		END TRY
+		BEGIN CATCH
+
+			SET @bool = 6;
+			RETURN;
+
+		END CATCH
+		/* TERMINA CREACION DE TABLA TEMPORAL */
+
 		IF EXISTS( SELECT * FROM usuario 
 					WHERE nombre_usuario = @nombre_usuario )
 		BEGIN
@@ -2104,18 +1567,32 @@ CREATE PROCEDURE sp_registrar_estudiante
 
 		BEGIN TRY
 
-			INSERT INTO estudiante
-			(
-				num_boleta,
-				correo_electronico
+			IF EXISTS( SELECT * FROM estudiante WHERE num_boleta = @num_boleta )
+			BEGIN
+				UPDATE estudiante
+					SET correo_electronico = @correo_electronico
+				WHERE num_boleta = @num_boleta;
 
-			) VALUES
-			(
-				@num_boleta,
-				@correo_electronico
-			);
+				SELECT TOP 1 @estudiante = id_est 
+					FROM estudiante 
+				WHERE num_boleta = @num_boleta;
+			END
+			ELSE 
+			BEGIN
+				INSERT INTO estudiante
+				(
+					num_boleta,
+					correo_electronico
 
-			SET @estudiante = SCOPE_IDENTITY();
+				) VALUES
+				(
+					@num_boleta,
+					@correo_electronico
+				);
+
+				SET @estudiante = SCOPE_IDENTITY();
+
+			END
 
 			INSERT INTO usuario
 			(
@@ -2164,6 +1641,7 @@ CREATE PROCEDURE sp_registrar_estudiante
 		BEGIN CATCH
 
 			SET @bool = 4;
+			RETURN;
 			
 		END CATCH
 
@@ -2401,6 +1879,250 @@ CREATE PROCEDURE sp_valida_restablece_contrasena
 
 /* PAAE */
 
+CREATE PROCEDURE sp_ingresa_tabla_estudiante
+	@paterno VARCHAR(MAX),
+	@materno VARCHAR(MAX),
+	@nombre VARCHAR(MAX),
+	@curp VARCHAR(MAX),
+	@sexo SMALLINT,
+	@fecha_nacimiento DATE,
+	@boleta BIGINT,
+	@estatus SMALLINT,
+	@id_genrado BIGINT OUTPUT,
+	@bool SMALLINT OUTPUT
+	AS BEGIN
+
+		BEGIN TRY
+
+			INSERT INTO estudiante
+			(
+				num_boleta,
+				curp,
+				nombres,
+				apellido_paterno,
+				apellido_materno,
+				sexo,
+				fecha_nacimiento,
+				estatus
+			)
+			VALUES
+			(
+				@boleta,
+				@curp,
+				@nombre,
+				@paterno,
+				@materno,
+				@sexo,
+				@fecha_nacimiento,
+				@estatus
+			);
+
+			SET @bool = 1;
+			SET @id_genrado = SCOPE_IDENTITY();
+
+		END TRY
+		BEGIN CATCH
+
+			SET @bool = 12;
+			RETURN;
+
+		END CATCH
+END
+
+
+CREATE PROCEDURE sp_actualiza_tabla_estudiante
+	@paterno VARCHAR(MAX),
+	@materno VARCHAR(MAX),
+	@nombre VARCHAR(MAX),
+	@curp VARCHAR(MAX),
+	@sexo SMALLINT,
+	@fecha_nacimiento DATE,
+	@boleta BIGINT,
+	@estatus SMALLINT,
+	@usuario_alta VARCHAR(MAX),
+	@bool SMALLINT OUTPUT
+	AS BEGIN
+
+		/* CREACION DE TABLA TEMPORAL */
+		DECLARE @id BIGINT;
+
+		SELECT TOP 1 @id = id_usuario FROM
+		(
+			SELECT id_usuario, 
+					nombre_usuario
+					FROM usuario
+
+			UNION
+
+			SELECT id_usuario,
+					nombre_usuario
+					FROM bit_usuario
+		) AS usuarios
+		WHERE nombre_usuario = @usuario_alta;
+
+		BEGIN TRY
+
+			CREATE TABLE #usuario_sesion
+			(
+				id INTEGER PRIMARY KEY IDENTITY,
+				id_usuario BIGINT
+			);
+
+			INSERT INTO #usuario_sesion
+			( id_usuario )VALUES( @id );
+
+			SET @bool = 1;
+
+		END TRY
+		BEGIN CATCH
+
+			SET @bool = 6;
+			RETURN;
+
+		END CATCH
+		/* TERMINA CREACION DE TABLA TEMPORAL */
+
+		BEGIN TRY
+			UPDATE estudiante
+			SET curp = @curp,
+				nombres = @nombre,
+				apellido_paterno = @paterno,
+				apellido_materno = @materno,
+				sexo = @sexo,
+				fecha_nacimiento = @fecha_nacimiento,
+				estatus = @estatus
+			WHERE num_boleta = @boleta ;
+			SET @bool = 1;
+		END TRY
+		BEGIN CATCH
+			SET @bool = 12;
+			RETURN;
+		END CATCH
+END
+
+
+CREATE PROCEDURE sp_mapeo_materia_grupo_estudiante
+	@boleta BIGINT,
+	@unidad_aprendizaje VARCHAR(MAX),
+	@grupo VARCHAR(MAX),
+	@usuario_alta VARCHAR(MAX),
+	@bool SMALLINT OUTPUT
+	AS BEGIN
+
+	DECLARE @id_plan BIGINT;
+	DECLARE @id_periodo BIGINT;
+	DECLARE @id_carrera BIGINT;
+	DECLARE @id_unidad BIGINT;
+	DECLARE @id_grupo BIGINT;
+	DECLARE @id_est BIGINT;
+	/* CREACION DE TABLA TEMPORAL */
+	DECLARE @id BIGINT;
+
+	SELECT TOP 1 @id = id_usuario FROM
+	(
+		SELECT id_usuario, 
+				nombre_usuario
+				FROM usuario
+
+		UNION
+
+		SELECT id_usuario,
+				nombre_usuario
+				FROM bit_usuario
+	) AS usuarios
+	WHERE nombre_usuario = @usuario_alta;
+
+	BEGIN TRY
+
+		CREATE TABLE #usuario_sesion
+		(
+			id INTEGER PRIMARY KEY IDENTITY,
+			id_usuario BIGINT
+		);
+
+		INSERT INTO #usuario_sesion
+		( id_usuario )VALUES( @id );
+
+		SET @bool = 1;
+
+	END TRY
+	BEGIN CATCH
+
+		SET @bool = 6;
+		RETURN;
+
+	END CATCH
+	/* TERMINA CREACION DE TABLA TEMPORAL */
+
+	SELECT TOP 1 @id_unidad = id_uni_apren
+		FROM unidad_aprendizaje
+	WHERE nom_uni_apren = @unidad_aprendizaje;
+
+	SELECT TOP 1 @id_grupo = id_grupo
+		FROM grupo
+	WHERE nom_grupo = @grupo;
+
+	SELECT TOP 1
+		@id_plan = u.id_plan,
+		@id_periodo = u.id_periodo,
+		@id_carrera = u.id_carrera,
+		@id_est = est.id_est
+			FROM estudiante_situacion_academica e
+		INNER JOIN uni_apren_plan_per_car_grup u
+			ON e.id_uni_apren_plan_per_car_grup =
+				u.id_uni_apren_plan_per_car_grup
+		INNER JOIN estudiante est
+			ON est.id_est = e.id_est
+	WHERE est.num_boleta = @boleta;
+
+	IF @id_unidad IS NULL OR 
+		@id_grupo IS NULL OR
+		@id_plan IS NULL OR
+		@id_periodo IS NULL OR
+		@id_carrera IS NULL
+	BEGIN
+		SET @bool = 14;
+		RETURN;
+	END
+
+	BEGIN TRY
+
+		INSERT INTO uni_apren_plan_per_car_grup
+		(
+			id_uni_apren,
+			id_plan,
+			id_periodo,
+			id_carrera,
+			id_grupo
+		) VALUES 
+		(
+			@id_unidad,
+			@id_plan,
+			@id_periodo,
+			@id_carrera,
+			@id_grupo
+		);
+
+		INSERT INTO estudiante_situacion_academica 
+		( id_uni_apren_plan_per_car_grup, id_est )
+		VALUES 
+		( 
+			SCOPE_IDENTITY(), 
+			@id_est
+		);
+
+		DELETE FROM uni_apren_plan_per_car_grup
+		WHERE id_uni_apren IS NULL AND
+				id_grupo IS NULL;
+
+	END TRY
+	BEGIN CATCH
+		SET @bool = 14;
+		RETURN;
+	END CATCH
+
+END
+
 
 CREATE PROCEDURE sp_alta_estudiante
 	@paterno VARCHAR(MAX),
@@ -2410,12 +2132,140 @@ CREATE PROCEDURE sp_alta_estudiante
 	@sexo SMALLINT,
 	@fecha_nacimiento DATE,
 	@boleta BIGINT,
-	@
+	@carrera INTEGER,
+	@semestre INTEGER,
+	@plan INTEGER,
+	@estatus SMALLINT,
 	@usuario_alta VARCHAR(MAX),
 	@bool SMALLINT OUTPUT
 	AS BEGIN
 
 	DECLARE @id_est BIGINT;
+	DECLARE @id_plan BIGINT;
+	DECLARE @id_periodo BIGINT;
+	DECLARE @id_carrera BIGINT;
+	DECLARE @bool_temp SMALLINT;
+
+	SELECT TOP 1 @id_est = id_est 
+	    FROM estudiante
+	WHERE num_boleta = @boleta;
+
+	SELECT TOP 1 @id_plan = id_plan 
+		FROM plan_estudios 
+	WHERE nombre_plan_numero = @plan;
+
+	SELECT TOP 1 @id_periodo = id_periodo 
+		FROM periodo 
+	WHERE nom_periodo_num = @semestre;
+
+	SELECT TOP 1 @id_carrera = id_carrera 
+		FROM carrera 
+	WHERE nom_carrera_num = @carrera;
+
+	IF @id_carrera IS NULL OR @id_periodo IS NULL OR @id_plan IS NULL
+	BEGIN
+		SET @bool = 13;
+		RETURN;
+	END
+
+	IF @id_est IS NOT NULL
+    BEGIN
+		BEGIN TRY
+			EXEC sp_actualiza_tabla_estudiante
+				@paterno,
+				@materno ,
+				@nombre ,
+				@curp ,
+				@sexo ,
+				@fecha_nacimiento ,
+				@boleta ,
+				@estatus ,
+				@usuario_alta ,
+				@bool_temp OUTPUT;
+
+			IF @bool_temp <> 1
+			BEGIN
+				SET @bool = @bool_temp;
+				RETURN;
+			END;
+
+			SET @bool = 1;
+		END TRY
+		BEGIN CATCH
+			SET @bool = 200;
+			RETURN;
+		END CATCH
+	END
+	ELSE
+	BEGIN
+		BEGIN TRY
+			EXEC sp_ingresa_tabla_estudiante
+				@paterno ,
+				@materno ,
+				@nombre ,
+				@curp ,
+				@sexo ,
+				@fecha_nacimiento ,
+				@boleta ,
+				@estatus ,
+				@id_est OUTPUT,
+				@bool_temp OUTPUT;
+
+			IF @bool_temp <> 1
+			BEGIN
+				SET @bool = @bool_temp;
+				RETURN;
+			END;
+
+			SET @bool = 1;
+		END TRY
+		BEGIN CATCH
+			SET @bool = 300;
+			RETURN;
+		END  CATCH
+	END
+
+	IF NOT EXISTS ( SELECT * FROM estudiante_situacion_academica WHERE id_est = @id_est )
+	BEGIN
+		BEGIN TRY
+			INSERT INTO uni_apren_plan_per_car_grup
+			( 
+				id_uni_apren,
+				id_plan,
+				id_periodo,
+				id_carrera,
+				id_grupo
+			)
+			VALUES
+			(
+				NULL,
+				@id_plan ,
+				@id_periodo,
+				@id_carrera,
+				NULL
+			);
+
+			INSERT INTO estudiante_situacion_academica 
+			( id_uni_apren_plan_per_car_grup, id_est )
+			VALUES ( SCOPE_IDENTITY(), @id_est );
+		END TRY
+		BEGIN CATCH
+			SET @bool = 400;
+			RETURN;
+		END CATCH
+	END	
+END
+
+
+CREATE PROCEDURE sp_edita_estudiante
+	@boleta BIGINT,
+	@carrera INTEGER,
+	@plan INTEGER,
+	@turno SMALLINT,
+	@estatus SMALLINT,
+	@usuario_alta VARCHAR(MAX),
+	@bool SMALLINT OUTPUT
+	AS BEGIN
 
 	/* CREACION DE TABLA TEMPORAL */
 	DECLARE @id BIGINT;
@@ -2451,195 +2301,121 @@ CREATE PROCEDURE sp_alta_estudiante
 	BEGIN CATCH
 
 		SET @bool = 6;
+		RETURN;
 
 	END CATCH
 	/* TERMINA CREACION DE TABLA TEMPORAL */
 
-	SELECT TOP 1 @id_est = id_est 
-	    FROM estudiante
-	WHERE num_boleta = @boleta;
-
-	IF EXISTS( SELECT * FROM estudiante WHERE num_boleta = @boleta ) AND @bool = 1
-    BEGIN
-		BEGIN TRY
-			
-			UPDATE estudiante
-			SET num_boleta = @boleta,
-				curp = @curp,
-				nombres = @nombre,
-				apellido_paterno = @paterno,
-				apellido_materno = @materno,
-				sexo = @sexo,
-				fecha_nacimiento = @fecha_nacimiento
-			WHERE id_est = @id_est ;
-
-			SET @bool = 1;
-
-		END TRY
-		BEGIN CATCH
-
-			SET @bool = 12;
-
-		END CATCH
-
-	END
-	ELSE
+	IF 
+		NOT EXISTS( SELECT * FROM estudiante WHERE num_boleta = @boleta ) OR
+		NOT EXISTS( SELECT * FROM carrera WHERE nom_carrera_num = @carrera ) OR
+		NOT EXISTS( SELECT * FROM plan_estudios WHERE nombre_plan_numero = @plan )
 	BEGIN
-
-		SET @bool = 12;
-
+		SET @bool = 15;
+		RETURN;
 	END
 
-	/* ELIMINACION DE TABLA TEMPORAL */
 	BEGIN TRY
+		UPDATE estudiante
+			SET estatus = @estatus,
+				turno = @turno
+		WHERE num_boleta = @boleta;
 
-		DROP TABLE #usuario_sesion;
+		UPDATE uni_apren_plan_per_car_grup
+			SET id_carrera = (
+					SELECT TOP 1 id_carrera 
+						FROM carrera 
+					WHERE nom_carrera_num = @carrera
+				),
+				id_plan = (
+					SELECT TOP 1 id_plan 
+						FROM plan_estudios 
+					WHERE nombre_plan_numero = @plan
+				)
+		WHERE id_uni_apren_plan_per_car_grup IN (
+			SELECT u.id_uni_apren_plan_per_car_grup
+				FROM estudiante_situacion_academica e
+			INNER JOIN uni_apren_plan_per_car_grup u
+				ON e.id_uni_apren_plan_per_car_grup =
+					u.id_uni_apren_plan_per_car_grup
+			INNER JOIN estudiante est
+				ON est.id_est = e.id_est
+			WHERE est.num_boleta = @boleta
+		);
 
 	END TRY
 	BEGIN CATCH
-
-		SET @bool = 7;
-
+		SET @bool = 15;
+		RETURN;
 	END CATCH
-	/* ELIMINACION DE TABLA TEMPORAL */
-
+	
 END
 
-CREATE PROCEDURE sp_edita_estudiante
-	@paterno VARCHAR(MAX),
-	@materno VARCHAR(MAX),
-	@nombre VARCHAR(MAX),
-	@curp VARCHAR(MAX),
-	@sexo SMALLINT,
-	@fecha_nacimiento DATE,
+CREATE PROCEDURE sp_estatus_baja_estudiante
 	@boleta BIGINT,
-	@carrera VARCHAR(MAX),
-	@semestre INTEGER,
-	@nomPeriodo VARCHAR(MAX),
-	@correo VARCHAR(MAX),
-	@usuario_resp_edicion VARCHAR(MAX),
+	@estatus SMALLINT,
+	@usuario_alta VARCHAR(MAX),
 	@bool SMALLINT OUTPUT
 	AS BEGIN
 
-	DECLARE @id_est BIGINT;
-	DECLARE @id_carrera BIGINT;
-	DECLARE @id_periodo BIGINT;
+		/* CREACION DE TABLA TEMPORAL */
+		DECLARE @id BIGINT;
 
-	/* CREACION DE TABLA TEMPORAL */
-	DECLARE @id BIGINT;
-
-	SELECT TOP 1 @id = id_usuario FROM
-	(
-		SELECT id_usuario, 
-				nombre_usuario
-				FROM usuario
-
-		UNION
-
-		SELECT id_usuario,
-				nombre_usuario
-				FROM bit_usuario
-	) AS usuarios
-	WHERE nombre_usuario = @usuario_resp_edicion;
-
-	BEGIN TRY
-
-		CREATE TABLE #usuario_sesion
+		SELECT TOP 1 @id = id_usuario FROM
 		(
-			id INTEGER PRIMARY KEY IDENTITY,
-			id_usuario BIGINT
-		);
+			SELECT id_usuario, 
+					nombre_usuario
+					FROM usuario
 
-		INSERT INTO #usuario_sesion
-		( id_usuario )VALUES( @id );
+			UNION
 
-		SET @bool = 1;
+			SELECT id_usuario,
+					nombre_usuario
+					FROM bit_usuario
+		) AS usuarios
+		WHERE nombre_usuario = @usuario_alta;
 
-	END TRY
-	BEGIN CATCH
-
-		SET @bool = 6;
-
-	END CATCH
-	/* TERMINA CREACION DE TABLA TEMPORAL */
-
-	SELECT TOP 1 @id_est = id_est 
-	    FROM estudiante
-	WHERE num_boleta = @boleta;
-
-	SELECT TOP 1 @id_carrera = carrera 
-		FROM carrera
-	WHERE nom_carrera = @carrera;
-
-	SELECT TOP 1 @id_periodo = id_periodo
-		FROM periodo
-	WHERE nom_periodo = @nomPeriodo;
-
-	IF @id_est IS NOT NULL AND @id_carrera IS NOT NULL AND @id_periodo IS NOT NULL AND @bool = 1
-    BEGIN
 		BEGIN TRY
-			
-			UPDATE estudiante
-			SET num_boleta = @boleta,
-				curp = @curp,
-				nombres = @nombre,
-				apellido_paterno = @paterno,
-				apellido_materno = @materno,
-				sexo = @sexo,
-				fecha_nacimiento = @fecha_nacimiento,
-				correo_electronico = @correo,
-				sexo = @sexo
-			WHERE id_est = @id_est ;
 
-			IF NOT EXISTS ( SELECT * FROM estudiante_carrera WHERE id_est =  @id_est )
-			BEGIN
-				INSERT INTO estudiante_carrera
-				(
-					id_est,
-					id_carrera
-				)VALUES
-				(
-					@id_est,
-					@id_carrera
-				);
-			ELSE
-			BEGIN
-				UPDATE estudiante_carrera
-					SET id_carrera = @id_carrera
-				WHERE id_est =  @id_est;
-			END
+			CREATE TABLE #usuario_sesion
+			(
+				id INTEGER PRIMARY KEY IDENTITY,
+				id_usuario BIGINT
+			);
+
+			INSERT INTO #usuario_sesion
+			( id_usuario )VALUES( @id );
 
 			SET @bool = 1;
 
 		END TRY
 		BEGIN CATCH
 
-			SET @bool = 12;
+			SET @bool = 6;
+			RETURN;
 
 		END CATCH
+		/* TERMINA CREACION DE TABLA TEMPORAL */
 
-	END
-	ELSE
-	BEGIN
+		IF NOT EXISTS( SELECT * FROM estudiante WHERE num_boleta = @boleta )
+		BEGIN
+			SET @bool = 15;
+			RETURN;
+		END
 
-		SET @bool = 12;
-
-	END
-
-	/* ELIMINACION DE TABLA TEMPORAL */
-	BEGIN TRY
-
-		DROP TABLE #usuario_sesion;
-
-	END TRY
-	BEGIN CATCH
-
-		SET @bool = 7;
-
-	END CATCH
-	/* ELIMINACION DE TABLA TEMPORAL */
+		BEGIN TRY
+			UPDATE estudiante
+				SET estatus = @estatus
+			WHERE num_boleta = @boleta;
+			SET @bool = 1;
+		END TRY
+		BEGIN CATCH
+			SET @bool = 15;
+			RETURN;
+		END CATCH
 
 END
+
 /*
 
 CODIGO DE ERRORES BASE DE DATOS
@@ -2655,7 +2431,11 @@ CODIGO DE ERRORES BASE DE DATOS
 	9: el usuario no existe al intentar restablecer contrasena
 	10:Error al eliminar token antiguo de restablecer contrasena
 	11:Error al mintentrar ingresar el nuevo token mde restablcer contrasena
-	12:ERROR AL ACTULIZAR AL ESTUDANITE DESDE UN USUARIO PAAE
+	12: ERROR AL INGRESAR AL ESTUDANITE DESDE UN USUARIO PAAE
+	13: LA CARRERA O PERIODO O PLAN DE ESTUDIOS NO EXISTEN
+	14:EL GRUPO O EL ESTUDINATE O LA UNIDAD DE APENDIZAJE NO SE ENCUENTRAN REGISTRADOS
+	15:Error al actualizar el estudiante
+	16:ERROR AL ACTULIZAR EL ESTADO DE LA BAJA DEL ESTUDIANTE
 
 */
 
@@ -2694,5 +2474,66 @@ EXEC sp_alta_estudiante
 2020300476,
 'MTJhMjRhMmI4YjE1NzE2ZGU1ZGNmZjUzYTdkNjQwODkwNWQwMWI5MmY3MjRjMzc2NTIwY2VkNzg1YTE0MGIzZA==',
 @bool OUTPUT;
+
+SELECT @bool;
+
+
+
+
+/* ALTA DE MATERRIAS, PLANES DE ESTUDIO, PERIODOS,
+	CARRERAS GRUPOS  Y CREDITOS*/
+
+INSERT INTO creditos (cant_creditos)
+VALUES(
+	40
+);
+
+INSERT INTO unidad_aprendizaje
+(
+	id_creditos,
+	nom_uni_apren
+)VALUES
+( 1, 'Desarrollo de sistemas distribuidos' ),
+( 1, 'Big Data' ), ( 1, 'IA' );
+
+INSERT INTO plan_estudios (nombre_plan, nombre_plan_numero )
+VALUES
+( '2009', 2009 ), ( '2020', 2020 );
+
+INSERT INTO periodo ( nom_periodo, nom_periodo_num )
+VALUES ( '1', 1 ), ( '2', 2 ), ( '3', 4 );
+
+INSERT INTO carrera 
+( nom_carrera, total_creditos, nom_carrera_num )
+VALUES 
+( 'Ingenieria en Sistemas Computacionales', 221, 1 ),
+( 'Ingenieria en Sistemas Computacionales', 231, 1 ),
+( 'Ingenieria en Inteligencia Artificial', 201, 1 ),
+( 'Licenciatura en Ciencia de Datos', 200, 1 );
+
+INSERT INTO grupo (nom_grupo)
+VALUES ( '2CM13' ), ( '2CM3' ), ( '2CI6' ), ( '2LM8' );
+
+
+
+SELECT * FROM estudiante;
+
+SELECT * FROM bit_estudiante;
+
+SELECT * FROM grupo;
+
+SELECT * FROM uni_apren_plan_per_car_grup;
+
+
+SELECT * from estudiante_situacion_academica;
+
+
+DECLARE @bool SMALLINT;
+
+EXEC sp_estatus_baja_estudiante
+	2029300476,
+	2,
+	'MTJhMjRhMmI4YjE1NzE2ZGU1ZGNmZjUzYTdkNjQwODkwNWQwMWI5MmY3MjRjMzc2NTIwY2VkNzg1YTE0MGIzZA==' ,
+	@bool OUTPUT;
 
 SELECT @bool;
