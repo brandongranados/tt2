@@ -93,7 +93,7 @@ public class FirmaSAT {
     private byte[] getContenidoCifrado(byte crudo[])throws Exception
     {
 
-        cifrador.init(Cipher.ENCRYPT_MODE, this.publica);
+        cifrador.init(Cipher.ENCRYPT_MODE, this.privada);
 
         return cifrador.doFinal(crudo);
     }
@@ -101,7 +101,7 @@ public class FirmaSAT {
     private byte[] getContenidoDescifrado(byte crudo[])throws Exception
     {
 
-        cifrador.init(Cipher.DECRYPT_MODE, this.privada);
+        cifrador.init(Cipher.DECRYPT_MODE, this.publica);
 
         return cifrador.doFinal(crudo);
     }
