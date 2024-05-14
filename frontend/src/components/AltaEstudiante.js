@@ -176,7 +176,7 @@ let AltaEstudiante = () => {
 
             let resp = await creaAlerta({
                 titulo : "Advertencia",
-                mensaje : "?Esta seguro de que su informacion es correcta?",
+                mensaje : "¿Esta seguro de que su informacion es correcta?",
                 icono : 5,
                 boolBtnCancel: true,
                 ColorConfirmar: "#2e7d32",
