@@ -105,7 +105,7 @@ let AltaPersonal = () => {
             }]));
 
             setEspera(false);
-            navegar("/gestion/altaPersonalValidacion");
+            navegar("/administrador/listaPersonal");
 
         } catch (error) {
             console.error(error);
