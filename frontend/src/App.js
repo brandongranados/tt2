@@ -13,6 +13,7 @@ import ExpedienteEstudiantil from "./components/ExpedienteEstudiantil";
 import AltaEstValEdicion from "./components/AltaEstValEdicion";
 import ExpendienteEdicion from "./components/ExpedienteEdicion";
 import Bitacora from "./components/Bitacora";
+import AltaPersonal from"./components/AltaPersonal";
 
 let App = () => {
   return (
@@ -37,7 +38,7 @@ let Inicio = () => {
       <Route path="/administrador/altaEstValEdicion" element={<AltaEstValEdicion/>} />
       <Route path="/administrador/expedienteEstudiantil" element={<ExpedienteEstudiantil/>} />
       <Route path="/administrador/expEstEdicion" element={<ExpendienteEdicion/>} />
-
+      <Route path="/administrador/altaPersonal" element={<AltaPersonal/>}/>
       <Route path="/auditor/bitacora" element={<Bitacora/>} />
       
 
