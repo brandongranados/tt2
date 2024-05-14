@@ -133,11 +133,17 @@ let AltaPersonal = () => {
         if (noEmpleado.trim().length === 0) {
             respuesta.bool = false;
             respuesta.msm += "Le falta el número de empleado. ";
+        } else if (!/^\d+$/.test(noEmpleado)) {
+            respuesta.bool = false;
+            respuesta.msm += "El número de empleado debe contener solo números. ";
         }
 
         if (correo.trim().length === 0) {
             respuesta.bool = false;
             respuesta.msm += "Le falta el correo electrónico. ";
+        } else if (!/\S+@\S+\.\S+/.test(correo)) {
+            respuesta.bool = false;
+            respuesta.msm += "El correo electrónico no es válido. ";
         }
 
         return respuesta;
