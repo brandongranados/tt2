@@ -1510,6 +1510,29 @@ CREATE VIEW v_obtener_correos AS
 				ON rue.id_usuario = u.id_usuario;
 
 
+
+CREATE VIEW v_list_est_expe_estudiantil AS
+	SELECT DISTINCT 
+		CONCAT(e.nombres, ' ', 
+				e.apellido_paterno, ' ',
+				e.apellido_materno) AS nombre,
+		e.num_boleta,
+		c.nom_carrera,
+		c.nom_carrera_num,
+		p.nom_periodo,
+		p.nom_periodo_num
+	FROM estudiante_situacion_academica esa
+	INNER JOIN estudiante e
+		ON esa.id_est = e.id_est
+	INNER JOIN uni_apren_plan_per_car_grup uappcg
+		ON esa.id_uni_apren_plan_per_car_grup = 
+			uappcg.id_uni_apren_plan_per_car_grup
+	INNER JOIN carrera c
+		ON uappcg.id_carrera = c.id_carrera
+	INNER JOIN periodo p
+		ON uappcg.id_periodo = p.id_periodo;
+
+
 /************************************************************************************/
 /************************************************************************************/
 /************************************************************************************/
@@ -2522,18 +2545,5 @@ SELECT * FROM bit_estudiante;
 
 SELECT * FROM grupo;
 
-SELECT * FROM uni_apren_plan_per_car_grup;
 
-
-SELECT * from estudiante_situacion_academica;
-
-
-DECLARE @bool SMALLINT;
-
-EXEC sp_estatus_baja_estudiante
-	2029300476,
-	2,
-	'MTJhMjRhMmI4YjE1NzE2ZGU1ZGNmZjUzYTdkNjQwODkwNWQwMWI5MmY3MjRjMzc2NTIwY2VkNzg1YTE0MGIzZA==' ,
-	@bool OUTPUT;
-
-SELECT @bool;
+SELECT * FROM v_list_est_expe_estudiantil

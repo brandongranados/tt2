@@ -1,5 +1,6 @@
 package com.tt.basedatos.servicios;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.tt.basedatos.JsonAjax.AltaEstuAjaxPAAEMasiva;
 import com.tt.basedatos.JsonAjax.AltaEstudianteAjaxPAAE;
 import com.tt.basedatos.JsonAjax.BajaEstudiantePAAE;
 import com.tt.basedatos.JsonAjax.EdicionEstudiantePAAE;
@@ -80,6 +82,51 @@ public class Paae {
             res.put("bool", bool);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.badRequest().body(res);
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Transactional(readOnly = false)
+    public ResponseEntity setDatosEstudianteMasiva(AltaEstuAjaxPAAEMasiva estudiantesMasiva)
+    {
+        ArrayList<Integer> boletaError = new ArrayList<Integer>();
+        AltaEstudianteAjaxPAAE estudiantes[] = estudiantesMasiva.getEstudiantes();
+        Integer bool = 0, error = 0;
+
+        try {
+
+            for (AltaEstudianteAjaxPAAE estudiante : estudiantes) 
+            {
+                bool = sp.spAltaEstudiante
+                (
+                    estudiante.getPaterno(),
+                    estudiante.getMaterno(),
+                    estudiante.getNombre(),
+                    estudiante.getCurp(),
+                    estudiante.getSexo(),
+                    estudiante.getFechaNacimiento(),
+                    estudiante.getBoleta(),
+                    estudiante.getCarrera(),
+                    estudiante.getSemestre(),
+                    estudiante.getPlan(),
+                    estudiante.getEstatus(),
+                    estudiante.getUsuario()
+                );
+
+                if( bool != 1 )
+                    boletaError.add(estudiante.getBoleta());
+            }
+
+            if( boletaError.size() > 0 )
+            {
+                error = 400;
+                throw new Exception();
+            }
+
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return error == 400 ? ResponseEntity.badRequest().body(boletaError) : ResponseEntity.status(500).build();
         }
 
         return ResponseEntity.ok().build();

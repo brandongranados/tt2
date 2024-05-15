@@ -6,11 +6,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tt.microservicioproxy.JsonAjax.AjaxArrayMasivaEstu;
+import com.tt.microservicioproxy.JsonAjax.AjaxExcelCargaEstuMas;
 import com.tt.microservicioproxy.JsonAjax.RegEstuTokenAjax;
 import com.tt.microservicioproxy.JsonAjax.RegistroEstudianteAjax;
 import com.tt.microservicioproxy.JsonAjax.Restablecer;
 import com.tt.microservicioproxy.JsonAjax.RestablecerSolicitud;
 import com.tt.microservicioproxy.servicios.BloquearInyecciones;
+import com.tt.microservicioproxy.servicios.ConectarMicroPAAE;
 import com.tt.microservicioproxy.servicios.Sesiones;
 
 import jakarta.validation.Valid;
@@ -23,6 +26,9 @@ public class Paginas {
 
     @Autowired
     private BloquearInyecciones iny;
+
+    @Autowired
+    private ConectarMicroPAAE paae;
 
     //VALIDACION CORREOS Y RESGITRO PARCIAL DESDE VENTANAS ESTUDIANTE
     @PostMapping("/registroEstudiante")
@@ -67,5 +73,28 @@ public class Paginas {
         datos.setUsuario(iny.getCadenaDepuradaInyecciones(datos.getUsuario()));
         
         return sesion.validaRestablecer(datos);
+    }
+
+
+
+
+
+    //MANEJO DE DATOS PARA SESIONES DE PAAE
+    @PostMapping("/personalGestionEscolar/altaEstudiantes")
+    public ResponseEntity altaEstudiantes(@Valid @RequestBody AjaxArrayMasivaEstu estudiantes)
+    {
+        return paae.setEstudiantes(estudiantes);
+    }
+
+    @PostMapping("/personalGestionEscolar/ejemploCargaMasiva")
+    public ResponseEntity getEjemploCargaMasiva()
+    {
+        return paae.getEjemploCargaMasiva();
+    }
+
+    @PostMapping("/personalGestionEscolar/cargaMasivaEstudiantes")
+    public ResponseEntity setCargaMasivaEstudiantes(@Valid @RequestBody AjaxExcelCargaEstuMas estu)
+    {
+        return paae.setCargaMasivaEstudiantes(estu);
     }
 }

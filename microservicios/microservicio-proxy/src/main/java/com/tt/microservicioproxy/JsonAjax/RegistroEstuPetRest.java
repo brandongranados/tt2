@@ -1,10 +1,35 @@
 package com.tt.microservicioproxy.JsonAjax;
 
+import com.github.rkpunjal.sqlsafe.SQLInjectionSafe;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 public class RegistroEstuPetRest {
+    @NotBlank
+    @Size(min = 10, max = 10, message = "La boleta solo puede tener 10 numeros")
+    @Pattern(regexp = "^[0-9]+$", message = "Boleta no valida")
+    @SQLInjectionSafe
     private String boleta;
+    @NotBlank
+    @SQLInjectionSafe
+    @NotNull
     private String usuario;
+    @NotBlank
+    @SQLInjectionSafe
+    @Email(message = "Correo no valido")
+    @NotNull
     private String correo;
+    @NotBlank
+    @SQLInjectionSafe
+    @NotNull
     private String contrasena;
+    @NotBlank
+    @SQLInjectionSafe
+    @NotNull
     private String token;
 
 
