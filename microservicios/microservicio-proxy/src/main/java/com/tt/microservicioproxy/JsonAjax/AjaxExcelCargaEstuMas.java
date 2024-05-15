@@ -5,19 +5,18 @@ import com.github.rkpunjal.sqlsafe.SQLInjectionSafe;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class InicioSesionPetRest {
-
-    @SQLInjectionSafe
+public class AjaxExcelCargaEstuMas {
     @NotBlank
+    @SQLInjectionSafe
     @NotNull
-    private String usuario;
+    private String docuemnto;
 
-    public String getUsuario() {
-        return usuario;
+    public String getDocuemnto() {
+        return docuemnto;
     }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
+    public void setDocuemnto(String docuemnto) {
+        this.docuemnto = docuemnto;
     }
     
 }

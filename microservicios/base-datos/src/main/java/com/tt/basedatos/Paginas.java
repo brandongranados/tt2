@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tt.basedatos.JsonAjax.AltaEstuAjaxPAAEMasiva;
 import com.tt.basedatos.JsonAjax.AltaEstudianteAjaxPAAE;
 import com.tt.basedatos.JsonAjax.BajaEstudiantePAAE;
 import com.tt.basedatos.JsonAjax.EdicionEstudiantePAAE;
@@ -85,11 +86,18 @@ public class Paginas {
         return paae.setMapeoMateriaGrupoEstudiante(estudiante);
     }
 
+    @PostMapping("/personalGestionEscolar/setNuevosEstudiantes")
+    public ResponseEntity setEstudiante(@RequestBody AltaEstuAjaxPAAEMasiva estudiante)
+    {
+        return paae.setDatosEstudianteMasiva(estudiante);
+    }
+
     @PostMapping("/personalGestionEscolar/setNuevoEstudiante")
-    public ResponseEntity setEstudiante(@RequestBody AltaEstudianteAjaxPAAE estudiante)
+    public ResponseEntity setEstudiantes(@RequestBody AltaEstudianteAjaxPAAE estudiante)
     {
         return paae.setDatosEstudiante(estudiante);
     }
+
 
     @PostMapping("/personalGestionEscolar/setActulizaEstudiante")
     public ResponseEntity setDatosEstudianteEdita(@RequestBody EdicionEstudiantePAAE estudiante)
