@@ -1486,7 +1486,12 @@ CREATE TRIGGER d_rol_usuario_est
 
 
 CREATE VIEW v_inicio_sesion AS
-	SELECT u.contrasena,
+	SELECT DISTINCT
+		contrasena,
+		nombre_usuario,
+		nombre_rol
+	FROM (
+		SELECT u.contrasena,
 			u.nombre_usuario,
 			r.nombre_rol
 		FROM rol_usuario_est rue
@@ -1495,7 +1500,20 @@ CREATE VIEW v_inicio_sesion AS
 			INNER JOIN roles r
 				ON rue.id_rol = r.id_rol
 			INNER JOIN usuario u
-				ON rue.id_usuario = u.id_usuario;
+				ON rue.id_usuario = u.id_usuario
+	UNION 
+
+	SELECT u.contrasena,
+			u.nombre_usuario, 
+			r.nombre_rol
+		FROM rol_personal_usuario rpu
+			INNER JOIN personal p
+				ON rpu.id_personal = p.id_personal
+			INNER JOIN usuario u 
+				ON u.id_usuario = rpu.id_usuario
+			INNER JOIN roles r
+				ON rPU.id_rol = r.id_rol
+	) AS inicio_sesion;
 
 
 CREATE VIEW v_obtener_correos AS
@@ -1510,12 +1528,20 @@ CREATE VIEW v_obtener_correos AS
 				ON rue.id_usuario = u.id_usuario;
 
 
-
 CREATE VIEW v_list_est_expe_estudiantil AS
 	SELECT DISTINCT 
 		CONCAT(e.nombres, ' ', 
 				e.apellido_paterno, ' ',
 				e.apellido_materno) AS nombre,
+		e.curp,
+		( CASE 
+			WHEN e.sexo = 0 THEN 'M'
+			WHEN e.sexo = 1 THEN 'F'
+		  	ELSE 'M'
+		  END
+		) AS sexo,
+		e.fecha_nacimiento,
+		e.correo_electronico,
 		e.num_boleta,
 		c.nom_carrera,
 		c.nom_carrera_num,
@@ -1531,6 +1557,19 @@ CREATE VIEW v_list_est_expe_estudiantil AS
 		ON uappcg.id_carrera = c.id_carrera
 	INNER JOIN periodo p
 		ON uappcg.id_periodo = p.id_periodo;
+
+
+CREATE VIEW v_docuemntos_expediente AS
+	SELECT DISTINCT
+		e.num_boleta,
+		t.nombre_solicitud,
+		ee.ruta
+	FROM estudiante e
+	INNER JOIN expediente_est ee
+		ON e.id_est = ee.id_est
+	INNER JOIN tipo_solicitud t
+		ON ee.id_tipo_solicitud =
+			t.id_tipo_solicitud;
 
 
 /************************************************************************************/
@@ -2474,6 +2513,45 @@ VALUES(
 	'ROLE_ESTUDIANTE'
 );
 
+INSERT INTO roles(nombre_rol)
+VALUES
+('ROLE_ADMIN'),
+('ROLE_PAAE'), ('ROLE_AUDITOR');
+
+
+INSERT INTO personal
+(nombres, apellido_paterno,
+apellido_materno)
+VALUES
+('ROSARIO', 'GALEANA', 'CHAVEZ'),
+('ROSARIO2', 'GALEANA', 'CHAVEZ'),
+('ROSARIO3', 'GALEANA', 'CHAVEZ');
+
+INSERT INTO usuario
+(
+	nombre_usuario,
+	contrasena
+)
+VALUES
+('ROSARIO', 'ROSARIO'),
+('ROSARIO2', 'ROSARIO2'),
+('ROSARIO3', 'ROSARIO3');
+
+SELECT * FROM personal;
+
+INSERT INTO rol_personal_usuario
+(
+	id_personal,
+	id_rol,
+	id_usuario
+)
+VALUES
+(1, 2, 20002), 
+(2, 3, 20003), 
+(3, 4, 20004);
+
+
+
 /***********************************************************************/
 
 
@@ -2538,12 +2616,4 @@ INSERT INTO grupo (nom_grupo)
 VALUES ( '2CM13' ), ( '2CM3' ), ( '2CI6' ), ( '2LM8' );
 
 
-
-SELECT * FROM estudiante;
-
-SELECT * FROM bit_estudiante;
-
-SELECT * FROM grupo;
-
-
-SELECT * FROM v_list_est_expe_estudiantil
+SELECT * FROM v_inicio_sesion;
