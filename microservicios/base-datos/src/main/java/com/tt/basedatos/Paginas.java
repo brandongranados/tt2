@@ -6,8 +6,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tt.basedatos.JsonAjax.AltaEstudianteAjax;
+import com.tt.basedatos.JsonAjax.AltaEstuAjaxPAAEMasiva;
+import com.tt.basedatos.JsonAjax.AltaEstudianteAjaxPAAE;
+import com.tt.basedatos.JsonAjax.BajaEstudiantePAAE;
+import com.tt.basedatos.JsonAjax.EdicionEstudiantePAAE;
 import com.tt.basedatos.JsonAjax.InicioSesionAjax;
+import com.tt.basedatos.JsonAjax.MapMateriaGrupEstuPAAE;
 import com.tt.basedatos.JsonAjax.RegistroEstuAjax;
 import com.tt.basedatos.JsonAjax.Restablecer;
 import com.tt.basedatos.JsonAjax.ValidaTokenRegEstAjax;
@@ -76,9 +80,34 @@ public class Paginas {
 
 
     //PAAE
-    @PostMapping("/setEstudiante")
-    public ResponseEntity setEstudiante(@RequestBody AltaEstudianteAjax estudiante)
+    @PostMapping("/personalGestionEscolar/setMapMatGrupEst")
+    public ResponseEntity setMateriaGrupoEstudiante(@RequestBody MapMateriaGrupEstuPAAE estudiante)
+    {
+        return paae.setMapeoMateriaGrupoEstudiante(estudiante);
+    }
+
+    @PostMapping("/personalGestionEscolar/setNuevosEstudiantes")
+    public ResponseEntity setEstudiante(@RequestBody AltaEstuAjaxPAAEMasiva estudiante)
+    {
+        return paae.setDatosEstudianteMasiva(estudiante);
+    }
+
+    @PostMapping("/personalGestionEscolar/setNuevoEstudiante")
+    public ResponseEntity setEstudiantes(@RequestBody AltaEstudianteAjaxPAAE estudiante)
     {
         return paae.setDatosEstudiante(estudiante);
+    }
+
+
+    @PostMapping("/personalGestionEscolar/setActulizaEstudiante")
+    public ResponseEntity setDatosEstudianteEdita(@RequestBody EdicionEstudiantePAAE estudiante)
+    {
+        return paae.setEditaEstudiante(estudiante);
+    }
+
+    @PostMapping("/personalGestionEscolar/setBajaEstudiante")
+    public ResponseEntity setBajaTemporalDEfinitivaEstudiante(@RequestBody BajaEstudiantePAAE estudiante)
+    {
+        return paae.setEstatusBajaEstudiante(estudiante);
     }
 }
