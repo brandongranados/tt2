@@ -1895,6 +1895,8 @@ CREATE PROCEDURE sp_registra_restablece_contrasena
 				@contrasena
 			);
 
+			SET @bool = 1;
+
 		END TRY
 		BEGIN CATCH
 
@@ -1915,6 +1917,30 @@ CREATE PROCEDURE sp_valida_restablece_contrasena
 
 		DECLARE @fecha_solicitud DATETIME;
 		DECLARE @fecha_expiracion DATETIME;
+
+		/* CREACION DE TABLA TEMPORAL */
+
+		BEGIN TRY
+
+			CREATE TABLE #usuario_sesion
+			(
+				id INTEGER PRIMARY KEY IDENTITY,
+				id_usuario BIGINT
+			);
+
+			INSERT INTO #usuario_sesion
+			( id_usuario )VALUES(NULL);
+
+			SET @bool = 1;
+
+		END TRY
+		BEGIN CATCH
+
+			SET @bool = 6;
+			RETURN;
+
+		END CATCH
+		/* TERMINA CREACION DE TABLA TEMPORAL */
 
 		SELECT TOP 1 @fecha_solicitud = r.fecha_solicitud,
 				@fecha_expiracion = r.fecha_expiracion
@@ -2630,6 +2656,9 @@ INSERT INTO grupo (nom_grupo)
 VALUES ( '2CM13' ), ( '2CM3' ), ( '2CI6' ), ( '2LM8' );
 
 
-SELECT * FROM v_inicio_sesion;
+SELECT * FROM personal;
 
-SELECT * FROM v_obtener_correos;
+SELECT * FROM usuario;
+
+SELECT * FROM restablecer_contrasena;
+

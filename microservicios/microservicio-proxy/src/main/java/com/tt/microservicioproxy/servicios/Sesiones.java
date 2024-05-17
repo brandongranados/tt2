@@ -113,7 +113,7 @@ public class Sesiones {
             envia.setUsuario(datos.getUsuario());
             envia.setToken(token);
             envia.setContrasena(datos.getContrasena());
-            resp = rest.getRespuestaRest(REGISTRO_RESTABLECER, datos);
+            resp = rest.getRespuestaRest(REGISTRO_RESTABLECER, envia);
 
             if( !resp.isPresent() )
                 throw new Exception();
