@@ -13,6 +13,7 @@ import com.tt.microservicioproxy.JsonAjax.RegistroEstuPetRest;
 import com.tt.microservicioproxy.JsonAjax.RegistroEstudianteAjax;
 import com.tt.microservicioproxy.JsonAjax.Restablecer;
 import com.tt.microservicioproxy.JsonAjax.RestablecerSolicitud;
+import com.tt.microservicioproxy.JsonAjax.ValidarRestablecerSolicitud;
 
 @Service
 public class Sesiones {
@@ -111,6 +112,7 @@ public class Sesiones {
             token = crypto.crearTokenRestablecerHash512(datos.getUsuario()+System.currentTimeMillis());
             envia.setUsuario(datos.getUsuario());
             envia.setToken(token);
+            envia.setContrasena(datos.getContrasena());
             resp = rest.getRespuestaRest(REGISTRO_RESTABLECER, datos);
 
             if( !resp.isPresent() )
@@ -121,7 +123,7 @@ public class Sesiones {
             if( ((Double) bd.get("bool")) != 1 )
                 throw new Exception();
 
-            correo.enviarCorreo(1, (String) bd.get("correo"), token);
+            correo.enviarCorreo(2, (String) bd.get("correo"), token);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -129,7 +131,7 @@ public class Sesiones {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity validaRestablecer(Restablecer datos)
+    public ResponseEntity validaRestablecer(ValidarRestablecerSolicitud datos)
     {
         Optional resp = null;
         Map<String, Object> bd = null;

@@ -99,8 +99,13 @@ CREATE TABLE personal
 	id_personal BIGINT PRIMARY KEY IDENTITY,
 	nombres VARCHAR(MAX) NOT NULL DEFAULT '',
 	apellido_paterno VARCHAR(MAX) NOT NULL DEFAULT '',
-	apellido_materno VARCHAR(MAX) NOT NULL DEFAULT ''
+	apellido_materno VARCHAR(MAX) NOT NULL DEFAULT '',
+	correo_electronico VARCHAR(MAX) NOT NULL DEFAULT ''
 );
+
+ALTER TABLE personal
+ADD correo_electronico 
+VARCHAR(MAX) NOT NULL DEFAULT '';
 
 CREATE TABLE semestre_activo
 (
@@ -228,9 +233,13 @@ CREATE TABLE restablecer_contrasena
 	fecha_solicitud DATETIME NOT NULL DEFAULT GETDATE(),
 	fecha_expiracion DATETIME NOT NULL DEFAULT GETDATE(),
 	token VARCHAR(MAX) NOT NULL DEFAULT '',
+	contrasena VARCHAR(MAX) NOT NULL DEFAULT '',
 	FOREIGN KEY(id_usuario) REFERENCES usuario(id_usuario)
 		ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+ALTER TABLE restablecer_contrasena
+ADD contrasena VARCHAR(MAX) NOT NULL DEFAULT '';
 
 /* BITACORAS TABLAS */
 
@@ -353,6 +362,7 @@ CREATE TABLE bit_personal
 	nombres VARCHAR(MAX),
 	apellido_paterno VARCHAR(MAX),
 	apellido_materno VARCHAR(MAX),
+	correo_electronico VARCHAR(MAX),
 
 	id_user_ejecuta BIGINT,
     fecha_ejecuta DATETIME DEFAULT GETDATE(),
@@ -1010,6 +1020,7 @@ CREATE TRIGGER d_personal
 				nombres,
 				apellido_paterno,
 				apellido_materno,
+				correo_electronico,
 
 				id_user_ejecuta,
 				tip_ejec
@@ -1018,6 +1029,7 @@ CREATE TRIGGER d_personal
                     deleted.nombres,
 					deleted.apellido_paterno,
 					deleted.apellido_materno,
+					deleted.correo_electronico,
 
                     ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
                     @tipo AS tipo
@@ -1517,15 +1529,27 @@ CREATE VIEW v_inicio_sesion AS
 
 
 CREATE VIEW v_obtener_correos AS
-	SELECT u.nombre_usuario,
+	SELECT DISTINCT
+		nombre_usuario,
+		correo_electronico
+	FROM (
+		SELECT u.nombre_usuario,
 			e.correo_electronico
 		FROM rol_usuario_est rue
 			INNER JOIN estudiante e
 				ON rue.id_est = e.id_est
-			INNER JOIN roles r
-				ON rue.id_rol = r.id_rol
 			INNER JOIN usuario u
-				ON rue.id_usuario = u.id_usuario;
+				ON rue.id_usuario = u.id_usuario
+	UNION 
+
+	SELECT u.nombre_usuario,
+			p.correo_electronico
+		FROM rol_personal_usuario rpu
+			INNER JOIN personal p
+				ON rpu.id_personal = p.id_personal
+			INNER JOIN usuario u 
+				ON u.id_usuario = rpu.id_usuario
+	) AS correos;
 
 
 CREATE VIEW v_list_est_expe_estudiantil AS
@@ -1822,6 +1846,7 @@ CREATE PROCEDURE sp_valida_token
 CREATE PROCEDURE sp_registra_restablece_contrasena
 	@usuario VARCHAR(MAX),
 	@token VARCHAR(MAX),
+	@contrasena VARCHAR(MAX),
 	@bool SMALLINT OUTPUT
 	AS BEGIN
 
@@ -1856,7 +1881,8 @@ CREATE PROCEDURE sp_registra_restablece_contrasena
 				id_usuario,
 				fecha_solicitud,
 				fecha_expiracion,
-				token
+				token,
+				contrasena
 			)
 			VALUES
 			(
@@ -1865,7 +1891,8 @@ CREATE PROCEDURE sp_registra_restablece_contrasena
 					WHERE nombre_usuario = @usuario ),
 				@fecha,
 				DATEADD(MINUTE, 30, @fecha),
-				@token
+				@token,
+				@contrasena
 			);
 
 		END TRY
@@ -1917,6 +1944,16 @@ CREATE PROCEDURE sp_valida_restablece_contrasena
 		END
 
 		BEGIN TRY
+
+			UPDATE usuario
+				SET contrasena = (
+					SELECT TOP 1 r.contrasena
+					FROM restablecer_contrasena r
+						INNER JOIN usuario u
+							ON r.id_usuario = u.id_usuario
+					WHERE u.nombre_usuario = @usuario
+				)
+			WHERE nombre_usuario = @usuario;
 
 			DELETE FROM restablecer_contrasena
 			WHERE id_restablecer_contrasena IN(
@@ -2555,29 +2592,6 @@ VALUES
 /***********************************************************************/
 
 
-SELECT * FROM estudiante;
-
-SELECT * FROM bit_estudiante;
-
-SELECT * FROM usuario;
-
-
-
-DECLARE @bool SMALLINT;
-
-EXEC sp_alta_estudiante
-'CASIANO',
-'GRANADOS',
-'BRANDON ANTONIO',
-'CAGB980704HMCSRR07',
-1,
-'1998-07-04',
-2020300476,
-'MTJhMjRhMmI4YjE1NzE2ZGU1ZGNmZjUzYTdkNjQwODkwNWQwMWI5MmY3MjRjMzc2NTIwY2VkNzg1YTE0MGIzZA==',
-@bool OUTPUT;
-
-SELECT @bool;
-
 
 
 
@@ -2617,3 +2631,5 @@ VALUES ( '2CM13' ), ( '2CM3' ), ( '2CI6' ), ( '2LM8' );
 
 
 SELECT * FROM v_inicio_sesion;
+
+SELECT * FROM v_obtener_correos;

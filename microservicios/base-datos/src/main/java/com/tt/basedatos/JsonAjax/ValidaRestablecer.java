@@ -1,10 +1,8 @@
 package com.tt.basedatos.JsonAjax;
 
-public class Restablecer {
+public class ValidaRestablecer {
     private String usuario;
     private String token;
-    private String contrasena;
-
 
     public String getUsuario() {
         return usuario;
@@ -17,11 +15,5 @@ public class Restablecer {
     }
     public void setToken(String token) {
         this.token = token;
-    }
-    public String getContrasena() {
-        return contrasena;
-    }
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
     }
 }

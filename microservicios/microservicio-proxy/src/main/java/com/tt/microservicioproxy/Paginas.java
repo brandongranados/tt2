@@ -12,6 +12,7 @@ import com.tt.microservicioproxy.JsonAjax.RegEstuTokenAjax;
 import com.tt.microservicioproxy.JsonAjax.RegistroEstudianteAjax;
 import com.tt.microservicioproxy.JsonAjax.Restablecer;
 import com.tt.microservicioproxy.JsonAjax.RestablecerSolicitud;
+import com.tt.microservicioproxy.JsonAjax.ValidarRestablecerSolicitud;
 import com.tt.microservicioproxy.servicios.BloquearInyecciones;
 import com.tt.microservicioproxy.servicios.ConectarMicroPAAE;
 import com.tt.microservicioproxy.servicios.Sesiones;
@@ -58,16 +59,7 @@ public class Paginas {
     }
 
     @PostMapping("/validaRestablecer")
-    public ResponseEntity validaRestablecer(@Valid @RequestBody Restablecer datos)
-    {
-
-        datos.setUsuario(iny.getCadenaDepuradaInyecciones(datos.getUsuario()));
-        
-        return sesion.validaRestablecer(datos);
-    }
-
-    @PostMapping("/restablecer")
-    public ResponseEntity restablecer(@Valid @RequestBody Restablecer datos)
+    public ResponseEntity restablecer(@Valid @RequestBody ValidarRestablecerSolicitud datos)
     {
 
         datos.setUsuario(iny.getCadenaDepuradaInyecciones(datos.getUsuario()));

@@ -13,6 +13,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.tt.basedatos.JsonAjax.InicioSesionAjax;
 import com.tt.basedatos.JsonAjax.RegistroEstuAjax;
 import com.tt.basedatos.JsonAjax.Restablecer;
+import com.tt.basedatos.JsonAjax.ValidaRestablecer;
 import com.tt.basedatos.JsonAjax.ValidaTokenRegEstAjax;
 import com.tt.basedatos.Repositorios.RepoSp;
 import com.tt.basedatos.Repositorios.RepoVistas;
@@ -105,7 +106,8 @@ public class Sesiones {
             salida = sp.spRegistraRestableceContrasena
             (
                 datos.getUsuario(),
-                datos.getToken()
+                datos.getToken(),
+                datos.getContrasena()
             );
 
             if( salida != 1 )
@@ -124,7 +126,7 @@ public class Sesiones {
     }
 
     @Transactional(readOnly = false)
-    public ResponseEntity validaRestablecer(Restablecer datos)
+    public ResponseEntity validaRestablecer(ValidaRestablecer datos)
     {
         Map<String, Object> resp = new HashMap<String, Object>();
         Integer salida = 0;

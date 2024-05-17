@@ -14,6 +14,7 @@ import com.tt.basedatos.JsonAjax.InicioSesionAjax;
 import com.tt.basedatos.JsonAjax.MapMateriaGrupEstuPAAE;
 import com.tt.basedatos.JsonAjax.RegistroEstuAjax;
 import com.tt.basedatos.JsonAjax.Restablecer;
+import com.tt.basedatos.JsonAjax.ValidaRestablecer;
 import com.tt.basedatos.JsonAjax.ValidaTokenRegEstAjax;
 import com.tt.basedatos.servicios.Paae;
 import com.tt.basedatos.servicios.Sesiones;
@@ -69,7 +70,7 @@ public class Paginas {
     }
 
     @PostMapping("/validaRestablecer")
-    public ResponseEntity validaRestablecer(@RequestBody Restablecer datos)
+    public ResponseEntity validaRestablecer(@RequestBody ValidaRestablecer datos)
     {
         return sesion.validaRestablecer(datos);
     }

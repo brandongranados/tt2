@@ -52,18 +52,22 @@ public class Configuracion {
                 .authorizeHttpRequests()
                 .requestMatchers(HttpMethod.POST, "/login")
                     .permitAll()
-                .requestMatchers(HttpMethod.POST, "/restaurarContrasena")
-                    .permitAll()
-                .requestMatchers(HttpMethod.POST, "/registroEstudiante")
-                    .permitAll()
-                .requestMatchers(HttpMethod.POST, "/registroEstudianteToken")
-                    .permitAll()
                 .requestMatchers(HttpMethod.POST, "/registroRestablecer")
                     .permitAll()
                 .requestMatchers(HttpMethod.POST, "/validaRestablecer")
                     .permitAll()
-                .requestMatchers(HttpMethod.POST, "/restablecer")
+
+
+
+
+                .requestMatchers(HttpMethod.POST, "/registroEstudiante")
                     .permitAll()
+                .requestMatchers(HttpMethod.POST, "/registroEstudianteToken")
+                    .permitAll()
+                
+
+
+
                 .requestMatchers(HttpMethod.POST, "/admin/**")
                     .permitAll()
                 .requestMatchers(HttpMethod.POST, "/personalGestionEscolar/**")

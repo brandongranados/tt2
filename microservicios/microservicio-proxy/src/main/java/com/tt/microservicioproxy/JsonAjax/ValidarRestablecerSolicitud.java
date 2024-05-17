@@ -5,7 +5,7 @@ import com.github.rkpunjal.sqlsafe.SQLInjectionSafe;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class RestablecerSolicitud {
+public class ValidarRestablecerSolicitud {
 
     @NotBlank
     @NotNull
@@ -14,8 +14,8 @@ public class RestablecerSolicitud {
     @NotBlank
     @NotNull
     @SQLInjectionSafe
-    private String contrasena;
-    
+    private String token;
+
 
     public String getUsuario() {
         return usuario;
@@ -23,10 +23,10 @@ public class RestablecerSolicitud {
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
-    public String getContrasena() {
-        return contrasena;
+    public String getToken() {
+        return token;
     }
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
+    public void setToken(String token) {
+        this.token = token;
     }
 }
