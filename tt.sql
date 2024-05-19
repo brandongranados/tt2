@@ -1552,6 +1552,28 @@ CREATE VIEW v_obtener_correos AS
 	) AS correos;
 
 
+CREATE VIEW v_lista_estudiantes AS
+	SELECT DISTINCT 
+		CONCAT(e.nombres, ' ', 
+				e.apellido_paterno, ' ',
+				e.apellido_materno) AS nombre,
+		e.num_boleta,
+		c.nom_carrera,
+		c.nom_carrera_num,
+		p.nom_periodo,
+		p.nom_periodo_num
+	FROM estudiante_situacion_academica esa
+	INNER JOIN estudiante e
+		ON esa.id_est = e.id_est
+	INNER JOIN uni_apren_plan_per_car_grup uappcg
+		ON esa.id_uni_apren_plan_per_car_grup = 
+			uappcg.id_uni_apren_plan_per_car_grup
+	INNER JOIN carrera c
+		ON uappcg.id_carrera = c.id_carrera
+	INNER JOIN periodo p
+		ON uappcg.id_periodo = p.id_periodo;
+
+
 CREATE VIEW v_list_est_expe_estudiantil AS
 	SELECT DISTINCT 
 		CONCAT(e.nombres, ' ', 
@@ -2662,3 +2684,19 @@ SELECT * FROM usuario;
 
 SELECT * FROM restablecer_contrasena;
 
+SELECT * FROM estudiante;
+
+
+
+SELECT * FROM v_lista_estudiantes
+ORDER BY nombre ASC
+OFFSET 100
+ROWS FETCH NEXT 200 ROWS ONLY;
+
+SELECT * FROM v_list_est_expe_estudiantil;
+
+SELECT * FROM v_docuemntos_expediente;
+
+SELECT * FROM v_lista_estudiantes ORDER BY nombre ASC 
+OFFSET (( 1 - 1 )* 100 ) 
+ROWS FETCH NEXT ( 1 * 100 ) ROWS ONLY
