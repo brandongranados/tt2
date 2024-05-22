@@ -26,6 +26,12 @@ import net.sf.jasperreports.engine.util.JRLoader;
 public class Pdf {
     @Value("${jasper.constancia.estudios}")
     private String CONSTANCIA_ESTUDIOS;
+    @Value("${jasper.constancia.inscripcion}")
+    private String CONSTANCIA_INSCRIPCION;
+    @Value("${jasper.constancia.becas}")
+    private String CONSTANCIA_BECAS;
+    @Value("${jasper.constancia.servicio}")
+    private String CONSTANCIA_SERVICIO;
     @Value("${rutas.constancia.estudios}")
     private String CONSTANCIA_ESTUDIOS_DATOS;
     @Value("${rutas.semestre.activo}")
@@ -42,15 +48,21 @@ public class Pdf {
     private ConsumoRest peticiones;
     @Autowired
     private Gson obj;
-    private JasperReport leerJasper;
+    private JasperReport plantillaEstudios;
+    private JasperReport plantillaInscripcion;
+    private JasperReport plantillaBecas;
+    private JasperReport plantillaServicio;
 
     @PostConstruct
     public void postPdf()
     {
         try {
-            this.leerJasper = (JasperReport) JRLoader.loadObjectFromFile(CONSTANCIA_ESTUDIOS);
+            this.plantillaEstudios = (JasperReport) JRLoader.loadObjectFromFile(CONSTANCIA_ESTUDIOS);
+            this.plantillaInscripcion = (JasperReport) JRLoader.loadObjectFromFile(CONSTANCIA_INSCRIPCION);
+            this.plantillaBecas = (JasperReport) JRLoader.loadObjectFromFile(CONSTANCIA_BECAS);
+            this.plantillaServicio = (JasperReport) JRLoader.loadObjectFromFile(CONSTANCIA_SERVICIO);
         } catch (Exception e) {
-            this.leerJasper = null;
+            this.plantillaEstudios = null;
         }
     }
 
@@ -59,8 +71,25 @@ public class Pdf {
         HashMap<String, Object> sal = new HashMap<String, Object>();
 
         try {
-            HashMap<String, Object> param = this.getParametrosConstanciaEstudios(boleta);
-            JasperPrint jasper = JasperFillManager.fillReport(leerJasper, param, new JREmptyDataSource());
+            HashMap<String, Object> param = this.getParametrosConstanciaGenericos(boleta);
+            JasperPrint jasper = JasperFillManager.fillReport(plantillaEstudios, param, new JREmptyDataSource());
+            byte crudo[] = JasperExportManager.exportReportToPdf(jasper);
+
+            sal.put("documento", Base64.getEncoder().encodeToString(crudo));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(sal);
+    }
+
+    public ResponseEntity getConstanciaInscripcion(int boleta)
+    {
+        HashMap<String, Object> sal = new HashMap<String, Object>();
+
+        try {
+            HashMap<String, Object> param = this.getParametrosConstanciaInscripcion(boleta);
+            JasperPrint jasper = JasperFillManager.fillReport(plantillaInscripcion, param, new JREmptyDataSource());
             byte crudo[] = JasperExportManager.exportReportToPdf(jasper);
             JasperExportManager.exportReportToPdfFile(jasper, "jaja.pdf");
 
@@ -72,42 +101,53 @@ public class Pdf {
         return ResponseEntity.ok(sal);
     }
 
-    private HashMap<String, Object> getParametrosConstanciaEstudios(int boleta)
+    public ResponseEntity getConstanciaBecas(int boleta)
     {
-        HashMap<String, Object> param = new HashMap<String, Object>();
-        AjaxExpedienteEst enviar = new AjaxExpedienteEst(boleta);
+        HashMap<String, Object> sal = new HashMap<String, Object>();
 
         try {
-            HashMap<String, Object> datos = this.restUnElemento(CONSTANCIA_ESTUDIOS_DATOS, enviar);
-            HashMap<String, Object> datos2 = this.restUnElemento(SEMESTRE_ACTIVO, null);
-            String cadena = "CADENA ORIGINAL:<br>\n" +
-                            "63|ESCUELA SUPERIOR DE CÓMPUTO||09DPN0053X|"
-                            +datos2.get("nombre_semestre")
-                            +"|CONSTANCIA DE ESTUDIOS|"+boleta+
-                            "|"+datos.get("nombre")+"\n"+
-                            "|"+datos.get("curp")+"|C|"+datos.get("nom_carrera")
-                            +"|"+((String)datos.get("nombre_plan")).substring(2, 3)+
-                            "|0|SIN ESPECIALIDAD|"+datos.get("porcentaje_carrera")
-                            +"|"+datos.get("promedio")+"|"+datos.get("turno")
-                            +"|"+datos.get("nom_grupo")+"|R|1|9 semestres|"
-                            +datos.get("total_creditos")+"|"+datos2.get("vigencia_inicio")
-                            +"|"+datos2.get("vigencia_fin")    
-                            +"|"+datos2.get("fecha_hoy");
-            HashMap<String, Object> petFirma = this.restUnElemento
-            (
-                FIRMA_SAT_FIRMA, 
-                new AjaxDocFirSAT(Base64.getEncoder().encodeToString(cadena.getBytes()))
-            );
-            HashMap<String, Object> petQR = this.restUnElemento
-            (
-                QR_CREA, 
-                new PetQr
-                (
-                    1000, 
-                    1000, 
-                    Base64.getEncoder().encodeToString((RUTA_VERIFICA_CONSTANCIA+"?datos="+petFirma.get("documento")).getBytes())
-                )
-            );
+            HashMap<String, Object> param = this.getParametrosConstanciaBecas(boleta);
+            JasperPrint jasper = JasperFillManager.fillReport(plantillaBecas, param, new JREmptyDataSource());
+            byte crudo[] = JasperExportManager.exportReportToPdf(jasper);
+            JasperExportManager.exportReportToPdfFile(jasper, "jaja.pdf");
+
+            sal.put("documento", Base64.getEncoder().encodeToString(crudo));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(sal);
+    }
+
+    public ResponseEntity getConstanciaServicio(int boleta)
+    {
+        HashMap<String, Object> sal = new HashMap<String, Object>();
+
+        try {
+            HashMap<String, Object> param = this.getParametrosConstanciaServicio(boleta);
+            JasperPrint jasper = JasperFillManager.fillReport(plantillaServicio, param, new JREmptyDataSource());
+            byte crudo[] = JasperExportManager.exportReportToPdf(jasper);
+            JasperExportManager.exportReportToPdfFile(jasper, "jaja.pdf");
+
+            sal.put("documento", Base64.getEncoder().encodeToString(crudo));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(sal);
+    }
+
+    private HashMap<String, Object> getParametrosConstanciaGenericos(int boleta)
+    {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+
+        try {
+            HashMap<String, Object> generales = this.getPeticionesGenericas(boleta);
+            HashMap<String, Object> datos = (HashMap<String, Object>)generales.get("datos");
+            HashMap<String, Object> datos2 = (HashMap<String, Object>)generales.get("datos2");
+            String cadena = (String)generales.get("cadena");
+            HashMap<String, Object> petFirma = (HashMap<String, Object>)generales.get("petFirma");
+            HashMap<String, Object> petQR = (HashMap<String, Object>)generales.get("petQR");
 
             //param.put("img", datos.get("foto_est"));
             param.put("img", petQR.get("respuesta"));
@@ -157,6 +197,83 @@ public class Pdf {
         return param;
     }
 
+    private HashMap<String, Object> getParametrosConstanciaBecas(int boleta)
+    {
+        return this.getParametrosConstanciaInscripcion(boleta);
+    }
+
+    private HashMap<String, Object> getParametrosConstanciaServicio(int boleta)
+    {
+        return this.getParametrosConstanciaInscripcion(boleta);
+    }
+
+    private HashMap<String, Object> getParametrosConstanciaInscripcion(int boleta)
+    {
+        HashMap<String, Object> param = this.getParametrosConstanciaGenericos(boleta);
+
+        try {
+
+            String renglo3 = (String)param.get("renglon4");
+            String renglon4 = (String)param.get("renglo3");
+
+            param.put("renglon3", renglo3);
+            param.put("renglon4", renglon4);
+            
+        } catch (Exception e) {
+            return null;
+        }
+
+        return param;
+    }
+
+    private HashMap<String, Object> getPeticionesGenericas(int boleta)
+    {
+        HashMap<String, Object> salida = new HashMap<String, Object>();
+
+        try {
+            HashMap<String, Object> datos = this.restUnElemento(CONSTANCIA_ESTUDIOS_DATOS, new AjaxExpedienteEst(boleta));
+            HashMap<String, Object> datos2 = this.restUnElemento(SEMESTRE_ACTIVO, null);
+            String cadena = "CADENA ORIGINAL:<br>\n" +
+                            "63|ESCUELA SUPERIOR DE CÓMPUTO||09DPN0053X|"
+                            +datos2.get("nombre_semestre")
+                            +"|CONSTANCIA DE ESTUDIOS|"+boleta+
+                            "|"+datos.get("nombre")+"\n"+
+                            "|"+datos.get("curp")+"|C|"+datos.get("nom_carrera")
+                            +"|"+((String)datos.get("nombre_plan")).substring(2, 3)+
+                            "|0|SIN ESPECIALIDAD|"+datos.get("porcentaje_carrera")
+                            +"|"+datos.get("promedio")+"|"+datos.get("turno")
+                            +"|"+datos.get("nom_grupo")+"|R|1|9 semestres|"
+                            +datos.get("total_creditos")+"|"+datos2.get("vigencia_inicio")
+                            +"|"+datos2.get("vigencia_fin")    
+                            +"|"+datos2.get("fecha_hoy");
+            HashMap<String, Object> petFirma = this.restUnElemento
+            (
+                FIRMA_SAT_FIRMA, 
+                new AjaxDocFirSAT(Base64.getEncoder().encodeToString(cadena.getBytes()))
+            );
+            HashMap<String, Object> petQR = this.restUnElemento
+            (
+                QR_CREA, 
+                new PetQr
+                (
+                    1000, 
+                    1000, 
+                    Base64.getEncoder().encodeToString((RUTA_VERIFICA_CONSTANCIA+"?datos="+petFirma.get("documento")).getBytes())
+                )
+            );
+
+            salida.put("datos", datos);
+            salida.put("datos2", datos2);
+            salida.put("cadena", cadena);
+            salida.put("petFirma", petFirma);
+            salida.put("petQR", petQR);
+        } catch (Exception e) {
+            salida = null;
+        }
+
+        return salida;
+    }
+
     private HashMap<String, Object> restUnElemento(String rutaGenerica, Object datos)
     {
         HashMap<String, Object> resPet = null;
@@ -178,24 +295,4 @@ public class Pdf {
         return salida;
     }
 
-    private List<HashMap<Object, Object>> restMuchosElemento(String rutaGenerica, Object datos)
-    {
-        HashMap<String, Object> resPet = null;
-        List<HashMap<Object, Object>>salida = null;
-        int codigo = 400;
-
-        try {
-            
-            resPet = peticiones.getRespuestaRest(rutaGenerica, datos);
-            codigo = (int)resPet.get("codigo");
-            salida = obj.fromJson((String)resPet.get("datos"), List.class);
-
-            if( codigo != 200 )
-                throw new Exception();
-
-        } catch (Exception e) {
-            return salida;
-        }
-        return salida;
-    }
 }

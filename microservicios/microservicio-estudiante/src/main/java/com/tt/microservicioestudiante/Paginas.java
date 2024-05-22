@@ -19,4 +19,22 @@ public class Paginas {
     {
         return pdf.getConstanciaEstudios(estu.getBoleta());
     }
+
+    @PostMapping("/estudiantes/constanciaInscripcion")
+    public ResponseEntity getCostanciaInscripcion(@RequestBody AjaxConstanciaEstudios estu)
+    {
+        return pdf.getConstanciaInscripcion(estu.getBoleta());
+    }
+
+    @PostMapping("/estudiantes/constanciaBecas")
+    public ResponseEntity getCostanciaBecas(@RequestBody AjaxConstanciaEstudios estu)
+    {
+        return pdf.getConstanciaBecas(estu.getBoleta());
+    }
+
+    @PostMapping("/estudiantes/constanciaServicio")
+    public ResponseEntity getCostanciaServicio(@RequestBody AjaxConstanciaEstudios estu)
+    {
+        return pdf.getConstanciaServicio(estu.getBoleta());
+    }
 }
