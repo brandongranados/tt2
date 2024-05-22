@@ -17,6 +17,7 @@ import com.tt.basedatos.JsonAjax.RegistroEstuAjax;
 import com.tt.basedatos.JsonAjax.Restablecer;
 import com.tt.basedatos.JsonAjax.ValidaRestablecer;
 import com.tt.basedatos.JsonAjax.ValidaTokenRegEstAjax;
+import com.tt.basedatos.servicios.Estudiante;
 import com.tt.basedatos.servicios.Paae;
 import com.tt.basedatos.servicios.Sesiones;
 
@@ -27,6 +28,8 @@ public class Paginas {
     private Sesiones sesion;
     @Autowired
     private Paae paae;
+    @Autowired
+    private Estudiante microEstu;
     
     //SESIONES
     @PostMapping("/datosInicioSesion")
@@ -122,5 +125,23 @@ public class Paginas {
     public ResponseEntity getExpedienteDoc(@RequestBody AjaxExpedienteEst estu)
     {
         return paae.getExpedienteEstuDocs(estu);
+    }
+
+
+
+
+
+
+    //ESTUDIANTE
+    @PostMapping("/estudiante/getDatosConstanciaEstudios")
+    public ResponseEntity getDatosConstanciaEstudios(@RequestBody AjaxExpedienteEst estu)
+    {
+        return microEstu.getDatosConstaciaEstudios(estu.getBoleta());
+    }
+
+    @PostMapping("/estudiante/getSemestreActivo")
+    public ResponseEntity getSemestreActivo()
+    {
+        return microEstu.getDatosSemestreActivo();
     }
 }

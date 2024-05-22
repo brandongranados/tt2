@@ -17,8 +17,12 @@ CREATE TABLE estudiante
 	sexo SMALLINT NOT NULL DEFAULT 1,
 	fecha_nacimiento DATE NOT NULL DEFAULT GETDATE(),
 	estatus SMALLINT DEFAULT 0,
-	turno SMALLINT DEFAULT 0
+	turno SMALLINT DEFAULT 0,
+	foto_est VARBINARY(MAX) DEFAULT NULL
 );
+
+ALTER TABLE estudiante
+ADD foto_est VARBINARY(MAX) DEFAULT NULL;
 
 CREATE TABLE carrera
 (
@@ -479,7 +483,8 @@ CREATE TABLE bit_estudiante
 	sexo SMALLINT,
 	fecha_nacimiento DATE,
 	estatus SMALLINT,
-	turno SMALLINT DEFAULT 0,
+	turno SMALLINT,
+	foto_est VARBINARY(MAX),
 
 	id_user_ejecuta BIGINT,
     fecha_ejecuta DATETIME DEFAULT GETDATE(),
@@ -1349,6 +1354,7 @@ CREATE TRIGGER d_estudiante
 				fecha_nacimiento,
 				estatus,
 				turno,
+				foto_est,
 
 				id_user_ejecuta,
 				tip_ejec
@@ -1366,6 +1372,7 @@ CREATE TRIGGER d_estudiante
                     deleted.fecha_nacimiento,
 					deleted.estatus,
 					deleted.turno,
+					deleted.foto_est ,
                     ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
                     @tipo AS tipo
             FROM deleted
@@ -1616,6 +1623,164 @@ CREATE VIEW v_docuemntos_expediente AS
 	INNER JOIN tipo_solicitud t
 		ON ee.id_tipo_solicitud =
 			t.id_tipo_solicitud;
+
+
+CREATE VIEW v_constancia_estudios_datos_est AS
+	SELECT DISTINCT
+		CONCAT(e.apellido_paterno, ' ',
+			e.apellido_materno, ' ',
+			e.nombres) AS nombre,
+			e.num_boleta,
+			e.curp,
+			(
+			CASE 
+				WHEN e.estatus = 1 THEN 'Alumno Regular'
+				WHEN e.estatus = 2 THEN 'Alumno Irregular'
+				ELSE 'Alumno Irregular'
+			END
+			) estatus,
+			e.foto_est,
+			(
+			CASE 
+				WHEN e.turno = 1 THEN 'matutino'
+				WHEN e.turno = 2 THEN 'verpertino'
+				WHEN e.turno = 3 THEN 'mixto'
+				ELSE 'mixto'
+			END
+			) AS turno,
+			p.nom_periodo,
+			P.nom_periodo_num,
+			g.nom_grupo,
+			CONCAT( 'del programa académico de ',
+				c.nom_carrera
+				) AS nom_carrera,
+			c.total_creditos,
+			pl.nombre_plan,
+			e.porcentaje_carrera,
+			e.promedio
+	FROM estudiante e
+		INNER JOIN estudiante_situacion_academica esa
+			ON e.id_est = esa.id_est
+		INNER JOIN uni_apren_plan_per_car_grup uappcg
+			ON uappcg.id_uni_apren_plan_per_car_grup =
+				esa.id_uni_apren_plan_per_car_grup
+		INNER JOIN periodo p
+			ON uappcg.id_periodo = p.id_periodo
+		INNER JOIN grupo g
+			ON uappcg.id_grupo = g.id_grupo
+		INNER JOIN carrera c
+			ON uappcg.id_carrera = c.id_carrera
+		INNER JOIN plan_estudios pl
+			ON pl.id_plan = uappcg.id_plan;
+
+
+CREATE VIEW v_constancia_estudios_semestre_activo AS
+	SELECT nombre_semestre,
+			CONCAT(
+				'cuya vigencia es del ',
+				DAY(fecha_inicio),
+				' ',
+				(
+					CASE 
+						WHEN MONTH(fecha_inicio) = 1 THEN 'enero'
+						WHEN MONTH(fecha_inicio) = 2  THEN 'febrero'
+						WHEN MONTH(fecha_inicio) = 3  THEN 'marzo'
+						WHEN MONTH(fecha_inicio) = 4  THEN 'abril'
+						WHEN MONTH(fecha_inicio) = 5  THEN 'mayo'
+						WHEN MONTH(fecha_inicio) = 6  THEN 'junio'
+						WHEN MONTH(fecha_inicio) = 7  THEN 'julio'
+						WHEN MONTH(fecha_inicio) = 8  THEN 'agosto'
+						WHEN MONTH(fecha_inicio) = 9  THEN 'septiembre'
+						WHEN MONTH(fecha_inicio) = 10  THEN 'octubre'
+						WHEN MONTH(fecha_inicio) = 11  THEN 'noviembre'
+						ELSE 'diciembre'
+					END
+				), ' de ',
+				YEAR(fecha_inicio), ' al ',
+				DAY(fecha_fin),
+				' ',
+				(
+					CASE 
+						WHEN MONTH(fecha_fin) = 1 THEN 'enero'
+						WHEN MONTH(fecha_fin) = 2  THEN 'febrero'
+						WHEN MONTH(fecha_fin) = 3  THEN 'marzo'
+						WHEN MONTH(fecha_fin) = 4  THEN 'abril'
+						WHEN MONTH(fecha_fin) = 5  THEN 'mayo'
+						WHEN MONTH(fecha_fin) = 6  THEN 'junio'
+						WHEN MONTH(fecha_fin) = 7  THEN 'julio'
+						WHEN MONTH(fecha_fin) = 8  THEN 'agosto'
+						WHEN MONTH(fecha_fin) = 9  THEN 'septiembre'
+						WHEN MONTH(fecha_fin) = 10  THEN 'octubre'
+						WHEN MONTH(fecha_fin) = 11  THEN 'noviembre'
+						ELSE 'diciembre'
+					END
+				), ' de ',
+				YEAR(fecha_fin)
+			) AS vigencia,
+			CONCAT(
+				DAY(fecha_inicio),
+				' ',
+				(
+					CASE 
+						WHEN MONTH(fecha_inicio) = 1 THEN 'enero'
+						WHEN MONTH(fecha_inicio) = 2  THEN 'febrero'
+						WHEN MONTH(fecha_inicio) = 3  THEN 'marzo'
+						WHEN MONTH(fecha_inicio) = 4  THEN 'abril'
+						WHEN MONTH(fecha_inicio) = 5  THEN 'mayo'
+						WHEN MONTH(fecha_inicio) = 6  THEN 'junio'
+						WHEN MONTH(fecha_inicio) = 7  THEN 'julio'
+						WHEN MONTH(fecha_inicio) = 8  THEN 'agosto'
+						WHEN MONTH(fecha_inicio) = 9  THEN 'septiembre'
+						WHEN MONTH(fecha_inicio) = 10  THEN 'octubre'
+						WHEN MONTH(fecha_inicio) = 11  THEN 'noviembre'
+						ELSE 'diciembre'
+					END
+				), ' de ',
+				YEAR(fecha_inicio)
+				) AS vigencia_inicio,
+				CONCAT(
+				DAY(fecha_fin),
+				' ',
+				(
+					CASE 
+						WHEN MONTH(fecha_fin) = 1 THEN 'enero'
+						WHEN MONTH(fecha_fin) = 2  THEN 'febrero'
+						WHEN MONTH(fecha_fin) = 3  THEN 'marzo'
+						WHEN MONTH(fecha_fin) = 4  THEN 'abril'
+						WHEN MONTH(fecha_fin) = 5  THEN 'mayo'
+						WHEN MONTH(fecha_fin) = 6  THEN 'junio'
+						WHEN MONTH(fecha_fin) = 7  THEN 'julio'
+						WHEN MONTH(fecha_fin) = 8  THEN 'agosto'
+						WHEN MONTH(fecha_fin) = 9  THEN 'septiembre'
+						WHEN MONTH(fecha_fin) = 10  THEN 'octubre'
+						WHEN MONTH(fecha_fin) = 11  THEN 'noviembre'
+						ELSE 'diciembre'
+					END
+				), ' de ',
+				YEAR(fecha_fin)
+				) AS vigencia_fin,
+				CONCAT(
+					'Ciudad de México a los ',
+					DAY(GETDATE()), ' días de ',
+					(
+					CASE 
+						WHEN MONTH(GETDATE()) = 1 THEN 'Enero'
+						WHEN MONTH(GETDATE()) = 2  THEN 'Febrero'
+						WHEN MONTH(GETDATE()) = 3  THEN 'Marzo'
+						WHEN MONTH(GETDATE()) = 4  THEN 'Abril'
+						WHEN MONTH(GETDATE()) = 5  THEN 'Mayo'
+						WHEN MONTH(GETDATE()) = 6  THEN 'Junio'
+						WHEN MONTH(GETDATE()) = 7  THEN 'Julio'
+						WHEN MONTH(GETDATE()) = 8  THEN 'Agosto'
+						WHEN MONTH(GETDATE()) = 9  THEN 'Septiembre'
+						WHEN MONTH(GETDATE()) = 10  THEN 'Octubre'
+						WHEN MONTH(GETDATE()) = 11  THEN 'Noviembre'
+						ELSE 'Diciembre'
+					END
+				), ' de ', YEAR(GETDATE())
+				) AS fecha_hoy,
+			estado
+	 FROM semestre_activo;
 
 
 /************************************************************************************/
@@ -2678,6 +2843,31 @@ INSERT INTO grupo (nom_grupo)
 VALUES ( '2CM13' ), ( '2CM3' ), ( '2CI6' ), ( '2LM8' );
 
 
+INSERT INTO semestre_activo
+(
+	nombre_semestre,
+	fecha_inicio,
+	fecha_fin,
+	estado
+)
+VALUES
+(
+	'24/1',
+	'2023-08-28',
+	'2024-01-22',
+	1
+);
+
+
+
+
+
+
+
+
+
+
+
 SELECT * FROM personal;
 
 SELECT * FROM usuario;
@@ -2700,3 +2890,29 @@ SELECT * FROM v_docuemntos_expediente;
 SELECT * FROM v_lista_estudiantes ORDER BY nombre ASC 
 OFFSET (( 1 - 1 )* 100 ) 
 ROWS FETCH NEXT ( 1 * 100 ) ROWS ONLY
+
+
+SELECT TOP 1 
+	nombre,
+	num_boleta,
+	curp,
+	estatus,
+	foto_est,
+	turno,
+	nom_periodo,
+	nom_grupo,
+	nom_carrera,
+	total_creditos,
+	nombre_plan,
+	porcentaje_carrera,
+	promedio
+FROM
+v_constancia_estudios_datos_est
+WHERE num_boleta = 2029300476
+ORDER BY nom_periodo_num, nom_grupo DESC;
+
+
+SELECT nombre_semestre,
+		vigencia
+FROM v_constancia_estudios_semestre_activo
+WHERE estado = 1;

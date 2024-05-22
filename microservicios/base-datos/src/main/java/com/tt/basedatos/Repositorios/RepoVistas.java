@@ -68,4 +68,34 @@ public interface RepoVistas extends CrudRepository<ComodinVistas, Integer>{
         @Param("boleta") int boleta
     );
 
+    @Query
+    (
+        value = "SELECT TOP 1 nombre, num_boleta, "+
+                        "curp, estatus, foto_est, "+
+                        "turno, nom_periodo, "+
+                        "nom_grupo, nom_carrera, "+
+                        "total_creditos, nombre_plan, "+
+                        "porcentaje_carrera, promedio FROM "+
+                    "v_constancia_estudios_datos_est "+
+                    "WHERE num_boleta = :boleta "+
+                    "ORDER BY nom_periodo_num, "+
+                    "nom_grupo DESC",
+        nativeQuery = true
+    )
+    public Map<String, Object> getConstanciaEstudiosDatos
+    (
+        @Param("boleta") int boleta
+    );
+
+    @Query
+    (
+        value = "SELECT TOP 1 nombre_semestre, "+
+                        "vigencia, vigencia_inicio, vigencia_fin, "+
+                        "fecha_hoy "+
+                "FROM v_constancia_estudios_semestre_activo "+
+                "WHERE estado = 1",
+        nativeQuery = true
+    )
+    public Map<String, Object> getDatosSemestreActivo();
+
 }
