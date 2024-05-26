@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.tt.microservicioproxy.JsonAjax.AjaxArrayMasivaEstu;
 import com.tt.microservicioproxy.JsonAjax.AjaxCargaMasivaEst;
-import com.tt.microservicioproxy.JsonAjax.AjaxExcelCargaEstuMas;
 import com.tt.microservicioproxy.JsonAjax.AjaxExpedienteEst;
 import com.tt.microservicioproxy.JsonAjax.AjaxListaEstudiante;
 import com.tt.microservicioproxy.JsonAjax.BajaEstudiantePAAEMasiva;
@@ -24,12 +23,10 @@ public class ConectarMicroPAAE {
     private ConsumoRestv2 rest;
     @Autowired
     private BloquearInyecciones iny;
+    @Autowired
+    private Gson obj;
     @Value("${rutas.paae.altamasiva}")
     private String rutaAltaMasivaEst;
-    @Value("${rutas.excel.ejemplocargamasivaestudiantes}")
-    private String ejemploCargaMasiva;
-    @Value("${rutas.excel.cargamasivaestu}")
-    private String CARGA_MASIVA_EXCEL;
     @Value("${rutas.paae.altamasiva}")
     private String PAAE_ALTA_MASIVA;
     @Value("${rutas.paae.edicionmasiva}")
@@ -42,12 +39,6 @@ public class ConectarMicroPAAE {
     private String PAAE_LISTA_ESTUDIANTES;
     @Value("${rutas.paae.expedienteestudiante}")
     private String PAAE_EXPEDIENTE_ESTUDIANTE;
-    private Gson obj;
-
-    public ConectarMicroPAAE()
-    {
-        obj = new Gson();
-    }
     
     public ResponseEntity setEstudiantes(AjaxArrayMasivaEstu estudiantes)
     {
@@ -71,46 +62,6 @@ public class ConectarMicroPAAE {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity getEjemploCargaMasiva()
-    {
-        HashMap<String, Object> respRest = null;
-        HashMap<Object, Object> salida = null;
-        int codigo = 400;
-        
-        try {
-            respRest = rest.getRespuestaRest(ejemploCargaMasiva, null);
-            codigo = (int)respRest.get("codigo");
-            salida = obj.fromJson((String)respRest.get("datos"), HashMap.class);
-
-            if( codigo != 200 )
-                throw new Exception();
-
-        } catch (Exception e) {
-            return ResponseEntity.status(codigo).body(salida);
-        }
-        return ResponseEntity.ok(salida);
-    }
-
-    public ResponseEntity setCargaMasivaEstudiantes(AjaxExcelCargaEstuMas estudiantes)
-    {
-        HashMap<String, Object> respRest = null;
-        HashMap<Object, Object> salida = null;
-        int codigo = 400;
-        
-        try {
-            respRest = rest.getRespuestaRest(CARGA_MASIVA_EXCEL, estudiantes);
-            codigo = (int)respRest.get("codigo");
-            salida = obj.fromJson((String)respRest.get("datos"), HashMap.class);
-
-            if( codigo != 200 )
-                throw new Exception();
-
-        } catch (Exception e) {
-            return ResponseEntity.status(codigo).body(salida);
-        }
-        return ResponseEntity.ok(salida);
-    }
-
     public ResponseEntity setAltaMasivaEstudiantes(AjaxArrayMasivaEstu estudiantes)
     {
         HashMap<String, Object> respRest = null;
@@ -130,7 +81,6 @@ public class ConectarMicroPAAE {
         }
         return ResponseEntity.ok(salida);
     }
-
 
     public ResponseEntity setEdicionMasivaEstudiantes(EdicionEstudiantePAAEMasivo estudiantes)
     {
