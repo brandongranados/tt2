@@ -2,7 +2,6 @@ package com.tt.microservicioestudiante.servicios;
 
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,7 +90,6 @@ public class Pdf {
             HashMap<String, Object> param = this.getParametrosConstanciaInscripcion(boleta);
             JasperPrint jasper = JasperFillManager.fillReport(plantillaInscripcion, param, new JREmptyDataSource());
             byte crudo[] = JasperExportManager.exportReportToPdf(jasper);
-            JasperExportManager.exportReportToPdfFile(jasper, "jaja.pdf");
 
             sal.put("documento", Base64.getEncoder().encodeToString(crudo));
         } catch (Exception e) {
@@ -109,7 +107,6 @@ public class Pdf {
             HashMap<String, Object> param = this.getParametrosConstanciaBecas(boleta);
             JasperPrint jasper = JasperFillManager.fillReport(plantillaBecas, param, new JREmptyDataSource());
             byte crudo[] = JasperExportManager.exportReportToPdf(jasper);
-            JasperExportManager.exportReportToPdfFile(jasper, "jaja.pdf");
 
             sal.put("documento", Base64.getEncoder().encodeToString(crudo));
         } catch (Exception e) {
@@ -127,7 +124,6 @@ public class Pdf {
             HashMap<String, Object> param = this.getParametrosConstanciaServicio(boleta);
             JasperPrint jasper = JasperFillManager.fillReport(plantillaServicio, param, new JREmptyDataSource());
             byte crudo[] = JasperExportManager.exportReportToPdf(jasper);
-            JasperExportManager.exportReportToPdfFile(jasper, "jaja.pdf");
 
             sal.put("documento", Base64.getEncoder().encodeToString(crudo));
         } catch (Exception e) {
@@ -214,7 +210,7 @@ public class Pdf {
         try {
 
             String renglo3 = (String)param.get("renglon4");
-            String renglon4 = (String)param.get("renglo3");
+            String renglon4 = (String)param.get("renglon3");
 
             param.put("renglon3", renglo3);
             param.put("renglon4", renglon4);

@@ -21,9 +21,6 @@ CREATE TABLE estudiante
 	foto_est VARBINARY(MAX) DEFAULT NULL
 );
 
-ALTER TABLE estudiante
-ADD foto_est VARBINARY(MAX) DEFAULT NULL;
-
 CREATE TABLE carrera
 (
 	id_carrera BIGINT PRIMARY KEY IDENTITY,
@@ -56,21 +53,6 @@ CREATE TABLE creditos
 (
 	id_creditos BIGINT PRIMARY KEY IDENTITY,
 	cant_creditos FLOAT NOT NULL DEFAULT 0
-);
-
-CREATE TABLE bitacora_gestion
-(
-	id_bitacora BIGINT PRIMARY KEY IDENTITY,
-	fecha_resgistro_bd DATETIME NOT NULL DEFAULT GETDATE(),
-	fecha_solicitud DATETIME NOT NULL DEFAULT GETDATE(),
-	fecha_entrega DATETIME NOT NULL DEFAULT GETDATE(),
-	estado SMALLINT NOT NULL DEFAULT 0
-);
-
-CREATE TABLE tipo_solicitud
-(
-	id_tipo_solicitud BIGINT PRIMARY KEY IDENTITY,
-	nombre_solicitud VARCHAR(MAX) NOT NULL DEFAULT ''
 );
 
 CREATE TABLE usuario
@@ -106,10 +88,6 @@ CREATE TABLE personal
 	apellido_materno VARCHAR(MAX) NOT NULL DEFAULT '',
 	correo_electronico VARCHAR(MAX) NOT NULL DEFAULT ''
 );
-
-ALTER TABLE personal
-ADD correo_electronico 
-VARCHAR(MAX) NOT NULL DEFAULT '';
 
 CREATE TABLE semestre_activo
 (
@@ -242,8 +220,34 @@ CREATE TABLE restablecer_contrasena
 		ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE restablecer_contrasena
-ADD contrasena VARCHAR(MAX) NOT NULL DEFAULT '';
+CREATE TABLE est_tip_sol_bit_gestion
+(
+	id_est_tip_sol_bit_gestion BIGINT PRIMARY KEY IDENTITY,
+	id_est BIGINT,
+	id_tipo_solicitud BIGINT,
+	id_bitacora BIGINT,
+	FOREIGN KEY(id_est) REFERENCES estudiante(id_est)
+		ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(id_tipo_solicitud) REFERENCES tipo_solicitud(id_tipo_solicitud)
+		ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(id_bitacora) REFERENCES bitacora_gestion(id_bitacora)
+		ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE bitacora_gestion
+(
+	id_bitacora BIGINT PRIMARY KEY IDENTITY,
+	fecha_resgistro_bd DATETIME NOT NULL DEFAULT GETDATE(),
+	fecha_solicitud DATETIME NOT NULL DEFAULT GETDATE(),
+	fecha_entrega DATETIME NOT NULL DEFAULT GETDATE(),
+	estado SMALLINT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE tipo_solicitud
+(
+	id_tipo_solicitud BIGINT PRIMARY KEY IDENTITY,
+	nombre_solicitud VARCHAR(MAX) NOT NULL DEFAULT ''
+);
 
 /* BITACORAS TABLAS */
 
@@ -511,6 +515,8 @@ CREATE TABLE bit_estudiante_situacion_academica
 /************************************************************************************/
 /************************************************************************************/
 /************************************************************************************/
+
+
 
 CREATE TRIGGER d_estudiante_situacion_academica
 	ON estudiante_situacion_academica
@@ -2751,168 +2757,220 @@ CODIGO DE ERRORES BASE DE DATOS
 
 */
 
-/*
-	PARA ABRIR ARCHIVOS openssl rsa -in hola.key -text
-*/
-
-
 /***********************************************************************/
-
-INSERT INTO roles(nombre_rol)
-VALUES(
-	'ROLE_ESTUDIANTE'
-);
-
-INSERT INTO roles(nombre_rol)
-VALUES
-('ROLE_ADMIN'),
-('ROLE_PAAE'), ('ROLE_AUDITOR');
-
-
-INSERT INTO personal
-(nombres, apellido_paterno,
-apellido_materno)
-VALUES
-('ROSARIO', 'GALEANA', 'CHAVEZ'),
-('ROSARIO2', 'GALEANA', 'CHAVEZ'),
-('ROSARIO3', 'GALEANA', 'CHAVEZ');
-
-INSERT INTO usuario
-(
-	nombre_usuario,
-	contrasena
-)
-VALUES
-('ROSARIO', 'ROSARIO'),
-('ROSARIO2', 'ROSARIO2'),
-('ROSARIO3', 'ROSARIO3');
-
-SELECT * FROM personal;
-
-INSERT INTO rol_personal_usuario
-(
-	id_personal,
-	id_rol,
-	id_usuario
-)
-VALUES
-(1, 2, 20002), 
-(2, 3, 20003), 
-(3, 4, 20004);
-
-
-
+/***********************************************************************/
+/***********************************************************************/
+/***********************************************************************/
+/************************INSERTS OBLLIGATORIOS**************************/
+/***********************************************************************/
+/***********************************************************************/
 /***********************************************************************/
 
 
 
 
 
-/* ALTA DE MATERRIAS, PLANES DE ESTUDIO, PERIODOS,
-	CARRERAS GRUPOS  Y CREDITOS*/
 
-INSERT INTO creditos (cant_creditos)
-VALUES(
-	40
-);
 
-INSERT INTO unidad_aprendizaje
-(
-	id_creditos,
-	nom_uni_apren
-)VALUES
-( 1, 'Desarrollo de sistemas distribuidos' ),
-( 1, 'Big Data' ), ( 1, 'IA' );
 
-INSERT INTO plan_estudios (nombre_plan, nombre_plan_numero )
-VALUES
-( '2009', 2009 ), ( '2020', 2020 );
 
-INSERT INTO periodo ( nom_periodo, nom_periodo_num )
-VALUES ( '1', 1 ), ( '2', 2 ), ( '3', 4 );
-
-INSERT INTO carrera 
+INSERT INTO carrera
 ( nom_carrera, total_creditos, nom_carrera_num )
-VALUES 
-( 'Ingenieria en Sistemas Computacionales', 221, 1 ),
-( 'Ingenieria en Sistemas Computacionales', 231, 1 ),
-( 'Ingenieria en Inteligencia Artificial', 201, 1 ),
-( 'Licenciatura en Ciencia de Datos', 200, 1 );
+VALUES
+( 'Ingenieria en Sistemas Computacionales', 316.0 , 1 ),
+( 'Ingenieria en Sistemas Computacionales', 370.35 , 2 ),
+( 'Ingenieria en Inteligencia Artificial', 385.0 , 3 ),
+( 'Licenciatura en Ciencia de Datos', 200, 4 );
+
+
+INSERT INTO periodo (nom_periodo, nom_periodo_num)
+VALUES ('Semestre 2024/2', 1),
+       ('Semestre 2025/1', 2),
+       ('Semestre 2025/2', 3);
+
+INSERT INTO plan_estudios (nombre_plan, nombre_plan_numero)
+VALUES ('Plan 2009', 1),
+       ('Plan 2020', 2);
+
 
 INSERT INTO grupo (nom_grupo)
-VALUES ( '2CM13' ), ( '2CM3' ), ( '2CI6' ), ( '2LM8' );
+VALUES ('2CM1'),
+       ('2CM2'),
+       ('2CM3'),
+	   ('2CV1'),
+       ('2CV2'),
+       ('2CV3');
 
 
-INSERT INTO semestre_activo
-(
-	nombre_semestre,
-	fecha_inicio,
-	fecha_fin,
-	estado
-)
+INSERT INTO creditos ( cant_creditos)
 VALUES
-(
-	'24/1',
-	'2023-08-28',
-	'2024-01-22',
-	1
-);
+( 7.5),
+(10.5),
+(4.15),
+(4.45),
+(5.85),
+(4.39),
+(3.0),
+(12.0);
+
+INSERT INTO roles (nombre_rol)
+VALUES ('ESTUDIANTE'),
+       ('ADMIN'),
+       ('PAAE'),
+	   ('AUDITOR');
 
 
+INSERT INTO semestre_activo (nombre_semestre, fecha_inicio, fecha_fin, estado)
+VALUES ('2024/2', '2024-01-01', '2024-06-30', 1);
 
 
+INSERT INTO unidad_aprendizaje (id_creditos, nom_uni_apren)
+VALUES
+(1, 'Cálculo'),
+(1, 'Análisis Vectorial'),
+(2, 'Matemáticas Discretas'),
+(1, 'Comunicación Oral y Escrita'),
+(1, 'Fundamentos de Programación'),
+(6, 'Álgebra Lineal'),
+(1, 'Cálculo Aplicado'),
+(2, 'Mecánica y Electromagnetismo'),
+(6, 'Ingeniería, Ética y Sociedad'),
+(1, 'Fundamentos Económicos'),
+(1, 'Algoritmos y Estructuras de Datos'),
+(6, 'Ecuaciones Diferenciales'),
+(1, 'Circuitos Eléctricos'),
+(1, 'Fundamentos de Diseño Digital'),
+(1, 'Bases de Datos'),
+(1, 'Finanzas Empresariales'),
+(1, 'Paradigmas de Programación'),
+(1, 'Análisis y Diseño de Algoritmos'),
+(1, 'Probabilidad y Estadística'),
+(6, 'Matemáticas Avanzadas para la Ingeniería'),
+(1, 'Electrónica Analógica'),
+(1, 'Diseño de Sistemas Digitales'),
+(1, 'Tecnologías para el Desarrollo de Aplicaciones Web'),
+(1, 'Sistemas Operativos'),
+(1, 'Teoría de la Computación'),
+(1, 'Procesamiento Digital de Señales'),
+(1, 'Instrumentación y Control'),
+(1, 'Arquitectura de Computadoras'),
+(1, 'Análisis y Diseño de Sistemas'),
+(1, 'Formulación y Evaluación de Proyectos Informativos'),
+(1, 'Compiladores'),
+(1, 'Redes de Computadoras'),
+(1, 'Sistemas en Chip'),
+(1, 'Optativa A1'),
+(1, 'Optativa B1'),
+(1, 'Métodos Cuantitativos para la toma de desiciónes'),
+(1, 'Ingeniería de Software'),
+(1, 'Inteligencia Artificial'),
+(1, 'Aplicaciones para Comunicaciones en Red'),
+(1, 'Desarrollo de Aplicaciones Móviles Nativas'),
+(1, 'Optativa A2'),
+(1, 'Optativa B2'),
+(8, 'Trabajo Terminal I'),
+(1, 'Sistemas Distribuidos'),
+(1, 'Administración de Servicios en Red'),
+(7, 'Estancia Profesional'),
+(7, 'Desarrollo de Habilidades Sociales para la Alta Dirección'),
+(8, 'Trabajo Terminal II'),
+(1, 'Gestión Empresarial'),
+(1, 'Liderazgo Personal'),
+(1, 'Análisis Vectorial'),
+(1, 'Cálculo'),
+(2, 'Matemáticas Discretas'),
+(1, 'Algoritmia y Programación estructurada'),
+(6, 'Física'),
+(6, 'Ingeniería, Ética y Sociedad'),
+(6, 'Ecuaciones Diferenciales'),
+(6, 'Álgebra Lineal'),
+(6, 'Cálculo Aplicado'),
+(6, 'Estructuras de Datos'),
+(6, 'Comunicación Oral y Escrita'),
+(6, 'Análisis Fundamental de Circuitos'),
+(6, 'Matemáticas Avanzadas para la Ingeniería'),
+(6, 'Fundamentos Económicos'),
+(6, 'Fundamentos de Diseño Digital'),
+(6, 'Teoría Computacional'),
+(6, 'Base de Datos'),
+(6, 'Programación Orientada a Objetos'),
+(6, 'Electrónica Analógica'),
+(6, 'Redes de Computadoras'),
+(6, 'Diseño de Sistemas Digitales'),
+(6, 'Probabilidad y Estadística'),
+(6, 'Sistemas Operativos'),
+(6, 'Análisis y diseño Orientado a Objetos'),
+(6, 'Tecnologías para la Web'),
+(6, 'Administración financiera'),
+(6, 'Optativa A'),
+(6, 'Arquitectura de computadoras'),
+(6, 'Análisis de algoritmos'),
+(6, 'Optativa B'),
+(6, 'Ingeniería de Software'),
+(6, 'Administración de Proyectos'),
+(6, 'Instrumentación'),
+(6, 'Teoría de Comunicaciones y Señales'),
+(6, 'Aplicaciones para Comunicaciones en Red'),
+(6, 'Métodos Cuantitativos para la Toma de Decisiones'),
+(6, 'Introducción a los Microcontroladores'),
+(6, 'Compiladores'),
+(6, 'Optativa C'),
+(6, 'Optativa D'),
+(6, 'Desarrollo de Sistemas Distribuidos'),
+(6, 'Administración de Servicios en Red'),
+(6, 'Gestión Empresarial'),
+(6, 'Liderazgo'),
+(8, 'Trabajo Terminal I'),
+(7, 'Electiva'),
+(8, 'Trabajo Terminal II');
 
 
-
-
-
-
-
-SELECT * FROM personal;
-
-SELECT * FROM usuario;
-
-SELECT * FROM restablecer_contrasena;
-
-SELECT * FROM estudiante;
-
-
-
-SELECT * FROM v_lista_estudiantes
-ORDER BY nombre ASC
-OFFSET 100
-ROWS FETCH NEXT 200 ROWS ONLY;
-
-SELECT * FROM v_list_est_expe_estudiantil;
-
-SELECT * FROM v_docuemntos_expediente;
-
-SELECT * FROM v_lista_estudiantes ORDER BY nombre ASC 
-OFFSET (( 1 - 1 )* 100 ) 
-ROWS FETCH NEXT ( 1 * 100 ) ROWS ONLY
-
-
-SELECT TOP 1 
-	nombre,
-	num_boleta,
-	curp,
-	estatus,
-	foto_est,
-	turno,
-	nom_periodo,
-	nom_grupo,
-	nom_carrera,
-	total_creditos,
-	nombre_plan,
-	porcentaje_carrera,
-	promedio
-FROM
-v_constancia_estudios_datos_est
-WHERE num_boleta = 2029300476
-ORDER BY nom_periodo_num, nom_grupo DESC;
-
-
-SELECT nombre_semestre,
-		vigencia
-FROM v_constancia_estudios_semestre_activo
-WHERE estado = 1;
+INSERT INTO uni_apren_plan_per_car_grup (id_uni_apren, id_plan, id_periodo, id_carrera, id_grupo)
+VALUES
+(1, 1, 1, 1, 1),
+(2, 1, 1, 1, 1),
+(3, 1, 1, 1, 1),
+(4, 1, 1, 1, 1),
+(5, 1, 1, 1, 1),
+(6, 1, 1, 1, 1),
+(7, 1, 1, 1, 1),
+(8, 1, 1, 1, 1),
+(9, 1, 1, 1, 1),
+(10, 1, 1, 1, 1),
+(11, 1, 1, 1, 1),
+(12, 1, 1, 1, 1),
+(13, 1, 1, 1, 1),
+(14, 1, 1, 1, 1),
+(15, 1, 1, 1, 1),
+(16, 1, 1, 1, 1),
+(17, 1, 1, 1, 1),
+(18, 1, 1, 1, 1),
+(19, 1, 1, 1, 1),
+(20, 1, 1, 1, 1),
+(21, 1, 1, 1, 1),
+(22, 1, 1, 1, 1),
+(23, 1, 1, 1, 1),
+(24, 1, 1, 1, 1),
+(25, 1, 1, 1, 1),
+(26, 1, 1, 1, 1),
+(27, 1, 1, 1, 1),
+(28, 1, 1, 1, 1),
+(29, 1, 1, 1, 1),
+(30, 1, 1, 1, 1),
+(31, 1, 1, 1, 1),
+(32, 1, 1, 1, 1),
+(33, 1, 1, 1, 1),
+(34, 1, 1, 1, 1),
+(35, 1, 1, 1, 1),
+(36, 1, 1, 1, 1),
+(37, 1, 1, 1, 1),
+(38, 1, 1, 1, 1),
+(39, 1, 1, 1, 1),
+(40, 1, 1, 1, 1),
+(41, 1, 1, 1, 1),
+(42, 1, 1, 1, 1),
+(43, 1, 1, 1, 1),
+(44, 1, 1, 1, 1),
+(45, 1, 1, 1, 1),
+(46, 1, 1, 1, 1),
+(47, 1, 1, 1, 1);

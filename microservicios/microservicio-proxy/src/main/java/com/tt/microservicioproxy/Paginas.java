@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tt.microservicioproxy.JsonAjax.AjaxArrayMasivaEstu;
+import com.tt.microservicioproxy.JsonAjax.AjaxConstanciaEstudios;
+import com.tt.microservicioproxy.JsonAjax.AjaxDocFirSAT;
 import com.tt.microservicioproxy.JsonAjax.AjaxExcelCargaEstuMas;
 import com.tt.microservicioproxy.JsonAjax.AjaxExpedienteEst;
 import com.tt.microservicioproxy.JsonAjax.AjaxListaEstudiante;
@@ -19,6 +21,7 @@ import com.tt.microservicioproxy.JsonAjax.RestablecerSolicitud;
 import com.tt.microservicioproxy.JsonAjax.ValidarRestablecerSolicitud;
 import com.tt.microservicioproxy.servicios.BloquearInyecciones;
 import com.tt.microservicioproxy.servicios.ConectarMicroPAAE;
+import com.tt.microservicioproxy.servicios.Estudiante;
 import com.tt.microservicioproxy.servicios.Sesiones;
 
 import jakarta.validation.Valid;
@@ -34,6 +37,9 @@ public class Paginas {
 
     @Autowired
     private ConectarMicroPAAE paae;
+
+    @Autowired
+    private Estudiante conexEstu;
 
     //VALIDACION CORREOS Y RESGITRO PARCIAL DESDE VENTANAS ESTUDIANTE
     @PostMapping("/registroEstudiante")
@@ -123,5 +129,41 @@ public class Paginas {
     public ResponseEntity getExpedienteEstudiante(@Valid @RequestBody AjaxExpedienteEst estu)
     {
         return paae.getExpedienteEstudiante(estu);
+    }
+
+
+
+
+
+
+    //MANEJO DE PUNTOS DE ACCESO EN ESTUDIANTES
+    @PostMapping("/estudiante/getConstanciaEstudios")
+    public ResponseEntity getConstanciaEstudios(@Valid @RequestBody AjaxConstanciaEstudios estu)
+    {
+        return conexEstu.getConstanciaEstudios(estu);
+    }
+
+    @PostMapping("/estudiante/getConstanciaInscripcion")
+    public ResponseEntity getConstanciaInscripcion(@Valid @RequestBody AjaxConstanciaEstudios estu)
+    {
+        return conexEstu.getConstanciaInscripcion(estu);
+    }
+
+    @PostMapping("/estudiante/getConstanciaBecas")
+    public ResponseEntity getConstanciaBecas(@Valid @RequestBody AjaxConstanciaEstudios estu)
+    {
+        return conexEstu.getConstanciaBecas(estu);
+    }
+
+    @PostMapping("/estudiante/getConstanciaServicio")
+    public ResponseEntity getConstanciaServicio(@Valid @RequestBody AjaxConstanciaEstudios estu)
+    {
+        return conexEstu.getConstanciaServicio(estu);
+    }
+
+    @PostMapping("/estudiante/getVerificarConstancia")
+    public ResponseEntity getVerificarConstancia(@Valid @RequestBody AjaxDocFirSAT estu)
+    {
+        return conexEstu.getVerificaDocumento(estu);
     }
 }
