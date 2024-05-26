@@ -13,6 +13,7 @@ import ExpedienteEstudiantil from "./components/ExpedienteEstudiantil";
 import AltaEstValEdicion from "./components/AltaEstValEdicion";
 import ExpendienteEdicion from "./components/ExpedienteEdicion";
 import Bitacora from "./components/Bitacora";
+import ValidarConstancia from "./components/ValidarConstancia";
 
 let App = () => {
   return (
@@ -31,32 +32,14 @@ let Inicio = () => {
       <Route path="/restablecer" element={<RestablecerContrasena/>} />
       <Route path="/registroEstudiante" element={<RegistroEstudiante/>} />
       <Route path="/validarToken" element={<ValidarToken/>} />
-
+      <Route path="/validarConstancia" element={<ValidarConstancia/>} />
       <Route path="/administrador/altaEstudiante" element={<AltaEstudiante/>} />
       <Route path="/administrador/altaEstudianteValidacion" element={<AltaEstudianteValidacion/>} />
       <Route path="/administrador/altaEstValEdicion" element={<AltaEstValEdicion/>} />
       <Route path="/administrador/expedienteEstudiantil" element={<ExpedienteEstudiantil/>} />
       <Route path="/administrador/expEstEdicion" element={<ExpendienteEdicion/>} />
-
       <Route path="/auditor/bitacora" element={<Bitacora/>} />
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      <Route path="/otro" element={<RegistroUsuario/>} />
-      
-      
+      <Route path="/otro" element={<RegistroUsuario/>} />     
       <Route path="/estudiante/solicitudes" element={<Solicitudes />} />
     </Routes>
   );

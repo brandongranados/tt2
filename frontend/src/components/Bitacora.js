@@ -1,185 +1,76 @@
-import { useState } from "react";
+import React, { useEffect, useState } from 'react';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import DownloadIcon from '@mui/icons-material/Download';
 
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableContainer from "@mui/material/TableContainer";
-import Typography from "@mui/material/Typography";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TablePagination from "@mui/material/TablePagination";
-import Checkbox from "@mui/material/Checkbox";
-import TableBody from "@mui/material/TableBody";
-import CreateIcon from '@mui/icons-material/Create';
-import DeleteIcon from '@mui/icons-material/Delete';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import Navegacion from './Navegacion';
 
-import Cargando from "./Cargando";
-import Navegacion from "./Navegacion";
-import { Box, Button } from "@mui/material";
+const Bitacora = () => {
+    const [datos, setDatos] = useState([]);
 
-let Bitacora = () => {
+    useEffect(() => {
+        // Aquí puedes hacer una llamada para obtener los datos de la bitácora
+        setDatos([
+            // Ejemplo de datos
+            { id: 1, tipo: 'Solicitud', fecha: '2023-05-01', a: '2024-05-01' },
+            { id: 2, tipo: 'Cambio', fecha: '2023-05-01', a: '2024-05-01' },
+        ]);
+    }, []);
 
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-
-    const [datos, setDatos] = useState([{
-            nombre: "Brandon Antonio",
-            apePaterno: "Casiano",
-            apeMaterno: "Granados",
-            curp : "CAGB980704HMCSRR07",
-            sexo : "HOMBRE",
-            nacimiento : "1998-07-04",
-            boleta: 201930043476,
-            carrera: "uno",
-            semestre: "uno"
-    }]);
-
-    let handleChangePage = (event, newPage) => {
-        setPage(newPage);
+    const handleDownload = (tipo) => {
+        // Lógica para manejar la descarga de las bitácoras
+        console.log(`Descargando bitácora de ${tipo}`);
     };
 
-    let handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(10);
-        setPage(0);
-    };
-
-    let editarExpediente = (iterador) => {
-        
-    };
-
-    return(
+    return (
         <>
-            <Cargando />
             <Navegacion />
-            <Grid container>
-                <Card sx={{width:"100%"}}>
-                    <CardContent>
-                        <Grid item xs={12}>
-                            <Typography
-                            variant="h4" 
-                            component={"p"} 
-                            fontWeight={"bold"}>
-                                Bit&aacute;cora
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Paper>
-                                <TableContainer>
-                                    <Table stickyHeader>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell/>
-                                                <TableCell>
-                                                    <Typography
-                                                    fontWeight={"bold"}
-                                                    textAlign={"center"}>
-                                                        Estudiante 
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography
-                                                    fontWeight={"bold"}
-                                                    textAlign={"center"}>
-                                                        Fecha
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography
-                                                    fontWeight={"bold"}
-                                                    textAlign={"center"}>
-                                                        Hora
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography
-                                                    fontWeight={"bold"}
-                                                    textAlign={"center"}>
-                                                        Editor
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell/>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {
-                                                datos.map( iterador => {
-                                                    return(
-                                                        <TableRow key={iterador.boleta}>
-                                                            <TableCell>
-                                                                <Checkbox
-                                                                sx={{
-                                                                    color: "black",
-                                                                    '&.Mui-checked': {
-                                                                    color: "black",
-                                                                    },
-                                                                }} />
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Typography
-                                                                textAlign={"center"}>
-                                                                    {iterador.apePaterno+" "+iterador.apeMaterno+" "+iterador.nombre}
-                                                                </Typography>
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Typography
-                                                                textAlign={"center"}>
-                                                                    {iterador.boleta}
-                                                                </Typography>
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Typography
-                                                                textAlign={"center"}>
-                                                                    {iterador.carrera}
-                                                                </Typography>
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Typography
-                                                                textAlign={"center"}>
-                                                                    {iterador.semestre}
-                                                                </Typography>
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Box sx={{
-                                                                    display:"flex",
-                                                                    justifyContent:"center"
-                                                                }}>
-                                                                    <Button onClick={ editarExpediente(iterador) }>
-                                                                        <PictureAsPdfIcon
-                                                                        sx={{color:"black", cursor:"pointer"}}/>
-                                                                    </Button>
-                                                                    <Button>
-                                                                        <DeleteIcon
-                                                                        sx={{color:"black", cursor:"pointer"}} />
-                                                                    </Button>
-                                                                </Box>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    )
-                                                } )
-                                            }
-                                        </TableBody>
-                                    </Table>
-                                    <TablePagination
-                                        rowsPerPageOptions={[10]}
-                                        component="div"
-                                        count={datos.length}
-                                        rowsPerPage={rowsPerPage}
-                                        page={page}
-                                        onPageChange={handleChangePage}
-                                        onRowsPerPageChange={handleChangeRowsPerPage}
-                                    />
-                                </TableContainer>
+            <Grid container spacing={3} sx={{ marginTop: 2 }}>
+                <Grid item xs={12}>
+                    <Typography variant="h4" component="h1" fontWeight="bold" textAlign="center">
+                        Bitácoras
+                    </Typography>
+                    <Box display="flex" justifyContent="center" mt={2}>
+                        <TextField
+                            label="DE"
+                            type="date"
+                            defaultValue="2023-05-01"
+                            InputLabelProps={{ shrink: true }}
+                            sx={{ marginRight: 2 }}
+                        />
+                        <TextField
+                            label="A"
+                            type="date"
+                            defaultValue="2024-05-01"
+                            InputLabelProps={{ shrink: true }}
+                        />
+                    </Box>
+                    {datos.map((dato) => (
+                        <Box key={dato.id} mt={3}>
+                            <Paper elevation={3} sx={{ padding: 2 }}>
+                                <Button
+                                    variant="outlined"
+                                    endIcon={<DownloadIcon />}
+                                    sx={{
+                                        width: '100%',
+                                        justifyContent: 'space-between',
+                                        padding: 2,
+                                    }}
+                                    onClick={() => handleDownload(dato.tipo)}
+                                >
+                                    Bitácora de {dato.tipo}
+                                </Button>
                             </Paper>
-                        </Grid>
-                    </CardContent>
-                </Card>
+                        </Box>
+                    ))}
+                </Grid>
             </Grid>
         </>
-    )
+    );
 };
 
 export default Bitacora;
