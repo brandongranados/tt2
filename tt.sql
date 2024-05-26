@@ -1846,7 +1846,7 @@ CREATE PROCEDURE sp_registrar_estudiante
 
 		BEGIN TRY
 
-			IF EXISTS( SELECT * FROM estudiante WHERE num_boleta = @num_boleta )
+			IF EXISTS( SELECT * FROM estudiante WHERE num_boleta = @num_boleta AND LEN(correo_electronico) <= 0 )
 			BEGIN
 				UPDATE estudiante
 					SET correo_electronico = @correo_electronico
@@ -1856,7 +1856,7 @@ CREATE PROCEDURE sp_registrar_estudiante
 					FROM estudiante 
 				WHERE num_boleta = @num_boleta;
 			END
-			ELSE 
+			ELSE IF NOT EXISTS ( SELECT * FROM estudiante WHERE num_boleta = @num_boleta )
 			BEGIN
 				INSERT INTO estudiante
 				(
@@ -1872,6 +1872,11 @@ CREATE PROCEDURE sp_registrar_estudiante
 				SET @estudiante = SCOPE_IDENTITY();
 
 			END
+			ELSE
+			BEGIN
+                SET @bool = 4;
+			    RETURN;
+            END
 
 			INSERT INTO usuario
 			(

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tt.microservicioexcel.Ajax.AjaxExcelCargaEstuMas;
 import com.tt.microservicioexcel.servicios.CargaMasivaEstu;
 import com.tt.microservicioexcel.servicios.DescargaEjemplos;
+import com.tt.microservicioexcel.servicios.ReinscripcionMasiva;
 
 @RestController
 public class Paginas {
@@ -16,6 +17,8 @@ public class Paginas {
     private DescargaEjemplos ejemplos;
     @Autowired
     private CargaMasivaEstu estudiante;
+    @Autowired
+    private ReinscripcionMasiva reinscribe;
     
     @PostMapping("/documentosExcel/ejemCargaMasivaEstu")
     public ResponseEntity getEjemCargaMasivaEstu()
@@ -27,5 +30,11 @@ public class Paginas {
     public ResponseEntity setCargaMasivaEstudiantes(@RequestBody AjaxExcelCargaEstuMas estu)
     {
         return estudiante.setCargaMasivaEstu(estu);
+    }
+
+    @PostMapping("/documentosExcel/reinscripcionMasivaEstu")
+    public ResponseEntity setReinscripcionMasivaEstudiantes(@RequestBody AjaxExcelCargaEstuMas estu)
+    {
+        return reinscribe.setReinscribeMasivaEstu(estu);
     }
 }

@@ -22,6 +22,7 @@ import com.tt.microservicioproxy.JsonAjax.ValidarRestablecerSolicitud;
 import com.tt.microservicioproxy.servicios.BloquearInyecciones;
 import com.tt.microservicioproxy.servicios.ConectarMicroPAAE;
 import com.tt.microservicioproxy.servicios.Estudiante;
+import com.tt.microservicioproxy.servicios.LecturaExcel;
 import com.tt.microservicioproxy.servicios.Sesiones;
 
 import jakarta.validation.Valid;
@@ -37,6 +38,9 @@ public class Paginas {
 
     @Autowired
     private ConectarMicroPAAE paae;
+
+    @Autowired
+    private LecturaExcel excel;
 
     @Autowired
     private Estudiante conexEstu;
@@ -82,19 +86,6 @@ public class Paginas {
 
 
     //MANEJO DE DATOS PARA SESIONES DE PAAE
-
-    @PostMapping("/personalGestionEscolar/ejemploCargaMasiva")
-    public ResponseEntity getEjemploCargaMasiva()
-    {
-        return paae.getEjemploCargaMasiva();
-    }
-
-    @PostMapping("/personalGestionEscolar/cargaMasivaEstudiantes")
-    public ResponseEntity setCargaMasivaEstudiantes(@Valid @RequestBody AjaxExcelCargaEstuMas estu)
-    {
-        return paae.setCargaMasivaEstudiantes(estu);
-    }
-
     @PostMapping("/personalGestionEscolar/altaMasivaEstudiantes")
     public ResponseEntity setEstudiantes(@Valid @RequestBody AjaxArrayMasivaEstu estu)
     {
@@ -166,4 +157,35 @@ public class Paginas {
     {
         return conexEstu.getVerificaDocumento(estu);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    //PUNTOS DE ACCESO CON LECTURA DE EXCEL
+    @PostMapping("/personalGestionEscolar/ejemploCargaMasiva")
+    public ResponseEntity getEjemploCargaMasiva()
+    {
+        return excel.getEjemploCargaMasiva();
+    }
+
+    @PostMapping("/personalGestionEscolar/cargaMasivaEstudiantes")
+    public ResponseEntity setCargaMasivaEstudiantes(@Valid @RequestBody AjaxExcelCargaEstuMas estu)
+    {
+        return excel.setCargaMasivaEstudiantes(estu);
+    }
+
+    @PostMapping("/personalGestionEscolar/reinscripcionMasivaEstudiantes")
+    public ResponseEntity setReinscripcionMasivaEstudiantes(@Valid @RequestBody AjaxExcelCargaEstuMas estu)
+    {
+        return excel.setReinscripcionMasivaEstudiantes(estu);
+    }
+
 }
