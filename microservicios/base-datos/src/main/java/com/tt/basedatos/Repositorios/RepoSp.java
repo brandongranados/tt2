@@ -54,7 +54,8 @@ public interface RepoSp extends CrudRepository<ComodinVistas, Integer> {
     public Integer spRegistraRestableceContrasena
     (
         @Param("usuario") String usuario,
-        @Param("token") String token
+        @Param("token") String token,
+        @Param("contrasena") String contrasena
     );
 
 

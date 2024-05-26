@@ -6,15 +6,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tt.basedatos.JsonAjax.AjaxExpedienteEst;
+import com.tt.basedatos.JsonAjax.AjaxListaEstudiante;
 import com.tt.basedatos.JsonAjax.AltaEstuAjaxPAAEMasiva;
-import com.tt.basedatos.JsonAjax.AltaEstudianteAjaxPAAE;
-import com.tt.basedatos.JsonAjax.BajaEstudiantePAAE;
-import com.tt.basedatos.JsonAjax.EdicionEstudiantePAAE;
+import com.tt.basedatos.JsonAjax.BajaEstudiantePAAEMasiva;
+import com.tt.basedatos.JsonAjax.EdicionEstudiantePAAEMasivo;
 import com.tt.basedatos.JsonAjax.InicioSesionAjax;
-import com.tt.basedatos.JsonAjax.MapMateriaGrupEstuPAAE;
+import com.tt.basedatos.JsonAjax.MapMateriaGrupEstuPAAEMasiva;
 import com.tt.basedatos.JsonAjax.RegistroEstuAjax;
 import com.tt.basedatos.JsonAjax.Restablecer;
+import com.tt.basedatos.JsonAjax.ValidaRestablecer;
 import com.tt.basedatos.JsonAjax.ValidaTokenRegEstAjax;
+import com.tt.basedatos.servicios.Estudiante;
 import com.tt.basedatos.servicios.Paae;
 import com.tt.basedatos.servicios.Sesiones;
 
@@ -25,6 +28,8 @@ public class Paginas {
     private Sesiones sesion;
     @Autowired
     private Paae paae;
+    @Autowired
+    private Estudiante microEstu;
     
     //SESIONES
     @PostMapping("/datosInicioSesion")
@@ -69,7 +74,7 @@ public class Paginas {
     }
 
     @PostMapping("/validaRestablecer")
-    public ResponseEntity validaRestablecer(@RequestBody Restablecer datos)
+    public ResponseEntity validaRestablecer(@RequestBody ValidaRestablecer datos)
     {
         return sesion.validaRestablecer(datos);
     }
@@ -80,34 +85,63 @@ public class Paginas {
 
 
     //PAAE
-    @PostMapping("/personalGestionEscolar/setMapMatGrupEst")
-    public ResponseEntity setMateriaGrupoEstudiante(@RequestBody MapMateriaGrupEstuPAAE estudiante)
+    @PostMapping("/personalGestionEscolar/setMapMatGrupEstMasiva")
+    public ResponseEntity setMateriaGrupoEstudiante(@RequestBody MapMateriaGrupEstuPAAEMasiva estudiante)
     {
-        return paae.setMapeoMateriaGrupoEstudiante(estudiante);
+        return paae.setMapeoMateriaGrupoEstudianteMasiva(estudiante);
     }
 
-    @PostMapping("/personalGestionEscolar/setNuevosEstudiantes")
+    @PostMapping("/personalGestionEscolar/setNuevoEstudianteMasiva")
     public ResponseEntity setEstudiante(@RequestBody AltaEstuAjaxPAAEMasiva estudiante)
     {
         return paae.setDatosEstudianteMasiva(estudiante);
     }
 
-    @PostMapping("/personalGestionEscolar/setNuevoEstudiante")
-    public ResponseEntity setEstudiantes(@RequestBody AltaEstudianteAjaxPAAE estudiante)
+    @PostMapping("/personalGestionEscolar/setActulizaEstudianteMasiva")
+    public ResponseEntity setDatosEstudianteEdita(@RequestBody EdicionEstudiantePAAEMasivo estudiante)
     {
-        return paae.setDatosEstudiante(estudiante);
+        return paae.setEditaEstudianteMasiva(estudiante);
+    }
+
+    @PostMapping("/personalGestionEscolar/setBajaEstudianteMasiva")
+    public ResponseEntity setBajaTemporalDEfinitivaEstudiante(@RequestBody BajaEstudiantePAAEMasiva estudiante)
+    {
+        return paae.setEstatusBajaEstudianteMasiva(estudiante);
+    }
+
+    @PostMapping("/personalGestionEscolar/getListaEstudiantes")
+    public ResponseEntity getListaEstudiantes(@RequestBody AjaxListaEstudiante estu)
+    {
+        return paae.getListaEstudiante(estu);
+    }
+
+    @PostMapping("/personalGestionEscolar/getExpedienteDatos")
+    public ResponseEntity getExpedienteDatos(@RequestBody AjaxExpedienteEst estu)
+    {
+        return paae.getExpedienteEstuDatos(estu);
+    }
+
+    @PostMapping("/personalGestionEscolar/getExpedienteDocs")
+    public ResponseEntity getExpedienteDoc(@RequestBody AjaxExpedienteEst estu)
+    {
+        return paae.getExpedienteEstuDocs(estu);
     }
 
 
-    @PostMapping("/personalGestionEscolar/setActulizaEstudiante")
-    public ResponseEntity setDatosEstudianteEdita(@RequestBody EdicionEstudiantePAAE estudiante)
+
+
+
+
+    //ESTUDIANTE
+    @PostMapping("/estudiante/getDatosConstanciaEstudios")
+    public ResponseEntity getDatosConstanciaEstudios(@RequestBody AjaxExpedienteEst estu)
     {
-        return paae.setEditaEstudiante(estudiante);
+        return microEstu.getDatosConstaciaEstudios(estu.getBoleta());
     }
 
-    @PostMapping("/personalGestionEscolar/setBajaEstudiante")
-    public ResponseEntity setBajaTemporalDEfinitivaEstudiante(@RequestBody BajaEstudiantePAAE estudiante)
+    @PostMapping("/estudiante/getSemestreActivo")
+    public ResponseEntity getSemestreActivo()
     {
-        return paae.setEstatusBajaEstudiante(estudiante);
+        return microEstu.getDatosSemestreActivo();
     }
 }

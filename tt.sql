@@ -17,7 +17,8 @@ CREATE TABLE estudiante
 	sexo SMALLINT NOT NULL DEFAULT 1,
 	fecha_nacimiento DATE NOT NULL DEFAULT GETDATE(),
 	estatus SMALLINT DEFAULT 0,
-	turno SMALLINT DEFAULT 0
+	turno SMALLINT DEFAULT 0,
+	foto_est VARBINARY(MAX) DEFAULT NULL
 );
 
 CREATE TABLE carrera
@@ -54,21 +55,6 @@ CREATE TABLE creditos
 	cant_creditos FLOAT NOT NULL DEFAULT 0
 );
 
-CREATE TABLE bitacora_gestion
-(
-	id_bitacora BIGINT PRIMARY KEY IDENTITY,
-	fecha_resgistro_bd DATETIME NOT NULL DEFAULT GETDATE(),
-	fecha_solicitud DATETIME NOT NULL DEFAULT GETDATE(),
-	fecha_entrega DATETIME NOT NULL DEFAULT GETDATE(),
-	estado SMALLINT NOT NULL DEFAULT 0
-);
-
-CREATE TABLE tipo_solicitud
-(
-	id_tipo_solicitud BIGINT PRIMARY KEY IDENTITY,
-	nombre_solicitud VARCHAR(MAX) NOT NULL DEFAULT ''
-);
-
 CREATE TABLE usuario
 (
 	id_usuario BIGINT PRIMARY KEY IDENTITY,
@@ -99,7 +85,8 @@ CREATE TABLE personal
 	id_personal BIGINT PRIMARY KEY IDENTITY,
 	nombres VARCHAR(MAX) NOT NULL DEFAULT '',
 	apellido_paterno VARCHAR(MAX) NOT NULL DEFAULT '',
-	apellido_materno VARCHAR(MAX) NOT NULL DEFAULT ''
+	apellido_materno VARCHAR(MAX) NOT NULL DEFAULT '',
+	correo_electronico VARCHAR(MAX) NOT NULL DEFAULT ''
 );
 
 CREATE TABLE semestre_activo
@@ -228,8 +215,38 @@ CREATE TABLE restablecer_contrasena
 	fecha_solicitud DATETIME NOT NULL DEFAULT GETDATE(),
 	fecha_expiracion DATETIME NOT NULL DEFAULT GETDATE(),
 	token VARCHAR(MAX) NOT NULL DEFAULT '',
+	contrasena VARCHAR(MAX) NOT NULL DEFAULT '',
 	FOREIGN KEY(id_usuario) REFERENCES usuario(id_usuario)
 		ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE est_tip_sol_bit_gestion
+(
+	id_est_tip_sol_bit_gestion BIGINT PRIMARY KEY IDENTITY,
+	id_est BIGINT,
+	id_tipo_solicitud BIGINT,
+	id_bitacora BIGINT,
+	FOREIGN KEY(id_est) REFERENCES estudiante(id_est)
+		ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(id_tipo_solicitud) REFERENCES tipo_solicitud(id_tipo_solicitud)
+		ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(id_bitacora) REFERENCES bitacora_gestion(id_bitacora)
+		ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE bitacora_gestion
+(
+	id_bitacora BIGINT PRIMARY KEY IDENTITY,
+	fecha_resgistro_bd DATETIME NOT NULL DEFAULT GETDATE(),
+	fecha_solicitud DATETIME NOT NULL DEFAULT GETDATE(),
+	fecha_entrega DATETIME NOT NULL DEFAULT GETDATE(),
+	estado SMALLINT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE tipo_solicitud
+(
+	id_tipo_solicitud BIGINT PRIMARY KEY IDENTITY,
+	nombre_solicitud VARCHAR(MAX) NOT NULL DEFAULT ''
 );
 
 /* BITACORAS TABLAS */
@@ -353,6 +370,7 @@ CREATE TABLE bit_personal
 	nombres VARCHAR(MAX),
 	apellido_paterno VARCHAR(MAX),
 	apellido_materno VARCHAR(MAX),
+	correo_electronico VARCHAR(MAX),
 
 	id_user_ejecuta BIGINT,
     fecha_ejecuta DATETIME DEFAULT GETDATE(),
@@ -469,7 +487,8 @@ CREATE TABLE bit_estudiante
 	sexo SMALLINT,
 	fecha_nacimiento DATE,
 	estatus SMALLINT,
-	turno SMALLINT DEFAULT 0,
+	turno SMALLINT,
+	foto_est VARBINARY(MAX),
 
 	id_user_ejecuta BIGINT,
     fecha_ejecuta DATETIME DEFAULT GETDATE(),
@@ -496,6 +515,8 @@ CREATE TABLE bit_estudiante_situacion_academica
 /************************************************************************************/
 /************************************************************************************/
 /************************************************************************************/
+
+
 
 CREATE TRIGGER d_estudiante_situacion_academica
 	ON estudiante_situacion_academica
@@ -1010,6 +1031,7 @@ CREATE TRIGGER d_personal
 				nombres,
 				apellido_paterno,
 				apellido_materno,
+				correo_electronico,
 
 				id_user_ejecuta,
 				tip_ejec
@@ -1018,6 +1040,7 @@ CREATE TRIGGER d_personal
                     deleted.nombres,
 					deleted.apellido_paterno,
 					deleted.apellido_materno,
+					deleted.correo_electronico,
 
                     ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
                     @tipo AS tipo
@@ -1337,6 +1360,7 @@ CREATE TRIGGER d_estudiante
 				fecha_nacimiento,
 				estatus,
 				turno,
+				foto_est,
 
 				id_user_ejecuta,
 				tip_ejec
@@ -1354,6 +1378,7 @@ CREATE TRIGGER d_estudiante
                     deleted.fecha_nacimiento,
 					deleted.estatus,
 					deleted.turno,
+					deleted.foto_est ,
                     ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
                     @tipo AS tipo
             FROM deleted
@@ -1486,7 +1511,12 @@ CREATE TRIGGER d_rol_usuario_est
 
 
 CREATE VIEW v_inicio_sesion AS
-	SELECT u.contrasena,
+	SELECT DISTINCT
+		contrasena,
+		nombre_usuario,
+		nombre_rol
+	FROM (
+		SELECT u.contrasena,
 			u.nombre_usuario,
 			r.nombre_rol
 		FROM rol_usuario_est rue
@@ -1495,23 +1525,47 @@ CREATE VIEW v_inicio_sesion AS
 			INNER JOIN roles r
 				ON rue.id_rol = r.id_rol
 			INNER JOIN usuario u
-				ON rue.id_usuario = u.id_usuario;
+				ON rue.id_usuario = u.id_usuario
+	UNION 
+
+	SELECT u.contrasena,
+			u.nombre_usuario, 
+			r.nombre_rol
+		FROM rol_personal_usuario rpu
+			INNER JOIN personal p
+				ON rpu.id_personal = p.id_personal
+			INNER JOIN usuario u 
+				ON u.id_usuario = rpu.id_usuario
+			INNER JOIN roles r
+				ON rPU.id_rol = r.id_rol
+	) AS inicio_sesion;
 
 
 CREATE VIEW v_obtener_correos AS
-	SELECT u.nombre_usuario,
+	SELECT DISTINCT
+		nombre_usuario,
+		correo_electronico
+	FROM (
+		SELECT u.nombre_usuario,
 			e.correo_electronico
 		FROM rol_usuario_est rue
 			INNER JOIN estudiante e
 				ON rue.id_est = e.id_est
-			INNER JOIN roles r
-				ON rue.id_rol = r.id_rol
 			INNER JOIN usuario u
-				ON rue.id_usuario = u.id_usuario;
+				ON rue.id_usuario = u.id_usuario
+	UNION 
+
+	SELECT u.nombre_usuario,
+			p.correo_electronico
+		FROM rol_personal_usuario rpu
+			INNER JOIN personal p
+				ON rpu.id_personal = p.id_personal
+			INNER JOIN usuario u 
+				ON u.id_usuario = rpu.id_usuario
+	) AS correos;
 
 
-
-CREATE VIEW v_list_est_expe_estudiantil AS
+CREATE VIEW v_lista_estudiantes AS
 	SELECT DISTINCT 
 		CONCAT(e.nombres, ' ', 
 				e.apellido_paterno, ' ',
@@ -1531,6 +1585,208 @@ CREATE VIEW v_list_est_expe_estudiantil AS
 		ON uappcg.id_carrera = c.id_carrera
 	INNER JOIN periodo p
 		ON uappcg.id_periodo = p.id_periodo;
+
+
+CREATE VIEW v_list_est_expe_estudiantil AS
+	SELECT DISTINCT 
+		CONCAT(e.nombres, ' ', 
+				e.apellido_paterno, ' ',
+				e.apellido_materno) AS nombre,
+		e.curp,
+		( CASE 
+			WHEN e.sexo = 0 THEN 'M'
+			WHEN e.sexo = 1 THEN 'F'
+		  	ELSE 'M'
+		  END
+		) AS sexo,
+		e.fecha_nacimiento,
+		e.correo_electronico,
+		e.num_boleta,
+		c.nom_carrera,
+		c.nom_carrera_num,
+		p.nom_periodo,
+		p.nom_periodo_num
+	FROM estudiante_situacion_academica esa
+	INNER JOIN estudiante e
+		ON esa.id_est = e.id_est
+	INNER JOIN uni_apren_plan_per_car_grup uappcg
+		ON esa.id_uni_apren_plan_per_car_grup = 
+			uappcg.id_uni_apren_plan_per_car_grup
+	INNER JOIN carrera c
+		ON uappcg.id_carrera = c.id_carrera
+	INNER JOIN periodo p
+		ON uappcg.id_periodo = p.id_periodo;
+
+
+CREATE VIEW v_docuemntos_expediente AS
+	SELECT DISTINCT
+		e.num_boleta,
+		t.nombre_solicitud,
+		ee.ruta
+	FROM estudiante e
+	INNER JOIN expediente_est ee
+		ON e.id_est = ee.id_est
+	INNER JOIN tipo_solicitud t
+		ON ee.id_tipo_solicitud =
+			t.id_tipo_solicitud;
+
+
+CREATE VIEW v_constancia_estudios_datos_est AS
+	SELECT DISTINCT
+		CONCAT(e.apellido_paterno, ' ',
+			e.apellido_materno, ' ',
+			e.nombres) AS nombre,
+			e.num_boleta,
+			e.curp,
+			(
+			CASE 
+				WHEN e.estatus = 1 THEN 'Alumno Regular'
+				WHEN e.estatus = 2 THEN 'Alumno Irregular'
+				ELSE 'Alumno Irregular'
+			END
+			) estatus,
+			e.foto_est,
+			(
+			CASE 
+				WHEN e.turno = 1 THEN 'matutino'
+				WHEN e.turno = 2 THEN 'verpertino'
+				WHEN e.turno = 3 THEN 'mixto'
+				ELSE 'mixto'
+			END
+			) AS turno,
+			p.nom_periodo,
+			P.nom_periodo_num,
+			g.nom_grupo,
+			CONCAT( 'del programa académico de ',
+				c.nom_carrera
+				) AS nom_carrera,
+			c.total_creditos,
+			pl.nombre_plan,
+			e.porcentaje_carrera,
+			e.promedio
+	FROM estudiante e
+		INNER JOIN estudiante_situacion_academica esa
+			ON e.id_est = esa.id_est
+		INNER JOIN uni_apren_plan_per_car_grup uappcg
+			ON uappcg.id_uni_apren_plan_per_car_grup =
+				esa.id_uni_apren_plan_per_car_grup
+		INNER JOIN periodo p
+			ON uappcg.id_periodo = p.id_periodo
+		INNER JOIN grupo g
+			ON uappcg.id_grupo = g.id_grupo
+		INNER JOIN carrera c
+			ON uappcg.id_carrera = c.id_carrera
+		INNER JOIN plan_estudios pl
+			ON pl.id_plan = uappcg.id_plan;
+
+
+CREATE VIEW v_constancia_estudios_semestre_activo AS
+	SELECT nombre_semestre,
+			CONCAT(
+				'cuya vigencia es del ',
+				DAY(fecha_inicio),
+				' ',
+				(
+					CASE 
+						WHEN MONTH(fecha_inicio) = 1 THEN 'enero'
+						WHEN MONTH(fecha_inicio) = 2  THEN 'febrero'
+						WHEN MONTH(fecha_inicio) = 3  THEN 'marzo'
+						WHEN MONTH(fecha_inicio) = 4  THEN 'abril'
+						WHEN MONTH(fecha_inicio) = 5  THEN 'mayo'
+						WHEN MONTH(fecha_inicio) = 6  THEN 'junio'
+						WHEN MONTH(fecha_inicio) = 7  THEN 'julio'
+						WHEN MONTH(fecha_inicio) = 8  THEN 'agosto'
+						WHEN MONTH(fecha_inicio) = 9  THEN 'septiembre'
+						WHEN MONTH(fecha_inicio) = 10  THEN 'octubre'
+						WHEN MONTH(fecha_inicio) = 11  THEN 'noviembre'
+						ELSE 'diciembre'
+					END
+				), ' de ',
+				YEAR(fecha_inicio), ' al ',
+				DAY(fecha_fin),
+				' ',
+				(
+					CASE 
+						WHEN MONTH(fecha_fin) = 1 THEN 'enero'
+						WHEN MONTH(fecha_fin) = 2  THEN 'febrero'
+						WHEN MONTH(fecha_fin) = 3  THEN 'marzo'
+						WHEN MONTH(fecha_fin) = 4  THEN 'abril'
+						WHEN MONTH(fecha_fin) = 5  THEN 'mayo'
+						WHEN MONTH(fecha_fin) = 6  THEN 'junio'
+						WHEN MONTH(fecha_fin) = 7  THEN 'julio'
+						WHEN MONTH(fecha_fin) = 8  THEN 'agosto'
+						WHEN MONTH(fecha_fin) = 9  THEN 'septiembre'
+						WHEN MONTH(fecha_fin) = 10  THEN 'octubre'
+						WHEN MONTH(fecha_fin) = 11  THEN 'noviembre'
+						ELSE 'diciembre'
+					END
+				), ' de ',
+				YEAR(fecha_fin)
+			) AS vigencia,
+			CONCAT(
+				DAY(fecha_inicio),
+				' ',
+				(
+					CASE 
+						WHEN MONTH(fecha_inicio) = 1 THEN 'enero'
+						WHEN MONTH(fecha_inicio) = 2  THEN 'febrero'
+						WHEN MONTH(fecha_inicio) = 3  THEN 'marzo'
+						WHEN MONTH(fecha_inicio) = 4  THEN 'abril'
+						WHEN MONTH(fecha_inicio) = 5  THEN 'mayo'
+						WHEN MONTH(fecha_inicio) = 6  THEN 'junio'
+						WHEN MONTH(fecha_inicio) = 7  THEN 'julio'
+						WHEN MONTH(fecha_inicio) = 8  THEN 'agosto'
+						WHEN MONTH(fecha_inicio) = 9  THEN 'septiembre'
+						WHEN MONTH(fecha_inicio) = 10  THEN 'octubre'
+						WHEN MONTH(fecha_inicio) = 11  THEN 'noviembre'
+						ELSE 'diciembre'
+					END
+				), ' de ',
+				YEAR(fecha_inicio)
+				) AS vigencia_inicio,
+				CONCAT(
+				DAY(fecha_fin),
+				' ',
+				(
+					CASE 
+						WHEN MONTH(fecha_fin) = 1 THEN 'enero'
+						WHEN MONTH(fecha_fin) = 2  THEN 'febrero'
+						WHEN MONTH(fecha_fin) = 3  THEN 'marzo'
+						WHEN MONTH(fecha_fin) = 4  THEN 'abril'
+						WHEN MONTH(fecha_fin) = 5  THEN 'mayo'
+						WHEN MONTH(fecha_fin) = 6  THEN 'junio'
+						WHEN MONTH(fecha_fin) = 7  THEN 'julio'
+						WHEN MONTH(fecha_fin) = 8  THEN 'agosto'
+						WHEN MONTH(fecha_fin) = 9  THEN 'septiembre'
+						WHEN MONTH(fecha_fin) = 10  THEN 'octubre'
+						WHEN MONTH(fecha_fin) = 11  THEN 'noviembre'
+						ELSE 'diciembre'
+					END
+				), ' de ',
+				YEAR(fecha_fin)
+				) AS vigencia_fin,
+				CONCAT(
+					'Ciudad de México a los ',
+					DAY(GETDATE()), ' días de ',
+					(
+					CASE 
+						WHEN MONTH(GETDATE()) = 1 THEN 'Enero'
+						WHEN MONTH(GETDATE()) = 2  THEN 'Febrero'
+						WHEN MONTH(GETDATE()) = 3  THEN 'Marzo'
+						WHEN MONTH(GETDATE()) = 4  THEN 'Abril'
+						WHEN MONTH(GETDATE()) = 5  THEN 'Mayo'
+						WHEN MONTH(GETDATE()) = 6  THEN 'Junio'
+						WHEN MONTH(GETDATE()) = 7  THEN 'Julio'
+						WHEN MONTH(GETDATE()) = 8  THEN 'Agosto'
+						WHEN MONTH(GETDATE()) = 9  THEN 'Septiembre'
+						WHEN MONTH(GETDATE()) = 10  THEN 'Octubre'
+						WHEN MONTH(GETDATE()) = 11  THEN 'Noviembre'
+						ELSE 'Diciembre'
+					END
+				), ' de ', YEAR(GETDATE())
+				) AS fecha_hoy,
+			estado
+	 FROM semestre_activo;
 
 
 /************************************************************************************/
@@ -1590,7 +1846,7 @@ CREATE PROCEDURE sp_registrar_estudiante
 
 		BEGIN TRY
 
-			IF EXISTS( SELECT * FROM estudiante WHERE num_boleta = @num_boleta )
+			IF EXISTS( SELECT * FROM estudiante WHERE num_boleta = @num_boleta AND LEN(correo_electronico) <= 0 )
 			BEGIN
 				UPDATE estudiante
 					SET correo_electronico = @correo_electronico
@@ -1600,7 +1856,7 @@ CREATE PROCEDURE sp_registrar_estudiante
 					FROM estudiante 
 				WHERE num_boleta = @num_boleta;
 			END
-			ELSE 
+			ELSE IF NOT EXISTS ( SELECT * FROM estudiante WHERE num_boleta = @num_boleta )
 			BEGIN
 				INSERT INTO estudiante
 				(
@@ -1616,6 +1872,11 @@ CREATE PROCEDURE sp_registrar_estudiante
 				SET @estudiante = SCOPE_IDENTITY();
 
 			END
+			ELSE
+			BEGIN
+                SET @bool = 4;
+			    RETURN;
+            END
 
 			INSERT INTO usuario
 			(
@@ -1783,6 +2044,7 @@ CREATE PROCEDURE sp_valida_token
 CREATE PROCEDURE sp_registra_restablece_contrasena
 	@usuario VARCHAR(MAX),
 	@token VARCHAR(MAX),
+	@contrasena VARCHAR(MAX),
 	@bool SMALLINT OUTPUT
 	AS BEGIN
 
@@ -1817,7 +2079,8 @@ CREATE PROCEDURE sp_registra_restablece_contrasena
 				id_usuario,
 				fecha_solicitud,
 				fecha_expiracion,
-				token
+				token,
+				contrasena
 			)
 			VALUES
 			(
@@ -1826,8 +2089,11 @@ CREATE PROCEDURE sp_registra_restablece_contrasena
 					WHERE nombre_usuario = @usuario ),
 				@fecha,
 				DATEADD(MINUTE, 30, @fecha),
-				@token
+				@token,
+				@contrasena
 			);
+
+			SET @bool = 1;
 
 		END TRY
 		BEGIN CATCH
@@ -1849,6 +2115,30 @@ CREATE PROCEDURE sp_valida_restablece_contrasena
 
 		DECLARE @fecha_solicitud DATETIME;
 		DECLARE @fecha_expiracion DATETIME;
+
+		/* CREACION DE TABLA TEMPORAL */
+
+		BEGIN TRY
+
+			CREATE TABLE #usuario_sesion
+			(
+				id INTEGER PRIMARY KEY IDENTITY,
+				id_usuario BIGINT
+			);
+
+			INSERT INTO #usuario_sesion
+			( id_usuario )VALUES(NULL);
+
+			SET @bool = 1;
+
+		END TRY
+		BEGIN CATCH
+
+			SET @bool = 6;
+			RETURN;
+
+		END CATCH
+		/* TERMINA CREACION DE TABLA TEMPORAL */
 
 		SELECT TOP 1 @fecha_solicitud = r.fecha_solicitud,
 				@fecha_expiracion = r.fecha_expiracion
@@ -1878,6 +2168,16 @@ CREATE PROCEDURE sp_valida_restablece_contrasena
 		END
 
 		BEGIN TRY
+
+			UPDATE usuario
+				SET contrasena = (
+					SELECT TOP 1 r.contrasena
+					FROM restablecer_contrasena r
+						INNER JOIN usuario u
+							ON r.id_usuario = u.id_usuario
+					WHERE u.nombre_usuario = @usuario
+				)
+			WHERE nombre_usuario = @usuario;
 
 			DELETE FROM restablecer_contrasena
 			WHERE id_restablecer_contrasena IN(
@@ -2462,88 +2762,220 @@ CODIGO DE ERRORES BASE DE DATOS
 
 */
 
-/*
-	PARA ABRIR ARCHIVOS openssl rsa -in hola.key -text
-*/
-
-
 /***********************************************************************/
-
-INSERT INTO roles(nombre_rol)
-VALUES(
-	'ROLE_ESTUDIANTE'
-);
-
+/***********************************************************************/
+/***********************************************************************/
+/***********************************************************************/
+/************************INSERTS OBLLIGATORIOS**************************/
+/***********************************************************************/
+/***********************************************************************/
 /***********************************************************************/
 
 
-SELECT * FROM estudiante;
-
-SELECT * FROM bit_estudiante;
-
-SELECT * FROM usuario;
-
-
-
-DECLARE @bool SMALLINT;
-
-EXEC sp_alta_estudiante
-'CASIANO',
-'GRANADOS',
-'BRANDON ANTONIO',
-'CAGB980704HMCSRR07',
-1,
-'1998-07-04',
-2020300476,
-'MTJhMjRhMmI4YjE1NzE2ZGU1ZGNmZjUzYTdkNjQwODkwNWQwMWI5MmY3MjRjMzc2NTIwY2VkNzg1YTE0MGIzZA==',
-@bool OUTPUT;
-
-SELECT @bool;
 
 
 
 
-/* ALTA DE MATERRIAS, PLANES DE ESTUDIO, PERIODOS,
-	CARRERAS GRUPOS  Y CREDITOS*/
 
-INSERT INTO creditos (cant_creditos)
-VALUES(
-	40
-);
 
-INSERT INTO unidad_aprendizaje
-(
-	id_creditos,
-	nom_uni_apren
-)VALUES
-( 1, 'Desarrollo de sistemas distribuidos' ),
-( 1, 'Big Data' ), ( 1, 'IA' );
 
-INSERT INTO plan_estudios (nombre_plan, nombre_plan_numero )
-VALUES
-( '2009', 2009 ), ( '2020', 2020 );
-
-INSERT INTO periodo ( nom_periodo, nom_periodo_num )
-VALUES ( '1', 1 ), ( '2', 2 ), ( '3', 4 );
-
-INSERT INTO carrera 
+INSERT INTO carrera
 ( nom_carrera, total_creditos, nom_carrera_num )
-VALUES 
-( 'Ingenieria en Sistemas Computacionales', 221, 1 ),
-( 'Ingenieria en Sistemas Computacionales', 231, 1 ),
-( 'Ingenieria en Inteligencia Artificial', 201, 1 ),
-( 'Licenciatura en Ciencia de Datos', 200, 1 );
+VALUES
+( 'Ingenieria en Sistemas Computacionales', 316.0 , 1 ),
+( 'Ingenieria en Sistemas Computacionales', 370.35 , 2 ),
+( 'Ingenieria en Inteligencia Artificial', 385.0 , 3 ),
+( 'Licenciatura en Ciencia de Datos', 200, 4 );
+
+
+INSERT INTO periodo (nom_periodo, nom_periodo_num)
+VALUES ('Semestre 2024/2', 1),
+       ('Semestre 2025/1', 2),
+       ('Semestre 2025/2', 3);
+
+INSERT INTO plan_estudios (nombre_plan, nombre_plan_numero)
+VALUES ('Plan 2009', 1),
+       ('Plan 2020', 2);
+
 
 INSERT INTO grupo (nom_grupo)
-VALUES ( '2CM13' ), ( '2CM3' ), ( '2CI6' ), ( '2LM8' );
+VALUES ('2CM1'),
+       ('2CM2'),
+       ('2CM3'),
+	   ('2CV1'),
+       ('2CV2'),
+       ('2CV3');
 
 
+INSERT INTO creditos ( cant_creditos)
+VALUES
+( 7.5),
+(10.5),
+(4.15),
+(4.45),
+(5.85),
+(4.39),
+(3.0),
+(12.0);
 
-SELECT * FROM estudiante;
+INSERT INTO roles (nombre_rol)
+VALUES ('ESTUDIANTE'),
+       ('ADMIN'),
+       ('PAAE'),
+	   ('AUDITOR');
 
-SELECT * FROM bit_estudiante;
 
-SELECT * FROM grupo;
+INSERT INTO semestre_activo (nombre_semestre, fecha_inicio, fecha_fin, estado)
+VALUES ('2024/2', '2024-01-01', '2024-06-30', 1);
 
 
-SELECT * FROM v_list_est_expe_estudiantil
+INSERT INTO unidad_aprendizaje (id_creditos, nom_uni_apren)
+VALUES
+(1, 'Cálculo'),
+(1, 'Análisis Vectorial'),
+(2, 'Matemáticas Discretas'),
+(1, 'Comunicación Oral y Escrita'),
+(1, 'Fundamentos de Programación'),
+(6, 'Álgebra Lineal'),
+(1, 'Cálculo Aplicado'),
+(2, 'Mecánica y Electromagnetismo'),
+(6, 'Ingeniería, Ética y Sociedad'),
+(1, 'Fundamentos Económicos'),
+(1, 'Algoritmos y Estructuras de Datos'),
+(6, 'Ecuaciones Diferenciales'),
+(1, 'Circuitos Eléctricos'),
+(1, 'Fundamentos de Diseño Digital'),
+(1, 'Bases de Datos'),
+(1, 'Finanzas Empresariales'),
+(1, 'Paradigmas de Programación'),
+(1, 'Análisis y Diseño de Algoritmos'),
+(1, 'Probabilidad y Estadística'),
+(6, 'Matemáticas Avanzadas para la Ingeniería'),
+(1, 'Electrónica Analógica'),
+(1, 'Diseño de Sistemas Digitales'),
+(1, 'Tecnologías para el Desarrollo de Aplicaciones Web'),
+(1, 'Sistemas Operativos'),
+(1, 'Teoría de la Computación'),
+(1, 'Procesamiento Digital de Señales'),
+(1, 'Instrumentación y Control'),
+(1, 'Arquitectura de Computadoras'),
+(1, 'Análisis y Diseño de Sistemas'),
+(1, 'Formulación y Evaluación de Proyectos Informativos'),
+(1, 'Compiladores'),
+(1, 'Redes de Computadoras'),
+(1, 'Sistemas en Chip'),
+(1, 'Optativa A1'),
+(1, 'Optativa B1'),
+(1, 'Métodos Cuantitativos para la toma de desiciónes'),
+(1, 'Ingeniería de Software'),
+(1, 'Inteligencia Artificial'),
+(1, 'Aplicaciones para Comunicaciones en Red'),
+(1, 'Desarrollo de Aplicaciones Móviles Nativas'),
+(1, 'Optativa A2'),
+(1, 'Optativa B2'),
+(8, 'Trabajo Terminal I'),
+(1, 'Sistemas Distribuidos'),
+(1, 'Administración de Servicios en Red'),
+(7, 'Estancia Profesional'),
+(7, 'Desarrollo de Habilidades Sociales para la Alta Dirección'),
+(8, 'Trabajo Terminal II'),
+(1, 'Gestión Empresarial'),
+(1, 'Liderazgo Personal'),
+(1, 'Análisis Vectorial'),
+(1, 'Cálculo'),
+(2, 'Matemáticas Discretas'),
+(1, 'Algoritmia y Programación estructurada'),
+(6, 'Física'),
+(6, 'Ingeniería, Ética y Sociedad'),
+(6, 'Ecuaciones Diferenciales'),
+(6, 'Álgebra Lineal'),
+(6, 'Cálculo Aplicado'),
+(6, 'Estructuras de Datos'),
+(6, 'Comunicación Oral y Escrita'),
+(6, 'Análisis Fundamental de Circuitos'),
+(6, 'Matemáticas Avanzadas para la Ingeniería'),
+(6, 'Fundamentos Económicos'),
+(6, 'Fundamentos de Diseño Digital'),
+(6, 'Teoría Computacional'),
+(6, 'Base de Datos'),
+(6, 'Programación Orientada a Objetos'),
+(6, 'Electrónica Analógica'),
+(6, 'Redes de Computadoras'),
+(6, 'Diseño de Sistemas Digitales'),
+(6, 'Probabilidad y Estadística'),
+(6, 'Sistemas Operativos'),
+(6, 'Análisis y diseño Orientado a Objetos'),
+(6, 'Tecnologías para la Web'),
+(6, 'Administración financiera'),
+(6, 'Optativa A'),
+(6, 'Arquitectura de computadoras'),
+(6, 'Análisis de algoritmos'),
+(6, 'Optativa B'),
+(6, 'Ingeniería de Software'),
+(6, 'Administración de Proyectos'),
+(6, 'Instrumentación'),
+(6, 'Teoría de Comunicaciones y Señales'),
+(6, 'Aplicaciones para Comunicaciones en Red'),
+(6, 'Métodos Cuantitativos para la Toma de Decisiones'),
+(6, 'Introducción a los Microcontroladores'),
+(6, 'Compiladores'),
+(6, 'Optativa C'),
+(6, 'Optativa D'),
+(6, 'Desarrollo de Sistemas Distribuidos'),
+(6, 'Administración de Servicios en Red'),
+(6, 'Gestión Empresarial'),
+(6, 'Liderazgo'),
+(8, 'Trabajo Terminal I'),
+(7, 'Electiva'),
+(8, 'Trabajo Terminal II');
+
+
+INSERT INTO uni_apren_plan_per_car_grup (id_uni_apren, id_plan, id_periodo, id_carrera, id_grupo)
+VALUES
+(1, 1, 1, 1, 1),
+(2, 1, 1, 1, 1),
+(3, 1, 1, 1, 1),
+(4, 1, 1, 1, 1),
+(5, 1, 1, 1, 1),
+(6, 1, 1, 1, 1),
+(7, 1, 1, 1, 1),
+(8, 1, 1, 1, 1),
+(9, 1, 1, 1, 1),
+(10, 1, 1, 1, 1),
+(11, 1, 1, 1, 1),
+(12, 1, 1, 1, 1),
+(13, 1, 1, 1, 1),
+(14, 1, 1, 1, 1),
+(15, 1, 1, 1, 1),
+(16, 1, 1, 1, 1),
+(17, 1, 1, 1, 1),
+(18, 1, 1, 1, 1),
+(19, 1, 1, 1, 1),
+(20, 1, 1, 1, 1),
+(21, 1, 1, 1, 1),
+(22, 1, 1, 1, 1),
+(23, 1, 1, 1, 1),
+(24, 1, 1, 1, 1),
+(25, 1, 1, 1, 1),
+(26, 1, 1, 1, 1),
+(27, 1, 1, 1, 1),
+(28, 1, 1, 1, 1),
+(29, 1, 1, 1, 1),
+(30, 1, 1, 1, 1),
+(31, 1, 1, 1, 1),
+(32, 1, 1, 1, 1),
+(33, 1, 1, 1, 1),
+(34, 1, 1, 1, 1),
+(35, 1, 1, 1, 1),
+(36, 1, 1, 1, 1),
+(37, 1, 1, 1, 1),
+(38, 1, 1, 1, 1),
+(39, 1, 1, 1, 1),
+(40, 1, 1, 1, 1),
+(41, 1, 1, 1, 1),
+(42, 1, 1, 1, 1),
+(43, 1, 1, 1, 1),
+(44, 1, 1, 1, 1),
+(45, 1, 1, 1, 1),
+(46, 1, 1, 1, 1),
+(47, 1, 1, 1, 1);

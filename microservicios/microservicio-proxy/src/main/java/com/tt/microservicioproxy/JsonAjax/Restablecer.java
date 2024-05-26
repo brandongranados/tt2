@@ -14,7 +14,12 @@ public class Restablecer {
     @NotNull
     @SQLInjectionSafe
     private String token;
-    
+    @NotBlank
+    @NotNull
+    @SQLInjectionSafe
+    private String contrasena;
+
+
     public String getUsuario() {
         return usuario;
     }
@@ -26,5 +31,11 @@ public class Restablecer {
     }
     public void setToken(String token) {
         this.token = token;
+    }
+    public String getContrasena() {
+        return contrasena;
+    }
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 }
