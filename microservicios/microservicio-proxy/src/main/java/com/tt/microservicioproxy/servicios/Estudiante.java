@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
-import com.tt.microservicioproxy.JsonAjax.AjaxConstanciaEstudios;
+import com.tt.microservicioproxy.JsonAjax.AjaxConstanciaUsuario;
 import com.tt.microservicioproxy.JsonAjax.AjaxDocFirSAT;
 
 @Service
@@ -28,7 +28,7 @@ public class Estudiante {
     @Value("${rutas.estudiante.verificar}")
     private String IMPRIMIR_CONSTANCIAS_VERIFICAR;
 
-    public ResponseEntity getConstanciaEstudios(AjaxConstanciaEstudios estu)
+    public ResponseEntity getConstanciaEstudios(AjaxConstanciaUsuario estu)
     {
         HashMap<String, Object> respRest = null;
         HashMap<Object, Object> salida = null;
@@ -48,7 +48,7 @@ public class Estudiante {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity getConstanciaInscripcion(AjaxConstanciaEstudios estu)
+    public ResponseEntity getConstanciaInscripcion(AjaxConstanciaUsuario estu)
     {
         HashMap<String, Object> respRest = null;
         HashMap<Object, Object> salida = null;
@@ -68,7 +68,7 @@ public class Estudiante {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity getConstanciaBecas(AjaxConstanciaEstudios estu)
+    public ResponseEntity getConstanciaBecas(AjaxConstanciaUsuario estu)
     {
         HashMap<String, Object> respRest = null;
         HashMap<Object, Object> salida = null;
@@ -88,7 +88,7 @@ public class Estudiante {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity getConstanciaServicio(AjaxConstanciaEstudios estu)
+    public ResponseEntity getConstanciaServicio(AjaxConstanciaUsuario estu)
     {
         HashMap<String, Object> respRest = null;
         HashMap<Object, Object> salida = null;

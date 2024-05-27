@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tt.microservicioproxy.JsonAjax.AjaxArrayMasivaEstu;
 import com.tt.microservicioproxy.JsonAjax.AjaxConstanciaEstudios;
+import com.tt.microservicioproxy.JsonAjax.AjaxConstanciaUsuario;
 import com.tt.microservicioproxy.JsonAjax.AjaxDocFirSAT;
 import com.tt.microservicioproxy.JsonAjax.AjaxExcelCargaEstuMas;
 import com.tt.microservicioproxy.JsonAjax.AjaxExpedienteEst;
@@ -129,25 +130,25 @@ public class Paginas {
 
     //MANEJO DE PUNTOS DE ACCESO EN ESTUDIANTES
     @PostMapping("/estudiante/getConstanciaEstudios")
-    public ResponseEntity getConstanciaEstudios(@Valid @RequestBody AjaxConstanciaEstudios estu)
+    public ResponseEntity getConstanciaEstudios(@Valid @RequestBody AjaxConstanciaUsuario estu)
     {
         return conexEstu.getConstanciaEstudios(estu);
     }
 
     @PostMapping("/estudiante/getConstanciaInscripcion")
-    public ResponseEntity getConstanciaInscripcion(@Valid @RequestBody AjaxConstanciaEstudios estu)
+    public ResponseEntity getConstanciaInscripcion(@Valid @RequestBody AjaxConstanciaUsuario estu)
     {
         return conexEstu.getConstanciaInscripcion(estu);
     }
 
     @PostMapping("/estudiante/getConstanciaBecas")
-    public ResponseEntity getConstanciaBecas(@Valid @RequestBody AjaxConstanciaEstudios estu)
+    public ResponseEntity getConstanciaBecas(@Valid @RequestBody AjaxConstanciaUsuario estu)
     {
         return conexEstu.getConstanciaBecas(estu);
     }
 
     @PostMapping("/estudiante/getConstanciaServicio")
-    public ResponseEntity getConstanciaServicio(@Valid @RequestBody AjaxConstanciaEstudios estu)
+    public ResponseEntity getConstanciaServicio(@Valid @RequestBody AjaxConstanciaUsuario estu)
     {
         return conexEstu.getConstanciaServicio(estu);
     }

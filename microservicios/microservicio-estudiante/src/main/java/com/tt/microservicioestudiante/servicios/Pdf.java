@@ -61,7 +61,7 @@ public class Pdf {
             this.plantillaBecas = (JasperReport) JRLoader.loadObjectFromFile(CONSTANCIA_BECAS);
             this.plantillaServicio = (JasperReport) JRLoader.loadObjectFromFile(CONSTANCIA_SERVICIO);
         } catch (Exception e) {
-            this.plantillaEstudios = null;
+            e.getStackTrace();
         }
     }
 

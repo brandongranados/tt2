@@ -6,9 +6,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tt.microservicioestudiante.ajax.AjaxConstanciaEstudios;
+import com.tt.microservicioestudiante.ajax.AjaxConstanciaUsuario;
 import com.tt.microservicioestudiante.ajax.AjaxDocFirSAT;
 import com.tt.microservicioestudiante.servicios.Pdf;
+import com.tt.microservicioestudiante.servicios.UsuarioBoleta;
 import com.tt.microservicioestudiante.servicios.Verificacion;
 
 @RestController
@@ -17,29 +18,35 @@ public class Paginas {
     private Pdf pdf;
     @Autowired
     private Verificacion verifica;
+    @Autowired
+    private UsuarioBoleta user;
     
     @PostMapping("/estudiantes/constanciaEstudios")
-    public ResponseEntity getCostanciaEstudios(@RequestBody AjaxConstanciaEstudios estu)
+    public ResponseEntity getCostanciaEstudios(@RequestBody AjaxConstanciaUsuario estu)
     {
-        return pdf.getConstanciaEstudios(estu.getBoleta());
+        Double boleta = user.getBoleta(estu);
+        return pdf.getConstanciaEstudios(boleta.intValue());
     }
 
     @PostMapping("/estudiantes/constanciaInscripcion")
-    public ResponseEntity getCostanciaInscripcion(@RequestBody AjaxConstanciaEstudios estu)
+    public ResponseEntity getCostanciaInscripcion(@RequestBody AjaxConstanciaUsuario estu)
     {
-        return pdf.getConstanciaInscripcion(estu.getBoleta());
+        Double boleta = user.getBoleta(estu);
+        return pdf.getConstanciaInscripcion(boleta.intValue());
     }
 
     @PostMapping("/estudiantes/constanciaBecas")
-    public ResponseEntity getCostanciaBecas(@RequestBody AjaxConstanciaEstudios estu)
+    public ResponseEntity getCostanciaBecas(@RequestBody AjaxConstanciaUsuario estu)
     {
-        return pdf.getConstanciaBecas(estu.getBoleta());
+        Double boleta = user.getBoleta(estu);
+        return pdf.getConstanciaBecas(boleta.intValue());
     }
 
     @PostMapping("/estudiantes/constanciaServicio")
-    public ResponseEntity getCostanciaServicio(@RequestBody AjaxConstanciaEstudios estu)
+    public ResponseEntity getCostanciaServicio(@RequestBody AjaxConstanciaUsuario estu)
     {
-        return pdf.getConstanciaServicio(estu.getBoleta());
+        Double boleta = user.getBoleta(estu);
+        return pdf.getConstanciaServicio(boleta.intValue());
     }
 
     @PostMapping("/estudiantes/verificaConstancia")

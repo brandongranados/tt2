@@ -12,7 +12,7 @@ CREATE TABLE estudiante
 	nombres VARCHAR(MAX) NOT NULL DEFAULT '',
 	apellido_paterno VARCHAR(MAX) NOT NULL DEFAULT '',
 	apellido_materno VARCHAR(MAX) NOT NULL DEFAULT '',
-	promedio FLOAT NOT NULL DEFAULT 0,
+	promedio FLOAT NOT NULL DEFAULT 10,
 	correo_electronico VARCHAR(MAX) NOT NULL DEFAULT '',
 	sexo SMALLINT NOT NULL DEFAULT 1,
 	fecha_nacimiento DATE NOT NULL DEFAULT GETDATE(),
@@ -1514,11 +1514,13 @@ CREATE VIEW v_inicio_sesion AS
 	SELECT DISTINCT
 		contrasena,
 		nombre_usuario,
-		nombre_rol
+		nombre_rol,
+		num_boleta
 	FROM (
 		SELECT u.contrasena,
 			u.nombre_usuario,
-			r.nombre_rol
+			r.nombre_rol,
+			e.num_boleta
 		FROM rol_usuario_est rue
 			INNER JOIN estudiante e
 				ON rue.id_est = e.id_est
@@ -1526,11 +1528,14 @@ CREATE VIEW v_inicio_sesion AS
 				ON rue.id_rol = r.id_rol
 			INNER JOIN usuario u
 				ON rue.id_usuario = u.id_usuario
+		    INNER JOIN estudiante_situacion_academica esa
+		        ON esa.id_est = e.id_est
 	UNION 
 
 	SELECT u.contrasena,
 			u.nombre_usuario, 
-			r.nombre_rol
+			r.nombre_rol,
+			NULL
 		FROM rol_personal_usuario rpu
 			INNER JOIN personal p
 				ON rpu.id_personal = p.id_personal
@@ -1788,6 +1793,28 @@ CREATE VIEW v_constancia_estudios_semestre_activo AS
 			estado
 	 FROM semestre_activo;
 
+
+CREATE VIEW v_estudiante_materias AS
+    SELECT e.num_boleta,
+           e.porcentaje_carrera,
+            e.promedio,
+            e.turno,
+            cre.cant_creditos,
+            c.total_creditos
+    FROM estudiante e
+    INNER JOIN estudiante_situacion_academica esa
+        ON e.id_est = esa.id_est
+    INNER JOIN uni_apren_plan_per_car_grup uappcg
+        ON esa.id_uni_apren_plan_per_car_grup =
+           uappcg.id_uni_apren_plan_per_car_grup
+    INNER JOIN unidad_aprendizaje ua
+        ON uappcg.id_uni_apren = ua.id_uni_apren
+    INNER JOIN creditos cre
+        ON ua.id_creditos = cre.id_creditos
+    INNER JOIN carrera c
+		ON uappcg.id_carrera = c.id_carrera
+	INNER JOIN periodo p
+		ON uappcg.id_periodo = p.id_periodo;
 
 /************************************************************************************/
 /************************************************************************************/
@@ -2979,3 +3006,24 @@ VALUES
 (45, 1, 1, 1, 1),
 (46, 1, 1, 1, 1),
 (47, 1, 1, 1, 1);
+
+
+
+
+CREATE TABLE #usuario_sesion
+(
+    id INTEGER PRIMARY KEY IDENTITY,
+    id_usuario BIGINT
+);
+
+INSERT INTO #usuario_sesion
+( id_usuario )VALUES( null );
+
+UPDATE rol_usuario_est
+SET id_rol = 1
+WHERE id_rol_usuario_est = 4;
+
+DROP TABLE #usuario_sesion;
+
+    SELECT TOP 1 * FROM v_inicio_sesion WHERE nombre_usuario  = ?
+
