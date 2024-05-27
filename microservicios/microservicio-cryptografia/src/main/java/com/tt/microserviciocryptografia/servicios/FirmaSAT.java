@@ -18,6 +18,7 @@ import java.util.HashMap;
 import javax.crypto.Cipher;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -123,7 +124,8 @@ public class FirmaSAT {
         PrivateKey privada = null;
         StringReader lec = new StringReader(contendido);
         PEMParser par = new PEMParser(lec);
-        PrivateKeyInfo obj = (PrivateKeyInfo)par.readObject();
+        PEMKeyPair pares = (PEMKeyPair)par.readObject();
+        PrivateKeyInfo obj = (PrivateKeyInfo)pares.getPrivateKeyInfo();
         PKCS8EncodedKeySpec specLlave = new PKCS8EncodedKeySpec(obj.getEncoded());
         KeyFactory facLlave = KeyFactory.getInstance("RSA");
 
