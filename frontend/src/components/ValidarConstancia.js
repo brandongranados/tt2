@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
+
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import DownloadIcon from '@mui/icons-material/Download';
 
-import Navegacion from './Navegacion';
+import useAjax from '../services/useAjax';
+import NavegacionInicioSesion from './NavegacionInicioSesion';
+import Cargando from './Cargando';
 
 const ValidarConstancia = () => {
+    const ObjAjax = useAjax();
+
+    const [espera, setEspera] = useState(false);
     const [datos, setDatos] = useState({
         nombre: "GUERRERO GUTIERREZ LESLIE ITZEL",
         situacion: "Su situación académica se encuentra inscrita en este plantel.",
@@ -25,11 +28,23 @@ const ValidarConstancia = () => {
     });
 
     useEffect(() => {
+
+        let url = window.location.href;
+        let token = url.split("=")[1];
+
+        let verifica = async () => {
+            
+            await ObjAjax.verificarDocumento({documento:token}, setEspera);
+
+        };
+
+        verifica();
     }, []);
 
     return (
         <>
-            <Navegacion />
+            <NavegacionInicioSesion />
+            <Cargando bool={espera}/>
             <Grid container spacing={3} sx={{ marginTop: 2 }}>
                 <Grid item xs={12}>
                     <Typography variant="h4" component="h1" fontWeight="bold" textAlign="center">

@@ -1,5 +1,11 @@
 import { useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { setAutenticacion } from '../services/Autenticacion';
+import { setDatosUsuario, setEstudiante, setListaEstudiantes, setExpEstudiante } from '../services/DatosUsuario';
+
 import AppBar from '@mui/material/AppBar';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
@@ -16,6 +22,8 @@ let Navegacion = () => {
 
     const [anchorEl, setAnchorEl] = useState(null);
     const abierto = Boolean(anchorEl);
+    const navegar = useNavigate();
+    const despacha = useDispatch();
 
     let abrirMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -23,6 +31,16 @@ let Navegacion = () => {
 
     let cerrar = () => {
         setAnchorEl(null);
+    };
+
+    let cerarSesion = () => {
+        despacha(setAutenticacion(null));
+        despacha(setDatosUsuario(null));
+        despacha(setEstudiante(null));
+        despacha(setListaEstudiantes(null));
+        despacha(setExpEstudiante(null));
+        sessionStorage.clear();
+        navegar("/");
     };
 
     return(
@@ -58,7 +76,9 @@ let Navegacion = () => {
                             }}>
                             <MenuItem onClick={ cerrar } >
                                 <Typography variant='p' component={"span"} >
-                                    Cerrar Sesi&oacute;n
+                                    <Button variant="contained" color="error" onClick={cerarSesion}>
+                                        Cerrar Sesi&oacute;n
+                                    </Button>
                                 </Typography>
                             </MenuItem>
                         </Menu>

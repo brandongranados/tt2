@@ -8,12 +8,12 @@ import InputTextBorderAzul from '../assets/js/InpuTextBorderAzul';
 import escom from '../assets/img/escom.png';
 import LinkLetras from '../assets/js/LinkLetras';
 import BotonAzul from '../assets/js/BotonAzul';
-import Navegacion from './Navegacion';
 import InputTextOcultaText from '../assets/js/InputTextOcultaText';
 import Cargando from "./Cargando";
 
 import useAjax from '../services/useAjax';
 import useCadenaUnica from './hooks/useCadenaUnica';
+import NavegacionInicioSesion from './NavegacionInicioSesion';
 
 let InicioSesion = () => {
 
@@ -57,7 +57,7 @@ let InicioSesion = () => {
     return(
         <>
             <Cargando bool={espera}/>
-            <Navegacion />
+            <NavegacionInicioSesion />
             <Grid container>
                 <Grid item xs sm></Grid>
                 <Grid item xs={12} sm={6}>

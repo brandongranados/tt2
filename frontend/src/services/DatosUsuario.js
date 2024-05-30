@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 export const DatosUsuarioSlice = createSlice({
     name: "DatosUsuario",
     initialState: {
-        DatosUsuario: [],
+        DatosUsuario: null,
         Estudiante: {},
         ListaEstudiantes: [],
         ExpEstudiante: {}
@@ -11,6 +11,15 @@ export const DatosUsuarioSlice = createSlice({
     reducers:{
         setDatosUsuario: (state, action) => {
             state.DatosUsuario = action.payload;
+            sessionStorage.setItem("DatosUsuario", state.DatosUsuario);
+        },
+        getDatosUsuario: (state) => {
+            let usuario = sessionStorage.getItem("DatosUsuario");
+
+            if( usuario )
+                state.DatosUsuario = usuario;
+            else
+                state.DatosUsuario = null;
         },
         setEstudiante: (state, action) => {
             state.Estudiante = action.payload;
@@ -24,6 +33,6 @@ export const DatosUsuarioSlice = createSlice({
     }
 })
 
-export const { setDatosUsuario, setEstudiante, setListaEstudiantes, setExpEstudiante } = DatosUsuarioSlice.actions;
+export const { getDatosUsuario, setDatosUsuario, setEstudiante, setListaEstudiantes, setExpEstudiante } = DatosUsuarioSlice.actions;
 
 export default DatosUsuarioSlice.reducer;
