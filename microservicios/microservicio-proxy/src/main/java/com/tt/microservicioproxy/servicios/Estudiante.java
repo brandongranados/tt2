@@ -117,7 +117,7 @@ public class Estudiante {
         try {
             respRest = rest.getRespuestaRest(IMPRIMIR_CONSTANCIAS_VERIFICAR, estu);
             codigo = (int)respRest.get("codigo");
-            //salida = obj.fromJson((String)respRest.get("datos"), HashMap.class);
+            salida = obj.fromJson((String)respRest.get("datos"), HashMap.class);
 
             if( codigo != 200 )
                 throw new Exception();
@@ -125,6 +125,6 @@ public class Estudiante {
         } catch (Exception e) {
             return ResponseEntity.status(codigo).body(salida);
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(salida);
     }
 }

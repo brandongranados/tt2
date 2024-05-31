@@ -29,6 +29,7 @@ public class Verificacion {
             
             resPet = peticiones.getRespuestaRest(FIRMA_SAT_VERIFICACION, estu);
             codigo = (int)resPet.get("codigo");
+            salida = obj.fromJson((String)resPet.get("datos"), HashMap.class);
 
             if( codigo != 200 )
                 throw new Exception();
@@ -36,6 +37,6 @@ public class Verificacion {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok().body(salida);
+        return ResponseEntity.ok(salida);
     }
 }

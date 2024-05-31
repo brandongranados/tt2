@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
@@ -60,20 +60,20 @@ public class FirmaSAT {
         return Base64.getEncoder().encodeToString(this.getMezclarArrayByte(crudo, firma));
     }
     
-    public boolean getVerificaDocumento(String base64Crudo) throws Exception
+    public String getVerificaDocumento(String base64Crudo) throws Exception
     {
         HashMap<Integer, byte[]> doc = this.dividirArrayByte(Base64.getDecoder().decode(base64Crudo));
         byte digesto[] = this.getDigesto((byte[])doc.get(1));
         byte firmaDescifrada[] = this.getContenidoDescifrado((byte[])doc.get(2));
 
         if( digesto.length != firmaDescifrada.length )
-            return false;
+            return null;
 
         for( int i = 0; i < digesto.length; i++ )
             if( digesto[i] != firmaDescifrada[i] )
-                return false;
+                return null;
 
-        return true;
+        return new String((byte[])doc.get(1), StandardCharsets.UTF_8);
     }
 
 
