@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.tt.microservicioestudiante.ajax.AjaxDocFirSAT;
+import com.tt.microservicioestudiante.ajax.AjaxEstudianteConstancias;
 import com.tt.microservicioestudiante.ajax.AjaxExpedienteEst;
 import com.tt.microservicioestudiante.ajax.PetQr;
 
@@ -43,6 +44,8 @@ public class Pdf {
     private String QR_CREA;
     @Value("${rutas.firma.firma}")
     private String FIRMA_SAT_FIRMA;
+    @Value("${rutas.constancia.solicitada}")
+    private String CONSTANCIA_SOLICITADA;
     @Autowired
     private ConsumoRest peticiones;
     @Autowired
@@ -131,6 +134,16 @@ public class Pdf {
         }
 
         return ResponseEntity.ok(sal);
+    }
+
+    public ResponseEntity setRegistroConstancia(AjaxEstudianteConstancias estu)
+    {
+        HashMap<String, Object> sp = restUnElemento(CONSTANCIA_SOLICITADA, estu);
+
+        if( sp != null )
+            return ResponseEntity.badRequest().build();
+        else
+            return ResponseEntity.ok().build();
     }
 
     private HashMap<String, Object> getParametrosConstanciaGenericos(int boleta)

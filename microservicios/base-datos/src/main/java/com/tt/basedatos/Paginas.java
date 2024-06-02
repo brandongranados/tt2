@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tt.basedatos.JsonAjax.AjaxAltaPeersonal;
+import com.tt.basedatos.JsonAjax.AjaxEstudianteConstancias;
 import com.tt.basedatos.JsonAjax.AjaxExpedienteEst;
 import com.tt.basedatos.JsonAjax.AjaxListaEstudiante;
 import com.tt.basedatos.JsonAjax.AltaEstuAjaxPAAEMasiva;
@@ -17,6 +19,7 @@ import com.tt.basedatos.JsonAjax.RegistroEstuAjax;
 import com.tt.basedatos.JsonAjax.Restablecer;
 import com.tt.basedatos.JsonAjax.ValidaRestablecer;
 import com.tt.basedatos.JsonAjax.ValidaTokenRegEstAjax;
+import com.tt.basedatos.servicios.Admin;
 import com.tt.basedatos.servicios.Estudiante;
 import com.tt.basedatos.servicios.Paae;
 import com.tt.basedatos.servicios.Sesiones;
@@ -30,6 +33,8 @@ public class Paginas {
     private Paae paae;
     @Autowired
     private Estudiante microEstu;
+    @Autowired
+    private Admin admin;
     
     //SESIONES
     @PostMapping("/datosInicioSesion")
@@ -143,5 +148,25 @@ public class Paginas {
     public ResponseEntity getSemestreActivo()
     {
         return microEstu.getDatosSemestreActivo();
+    }
+
+    @PostMapping("/estudiante/setRegistarConstanciaSolicitada")
+    public ResponseEntity setRegistarConstanciaSolicitada(@RequestBody AjaxEstudianteConstancias estu)
+    {
+        return microEstu.setRegistarConstanciaSolictada(estu);
+    }
+
+
+
+
+
+
+
+
+    //ADMINISTRADOR
+    @PostMapping("/admin/setRegistarPersonalApoyo")
+    public ResponseEntity setRegistarPersonalApoyo(@RequestBody AjaxAltaPeersonal personal)
+    {
+        return admin.setRegistarPersonalApoyo(personal);
     }
 }

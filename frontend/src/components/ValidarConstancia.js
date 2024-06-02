@@ -14,17 +14,15 @@ const ValidarConstancia = () => {
 
     const [espera, setEspera] = useState(false);
     const [datos, setDatos] = useState({
-        nombre: "GUERRERO GUTIERREZ LESLIE ITZEL",
-        situacion: "Su situación académica se encuentra inscrita en este plantel.",
-        curp: "GUCL961205MDFTRS09",
-        boleta: "2019530077",
-        tipo: "CONSTANCIA DE ESTUDIOS",
-        fechaEmision: "2024-02-21",
-        carrera: "ING. EN SIST. COMPUTACIONALES",
-        promedio: "86.41",
-        porcentajeAvance: "69.95%",
-        situacionAcademica: "Regular",
-        emisora: "DANIELA LOPEZ VEGA DEPARTAMENTO DE GESTIÓN ESCOLAR"
+        nombre: null,
+        situacion: null,
+        curp: null,
+        boleta: null,
+        tipo: null,
+        fechaEmision: null,
+        carrera: null,
+        promedio: null,
+        porcentajeAvance: null
     });
 
     useEffect(() => {
@@ -34,7 +32,21 @@ const ValidarConstancia = () => {
 
         let verifica = async () => {
             
-            await ObjAjax.verificarDocumento({documento:token}, setEspera);
+            let resp = await ObjAjax.verificarDocumento({documento:token}, setEspera);
+            let cadena = resp.documento.replace("<br>", "").replace("\n", "");
+            let array = cadena.split("|");
+            setDatos({
+                nombre: array[7],
+                situacion: "Su situación académica se encuentra inscrita en este plantel.",
+                curp: array[8],
+                boleta: array[6],
+                tipo: array[5],
+                fechaEmision: array[24],
+                carrera: array[10],
+                promedio: "86.41",
+                porcentajeAvance: "69.95%",
+                situacionAcademica: array[18]
+            });
 
         };
 
@@ -84,9 +96,6 @@ const ValidarConstancia = () => {
                             </Typography>
                             <Typography variant="body1" component="p" sx={{ mb: 2 }}>
                                 <strong>Situación académica:</strong> {datos.situacionAcademica}
-                            </Typography>
-                            <Typography variant="body1" component="p" sx={{ mb: 2 }}>
-                                <strong>Documento emitido por:</strong> {datos.emisora}
                             </Typography>
                             <Box mt={3} display="flex" justifyContent="center">
                             </Box>

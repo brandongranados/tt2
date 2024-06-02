@@ -68,25 +68,14 @@ CREATE TABLE roles
 	nombre_rol VARCHAR(MAX) NOT NULL DEFAULT ''
 );
 
-CREATE TABLE puestos
-(
-	id_puesto BIGINT PRIMARY KEY IDENTITY,
-	nombre_puesto VARCHAR(MAX) NOT NULL DEFAULT ''
-);
-
-CREATE TABLE departamento
-(
-	id_depto BIGINT PRIMARY KEY IDENTITY,
-	nombre_depto VARCHAR(MAX) NOT NULL DEFAULT ''
-);
-
 CREATE TABLE personal
 (
 	id_personal BIGINT PRIMARY KEY IDENTITY,
 	nombres VARCHAR(MAX) NOT NULL DEFAULT '',
 	apellido_paterno VARCHAR(MAX) NOT NULL DEFAULT '',
 	apellido_materno VARCHAR(MAX) NOT NULL DEFAULT '',
-	correo_electronico VARCHAR(MAX) NOT NULL DEFAULT ''
+	correo_electronico VARCHAR(MAX) NOT NULL DEFAULT '',
+	numero_personal VARCHAR(255) DEFAULT ''
 );
 
 CREATE TABLE semestre_activo
@@ -167,20 +156,6 @@ CREATE TABLE rol_personal_usuario
 	FOREIGN KEY (id_rol) REFERENCES roles(id_rol)
 		ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (id_personal) REFERENCES personal(id_personal)
-		ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE depto_personal_puesto
-(
-	id_depto_personal_puesto BIGINT PRIMARY KEY IDENTITY,
-	id_puesto BIGINT,
-	id_depto BIGINT,
-	id_personal BIGINT,
-	FOREIGN KEY (id_puesto) REFERENCES puestos(id_puesto)
-		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (id_depto) REFERENCES departamento(id_depto)
 		ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (id_personal) REFERENCES personal(id_personal)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -371,6 +346,7 @@ CREATE TABLE bit_personal
 	apellido_paterno VARCHAR(MAX),
 	apellido_materno VARCHAR(MAX),
 	correo_electronico VARCHAR(MAX),
+	numero_personal VARCHAR(255),
 
 	id_user_ejecuta BIGINT,
     fecha_ejecuta DATETIME DEFAULT GETDATE(),
@@ -399,33 +375,6 @@ CREATE TABLE bit_rol_usuario_est
 	id_rol BIGINT,
 	id_usuario BIGINT,
 	id_est BIGINT,
-
-	id_user_ejecuta BIGINT,
-    fecha_ejecuta DATETIME DEFAULT GETDATE(),
-    tip_ejec SMALLINT DEFAULT 0
-);
-
-
-CREATE TABLE bit_depto_personal_puesto
-(
-	id_bitacora_bitacora BIGINT PRIMARY KEY IDENTITY,
-
-	id_depto_personal_puesto BIGINT,
-	id_puesto BIGINT,
-	id_depto BIGINT,
-	id_personal BIGINT,
-
-	id_user_ejecuta BIGINT,
-    fecha_ejecuta DATETIME DEFAULT GETDATE(),
-    tip_ejec SMALLINT DEFAULT 0
-);
-
-CREATE TABLE bit_departamento
-(
-	id_bitacora_bitacora BIGINT PRIMARY KEY IDENTITY,
-
-	id_depto BIGINT,
-	nombre_depto VARCHAR(MAX),
 
 	id_user_ejecuta BIGINT,
     fecha_ejecuta DATETIME DEFAULT GETDATE(),
@@ -1032,6 +981,7 @@ CREATE TRIGGER d_personal
 				apellido_paterno,
 				apellido_materno,
 				correo_electronico,
+				numero_personal,
 
 				id_user_ejecuta,
 				tip_ejec
@@ -1041,6 +991,7 @@ CREATE TRIGGER d_personal
 					deleted.apellido_paterno,
 					deleted.apellido_materno,
 					deleted.correo_electronico,
+					deleted.numero_personal,
 
                     ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
                     @tipo AS tipo
@@ -1096,163 +1047,6 @@ CREATE TRIGGER d_expediente_est
                     deleted.id_est,
 					deleted.id_tipo_solicitud,
 					deleted.ruta,
-
-                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
-                    @tipo AS tipo
-            FROM deleted
-
-		END TRY
-		BEGIN CATCH
-
-			SET @tipo = 0;
-
-		END CATCH
-
-	END;
-
-
-CREATE TRIGGER d_depto_personal_puesto
-	ON depto_personal_puesto
-	AFTER UPDATE, DELETE
-	AS BEGIN
-
-		DECLARE @tipo SMALLINT;
-
-		SET @tipo = 0;
-
-		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*actuAlizacion*/
-			SET @tipo = 2;
-
-		END
-		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*REGISTRO ELIMNADO*/
-			SET @tipo = 3;
-
-		END
-
-		BEGIN TRY
-
-			INSERT INTO bit_depto_personal_puesto
-			(
-				id_depto_personal_puesto,
-				id_puesto,
-				id_depto,
-				id_personal,
-
-				id_user_ejecuta,
-				tip_ejec
-			)
-            SELECT deleted.id_depto_personal_puesto,
-                    deleted.id_puesto,
-					deleted.id_depto,
-					deleted.id_personal,
-
-                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
-                    @tipo AS tipo
-            FROM deleted
-
-		END TRY
-		BEGIN CATCH
-
-			SET @tipo = 0;
-
-		END CATCH
-
-	END;
-
-
-CREATE TRIGGER d_departamento
-	ON departamento
-	AFTER UPDATE, DELETE
-	AS BEGIN
-
-		DECLARE @tipo SMALLINT;
-
-		SET @tipo = 0;
-
-		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*actuAlizacion*/
-			SET @tipo = 2;
-
-		END
-		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*REGISTRO ELIMNADO*/
-			SET @tipo = 3;
-
-		END
-
-		BEGIN TRY
-
-			INSERT INTO bit_departamento
-			(
-				id_depto,
-				nombre_depto,
-
-				id_user_ejecuta,
-				tip_ejec
-			)
-            SELECT deleted.id_depto,
-                    deleted.nombre_depto,
-
-                    ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
-                    @tipo AS tipo
-            FROM deleted
-
-		END TRY
-		BEGIN CATCH
-
-			SET @tipo = 0;
-
-		END CATCH
-
-	END;
-
-
-CREATE TRIGGER d_puestos
-	ON puestos
-	AFTER UPDATE, DELETE
-	AS BEGIN
-
-		DECLARE @tipo SMALLINT;
-
-		SET @tipo = 0;
-
-		IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*actuAlizacion*/
-			SET @tipo = 2;
-
-		END
-		ELSE IF NOT EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
-		BEGIN
-
-			/*REGISTRO ELIMNADO*/
-			SET @tipo = 3;
-
-		END
-
-		BEGIN TRY
-
-			INSERT INTO bit_puestos
-			(
-				id_puesto,
-				nombre_puesto,
-
-				id_user_ejecuta,
-				tip_ejec
-			)
-            SELECT deleted.id_puesto,
-                    deleted.nombre_puesto,
 
                     ( SELECT TOP 1 id_usuario FROM #usuario_sesion ),
                     @tipo AS tipo
@@ -1499,6 +1293,22 @@ CREATE TRIGGER d_rol_usuario_est
 		END CATCH
 
 	END;
+
+/************************************************************************************/
+/************************************************************************************/
+/************************************************************************************/
+/********************************** FUNCIONES ******************************************/
+/************************************************************************************/
+/************************************************************************************/
+/************************************************************************************/
+
+CREATE FUNCTION f_zona_horaria_menos_seis(@entrada DATETIME)
+	RETURNS DATETIME
+	AS BEGIN
+
+		RETURN DATEADD(HOUR, -6, @entrada);
+
+END
 
 
 /************************************************************************************/
@@ -2766,6 +2576,243 @@ CREATE PROCEDURE sp_estatus_baja_estudiante
 
 END
 
+/*      ESTUDIANTES         */
+
+CREATE PROCEDURE sp_registra_constancias
+	@boleta BIGINT,
+	@constancia_solicitada VARCHAR(MAX),
+	@usuario_alta VARCHAR(MAX),
+	@bool SMALLINT OUTPUT
+	AS BEGIN
+
+		DECLARE @fecha DATETIME;
+		DECLARE @id_sol BIGINT;
+		DECLARE @id_est BIGINT;
+		/* CREACION DE TABLA TEMPORAL */
+		DECLARE @id BIGINT;
+
+		SELECT TOP 1 @id = id_usuario FROM
+		(
+			SELECT id_usuario, 
+					nombre_usuario
+					FROM usuario
+
+			UNION
+
+			SELECT id_usuario,
+					nombre_usuario
+					FROM bit_usuario
+		) AS usuarios
+		WHERE nombre_usuario = @usuario_alta;
+
+		BEGIN TRY
+
+			CREATE TABLE #usuario_sesion
+			(
+				id INTEGER PRIMARY KEY IDENTITY,
+				id_usuario BIGINT
+			);
+
+			INSERT INTO #usuario_sesion
+			( id_usuario )VALUES( @id );
+
+			SET @bool = 1;
+
+		END TRY
+		BEGIN CATCH
+
+			SET @bool = 6;
+			RETURN;
+
+		END CATCH
+		/* TERMINA CREACION DE TABLA TEMPORAL */
+
+		SET @fecha = GETDATE();
+
+		SELECT TOP 1 @id_est = id_est
+            FROM estudiante
+        WHERE num_boleta = @boleta;
+
+		SELECT TOP 1 @id_sol = id_tipo_solicitud
+            FROM tipo_solicitud
+        WHERE nombre_solicitud =
+                @constancia_solicitada;
+
+		IF @bool <> 1
+		BEGIN
+			SET @bool = 17;
+			RETURN;
+		END
+
+		IF @id_sol IS NULL OR @id_est IS NULL
+		BEGIN
+            SET @bool = 17;
+			RETURN;
+        END
+
+		BEGIN TRY
+
+			INSERT INTO bitacora_gestion
+			(
+				fecha_resgistro_bd,
+				fecha_solicitud,
+				fecha_entrega,
+				estado
+			)
+			VALUES
+			(
+				@fecha,
+				@fecha,
+				@fecha,
+				1
+			);
+
+			INSERT INTO est_tip_sol_bit_gestion
+			(
+				id_est,
+				id_tipo_solicitud,
+				id_bitacora
+			)
+			VALUES
+			(
+				@id_est,
+				@id_sol,
+				SCOPE_IDENTITY()
+			);
+
+			SET @bool = 1;
+
+		END TRY
+		BEGIN CATCH
+
+			SET @bool = 17;
+			RETURN;
+		
+		END CATCH
+END
+
+
+/* ADMIN */
+
+CREATE PROCEDURE sp_insertar_personal_gestion
+	@paterno VARCHAR(MAX),
+	@materno VARCHAR(MAX),
+	@nombre VARCHAR(MAX),
+	@numero_empleado VARCHAR(MAX),
+	@correo VARCHAR(MAX),
+	@usuario_alta VARCHAR(MAX),
+	@bool SMALLINT OUTPUT
+	AS BEGIN
+
+		DECLARE @id_personal BIGINT;
+		DECLARE @id_usuario BIGINT; 
+		DECLARE @fecha DATETIME;
+		/* CREACION DE TABLA TEMPORAL */
+		DECLARE @id BIGINT;
+
+		SELECT TOP 1 @id = id_usuario FROM
+		(
+			SELECT id_usuario, 
+					nombre_usuario
+					FROM usuario
+
+			UNION
+
+			SELECT id_usuario,
+					nombre_usuario
+					FROM bit_usuario
+		) AS usuarios
+		WHERE nombre_usuario = @usuario_alta;
+
+		BEGIN TRY
+
+			CREATE TABLE #usuario_sesion
+			(
+				id INTEGER PRIMARY KEY IDENTITY,
+				id_usuario BIGINT
+			);
+
+			INSERT INTO #usuario_sesion
+			( id_usuario )VALUES( @id );
+
+			SET @bool = 1;
+
+		END TRY
+		BEGIN CATCH
+
+			SET @bool = 6;
+			RETURN;
+
+		END CATCH
+		/* TERMINA CREACION DE TABLA TEMPORAL */
+
+		IF @bool <> 1
+		BEGIN
+			SET @bool = 17;
+			RETURN;
+		END
+
+		BEGIN TRY
+
+			INSERT INTO personal
+			(
+				nombres,
+				apellido_paterno,
+				apellido_materno,
+				correo_electronico,
+				numero_personal
+			)
+			VALUES
+			(
+				@nombre,
+				@paterno,
+				@materno,
+				@correo,
+				@numero_empleado
+			);
+
+			SET @id_personal = SCOPE_IDENTITY();
+
+			INSERT INTO usuario
+			(
+				nombre_usuario,
+				contrasena
+			)
+			VALUES
+			(
+				@numero_empleado,
+				@numero_empleado
+			);
+
+			SET @id_usuario = SCOPE_IDENTITY();
+
+			INSERT INTO rol_personal_usuario
+			(
+				id_personal,
+				id_rol,
+				id_usuario
+			)
+			VALUES
+			(
+				@id_personal,
+				(
+					SELECT TOP 1 id_rol 
+						FROM roles
+					WHERE nombre_rol = 'ROLE_PAAE'
+				),
+				@id_usuario
+			);
+
+			SET @bool = 1;
+
+		END TRY
+		BEGIN CATCH
+			SET @bool = 17;
+			RETURN;
+		END CATCH
+
+END
+
 /*
 
 CODIGO DE ERRORES BASE DE DATOS
@@ -2786,6 +2833,8 @@ CODIGO DE ERRORES BASE DE DATOS
 	14:EL GRUPO O EL ESTUDINATE O LA UNIDAD DE APENDIZAJE NO SE ENCUENTRAN REGISTRADOS
 	15:Error al actualizar el estudiante
 	16:ERROR AL ACTULIZAR EL ESTADO DE LA BAJA DEL ESTUDIANTE
+	17:ERROR AL REGISTRAR LA CONSTANCIA SOLICITADA
+	18 NO FUE POSIBLE REGISTRAR EL PERSONAL DE APOYA A GESTIN ESCOLAR
 
 */
 
@@ -2846,10 +2895,10 @@ VALUES
 (12.0);
 
 INSERT INTO roles (nombre_rol)
-VALUES ('ESTUDIANTE'),
-       ('ADMIN'),
-       ('PAAE'),
-	   ('AUDITOR');
+VALUES ('ROLE_ESTUDIANTE'),
+       ('ROLE_ADMIN'),
+       ('ROLE_PAAE'),
+	   ('ROLE_AUDITOR');
 
 
 INSERT INTO semestre_activo (nombre_semestre, fecha_inicio, fecha_fin, estado)
@@ -3008,30 +3057,15 @@ VALUES
 (47, 1, 1, 1, 1);
 
 
-
-
-CREATE TABLE #usuario_sesion
+INSERT INTO tipo_solicitud
 (
-    id INTEGER PRIMARY KEY IDENTITY,
-    id_usuario BIGINT
-);
+	nombre_solicitud
+) VALUES
+('CONSTANCIA DE ESTUDIOS'),
+('CONSTANCIA DE INSCRIPCION'),
+('CONSTANCIA DE BECAS'),
+('CONSTANCIA DE SERVICIO SOCIAL');
 
-INSERT INTO #usuario_sesion
-( id_usuario )VALUES( null );
 
-UPDATE rol_usuario_est
-SET id_rol = 1
-WHERE id_rol_usuario_est = 4;
-
-DROP TABLE #usuario_sesion;
-
-    SELECT TOP 1 nombre_semestre, vigencia, vigencia_inicio, vigencia_fin, fecha_hoy
-    FROM v_constancia_estudios_semestre_activo WHERE estado = 1
-
-SELECT TOP 1 nombre, num_boleta, curp, estatus, foto_est,
-             turno, nom_periodo, nom_grupo, nom_carrera,
-             total_creditos, nombre_plan, porcentaje_carrera, promedio
-FROM v_constancia_estudios_datos_est WHERE num_boleta = 2020300476
-ORDER BY nom_periodo_num, nom_grupo DESC
 
 

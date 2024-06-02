@@ -122,4 +122,41 @@ public interface RepoSp extends CrudRepository<ComodinVistas, Integer> {
         @Param("usuario_alta") String usuarioAlta
     );
 
+
+
+
+
+
+
+
+
+    /* PROCEDIMIENTOS PARA ESTUDIANTES */
+    @Procedure(procedureName = "sp_registra_constancias")
+    public Integer spRegistraConstancias
+    (
+        @Param("boleta") Integer boleta,
+        @Param("constancia_solicitada") String constanciaSolicitada,
+        @Param("usuario_alta") String usuarioAlta
+    );
+
+
+
+
+
+
+
+
+
+    /* PROCEDIMIENTOS PARA ADMINISTRADOR */
+    @Procedure(procedureName = "sp_insertar_personal_gestion")
+    public Integer spInsertarPersonalGestion
+    (
+        @Param("paterno") String paterno,
+        @Param("materno") String materno,
+        @Param("nombre") String nombre,
+        @Param("numero_empleado") String numeroEmpleado,
+        @Param("correo") String correo,
+        @Param("usuario_alta") String usuarioAlta
+    );
+
 }
