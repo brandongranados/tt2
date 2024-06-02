@@ -159,4 +159,11 @@ public interface RepoSp extends CrudRepository<ComodinVistas, Integer> {
         @Param("usuario_alta") String usuarioAlta
     );
 
+    @Procedure(procedureName = "sp_baja_personal_gestion")
+    public Integer spBajaPersonalGestion
+    (
+        @Param("numero_empleado") String numeroEmpleado,
+        @Param("usuario_alta") String usuarioAlta
+    );
+
 }

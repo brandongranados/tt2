@@ -7,12 +7,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.tt.basedatos.JsonAjax.AjaxAltaPeersonal;
+import com.tt.basedatos.JsonAjax.AjaxBajaPersonal;
+import com.tt.basedatos.JsonAjax.AjaxListaEstudiante;
 import com.tt.basedatos.Repositorios.RepoSp;
+import com.tt.basedatos.Repositorios.RepoVistas;
 
 @Service
 public class Admin {
     @Autowired
     private RepoSp sp;
+    @Autowired
+    private RepoVistas vista;
 
     @Transactional(readOnly = false)
     public ResponseEntity setRegistarPersonalApoyo(AjaxAltaPeersonal personal)
@@ -40,5 +45,38 @@ public class Admin {
         }
 
         return ResponseEntity.ok(bool);
+    }
+
+    @Transactional(readOnly = false)
+    public ResponseEntity setBajaPersonalGestion(AjaxBajaPersonal personal)
+    {
+        Integer bool = 0;
+
+        try {
+
+            bool = sp.spBajaPersonalGestion
+            (
+                personal.getNumeroEmpleado(),
+                personal.getUsuario()
+            );
+
+            if( bool != 1 )
+                throw new Exception();
+
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResponseEntity.badRequest().body(bool);
+        }
+
+        return ResponseEntity.ok(bool);
+    }
+
+    public ResponseEntity getListaPersonal(AjaxListaEstudiante lista)
+    {
+        try {
+            return ResponseEntity.ok(vista.getListaPersonal(lista.getPaginacion()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

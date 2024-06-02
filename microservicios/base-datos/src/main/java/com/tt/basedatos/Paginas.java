@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tt.basedatos.JsonAjax.AjaxAltaPeersonal;
+import com.tt.basedatos.JsonAjax.AjaxBajaPersonal;
 import com.tt.basedatos.JsonAjax.AjaxEstudianteConstancias;
 import com.tt.basedatos.JsonAjax.AjaxExpedienteEst;
 import com.tt.basedatos.JsonAjax.AjaxListaEstudiante;
@@ -168,5 +169,17 @@ public class Paginas {
     public ResponseEntity setRegistarPersonalApoyo(@RequestBody AjaxAltaPeersonal personal)
     {
         return admin.setRegistarPersonalApoyo(personal);
+    }
+
+    @PostMapping("/admin/setEliminarPersonalApoyo")
+    public ResponseEntity setBajaPersonalGestion(@RequestBody AjaxBajaPersonal personal)
+    {
+        return admin.setBajaPersonalGestion(personal);
+    }
+
+    @PostMapping("/admin/getListaPersonal")
+    public ResponseEntity getListaPersonal(@RequestBody AjaxListaEstudiante personal)
+    {
+        return admin.getListaPersonal(personal);
     }
 }

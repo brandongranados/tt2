@@ -98,4 +98,16 @@ public interface RepoVistas extends CrudRepository<ComodinVistas, Integer>{
     )
     public Map<String, Object> getDatosSemestreActivo();
 
+    @Query
+    (
+        value = "SELECT * FROM v_lista_personal "+
+                "OFFSET (( :paginacion - 1 )* 100 ) "+
+                "ROWS FETCH NEXT ( :paginacion * 100 ) ROWS ONLY",
+        nativeQuery = true
+    )
+    public List<Map<String, Object>> getListaPersonal
+    (
+        @Param("paginacion") int paginacion
+    );
+
 }
