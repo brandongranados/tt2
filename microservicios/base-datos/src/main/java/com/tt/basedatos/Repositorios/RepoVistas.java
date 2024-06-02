@@ -100,7 +100,7 @@ public interface RepoVistas extends CrudRepository<ComodinVistas, Integer>{
 
     @Query
     (
-        value = "SELECT * FROM v_lista_personal "+
+        value = "SELECT * FROM v_lista_personal ORDER BY nombre ASC "+
                 "OFFSET (( :paginacion - 1 )* 100 ) "+
                 "ROWS FETCH NEXT ( :paginacion * 100 ) ROWS ONLY",
         nativeQuery = true

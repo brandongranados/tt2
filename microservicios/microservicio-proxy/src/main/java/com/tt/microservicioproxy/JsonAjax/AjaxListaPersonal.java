@@ -2,7 +2,7 @@ package com.tt.microservicioproxy.JsonAjax;
 
 import jakarta.validation.constraints.NotNull;
 
-public class AjaxListaEstudiante {
+public class AjaxListaPersonal {
     @NotNull
     private int paginacion;
 

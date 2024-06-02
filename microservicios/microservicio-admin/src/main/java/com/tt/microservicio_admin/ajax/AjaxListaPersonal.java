@@ -1,9 +1,6 @@
-package com.tt.microservicioproxy.JsonAjax;
+package com.tt.microservicio_admin.ajax;
 
-import jakarta.validation.constraints.NotNull;
-
-public class AjaxListaEstudiante {
-    @NotNull
+public class AjaxListaPersonal {
     private int paginacion;
 
     public int getPaginacion() {

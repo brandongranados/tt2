@@ -1626,6 +1626,22 @@ CREATE VIEW v_estudiante_materias AS
 	INNER JOIN periodo p
 		ON uappcg.id_periodo = p.id_periodo;
 
+
+CREATE VIEW v_lista_personal AS
+    SELECT CONCAT(
+            p.nombres, ' ',
+            p.apellido_paterno, ' ',
+            p.apellido_materno
+        ) AS nombre,
+        p.numero_personal,
+        p.correo_electronico,
+        u.nombre_usuario
+    FROM rol_personal_usuario rpu
+    INNER JOIN personal p
+        ON rpu.id_personal = p.id_personal
+    INNER JOIN usuario u
+        ON rpu.id_usuario = u.id_usuario;
+
 /************************************************************************************/
 /************************************************************************************/
 /************************************************************************************/
@@ -2810,6 +2826,94 @@ CREATE PROCEDURE sp_insertar_personal_gestion
 			SET @bool = 17;
 			RETURN;
 		END CATCH
+
+END
+
+
+
+CREATE PROCEDURE sp_baja_personal_gestion
+	@numero_empleado VARCHAR(MAX),
+	@usuario_alta VARCHAR(MAX),
+	@bool SMALLINT OUTPUT
+    AS BEGIN
+
+        DECLARE @id_personal BIGINT;
+        DECLARE @id_usuario BIGINT;
+        /* CREACION DE TABLA TEMPORAL */
+		DECLARE @id BIGINT;
+
+		SELECT TOP 1 @id = id_usuario FROM
+		(
+			SELECT id_usuario,
+					nombre_usuario
+					FROM usuario
+
+			UNION
+
+			SELECT id_usuario,
+					nombre_usuario
+					FROM bit_usuario
+		) AS usuarios
+		WHERE nombre_usuario = @usuario_alta;
+
+		BEGIN TRY
+
+			CREATE TABLE #usuario_sesion
+			(
+				id INTEGER PRIMARY KEY IDENTITY,
+				id_usuario BIGINT
+			);
+
+			INSERT INTO #usuario_sesion
+			( id_usuario )VALUES( @id );
+
+			SET @bool = 1;
+
+		END TRY
+		BEGIN CATCH
+
+			SET @bool = 6;
+			RETURN;
+
+		END CATCH
+		/* TERMINA CREACION DE TABLA TEMPORAL */
+
+        SELECT @id_personal = p.id_personal,
+               @id_usuario = u.id_usuario
+            FROM rol_personal_usuario rpu
+            INNER JOIN personal p
+                ON rpu.id_personal = p.id_personal
+            INNER JOIN usuario u
+                ON rpu.id_usuario = u.id_usuario
+            WHERE p.numero_personal = @numero_empleado;
+
+        IF @bool <> 1
+        BEGIN
+            SET @bool = 18;
+			RETURN;
+        END
+
+        IF @id_personal IS NULL OR @id_usuario IS NULL
+        BEGIN
+            SET @bool = 18;
+			RETURN;
+        END
+
+        BEGIN TRY
+
+            DELETE FROM personal
+            WHERE id_personal = @id_personal;
+
+            DELETE FROM usuario
+            WHERE id_usuario = @id_usuario;
+
+            SET @bool = 1;
+
+        END TRY
+        BEGIN CATCH
+            SET @bool = 18;
+			RETURN;
+        END CATCH
 
 END
 

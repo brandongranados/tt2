@@ -33,7 +33,6 @@ public class AjaxCargaMasivaEst {
     @NotNull
     private String fechaNacimiento;
     @NotNull
-    @Size(min = 10, max = 10, message = "La boleta solo puede tener 10 numeros")
     private int boleta;
     @NotNull
     private int carrera;
@@ -46,6 +45,7 @@ public class AjaxCargaMasivaEst {
     @SQLInjectionSafe
     @NotBlank
     @NotNull
+    @Size(max = 88, min = 88, message = "Su usuario no cumple con el tamano estipulado")
     private String usuario;
 
 
