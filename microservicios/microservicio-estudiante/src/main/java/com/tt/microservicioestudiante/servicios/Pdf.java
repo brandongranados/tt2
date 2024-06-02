@@ -138,9 +138,9 @@ public class Pdf {
 
     public ResponseEntity setRegistroConstancia(AjaxEstudianteConstancias estu)
     {
-        HashMap<String, Object> sp = restUnElemento(CONSTANCIA_SOLICITADA, estu);
+        HashMap<String, Object> sp = restUnElementov2(CONSTANCIA_SOLICITADA, estu);
 
-        if( sp != null )
+        if( sp == null )
             return ResponseEntity.badRequest().build();
         else
             return ResponseEntity.ok().build();
@@ -302,6 +302,25 @@ public class Pdf {
             return null;
         }
         return salida;
+    }
+
+    private HashMap<String, Object> restUnElementov2(String rutaGenerica, Object datos)
+    {
+        HashMap<String, Object> resPet = null;
+        int codigo = 400;
+
+        try {
+            
+            resPet = peticiones.getRespuestaRest(rutaGenerica, datos);
+            codigo = (int)resPet.get("codigo");
+
+            if( codigo != 200 )
+                throw new Exception();
+
+        } catch (Exception e) {
+            return null;
+        }
+        return new HashMap<String, Object>();
     }
 
 }
