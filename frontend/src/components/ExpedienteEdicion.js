@@ -1,6 +1,5 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dayjs from 'dayjs';
-
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
@@ -14,26 +13,27 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-
 import VisibilityIcon from '@mui/icons-material/Visibility';
-
 import Cargando from "./Cargando";
 import Navegacion from "./Navegacion";
+import useAjax from '../services/useAjax';  
 
-let ExpendienteEdicion = () => {
-    // Datos ficticios
-    const [apePaterno, setApePaterno] = useState("Casiano");
-    const [apeMaterno, setApeMaterno] = useState("Granados");
-    const [nombres, setNombres] = useState("Brandon");
-    const [curp, setCurp] = useState("GULK123456HDFKD09");
-    const [sexo, setSexo] = useState("M");
-    const [nacimiento, setNacimiento] = useState(dayjs("1999-10-13"));
-    const [boleta, setBoleta] = useState("2018670098");
-    const [carreraOpc, setCarreraOpc] = useState(["INGENIERIA EN SISTEMAS"]);
-    const [carreraSel, setCarreraSel] = useState("INGENIERIA EN SISTEMAS");
+let ExpendienteEdicion = ({ estudiante }) => {
+
+    const [apePaterno, setApePaterno] = useState(estudiante.paterno);
+    const [apeMaterno, setApeMaterno] = useState(estudiante.materno);
+    const [nombres, setNombres] = useState(estudiante.nombre);
+    const [curp, setCurp] = useState(estudiante.curp);
+    const [sexo, setSexo] = useState(estudiante.sexo);
+    const [nacimiento, setNacimiento] = useState(dayjs(estudiante.fechaNacimiento));
+    const [boletaState, setBoleta] = useState(estudiante.boleta);
+    const [carreraOpc, setCarreraOpc] = useState(["1", "2", "3"]);  
+    const [carreraSel, setCarreraSel] = useState(estudiante.carrera);
     const [semestreNivel, setSemestreNivel] = useState(["1", "2", "3"]);
-    const [semestreNivelSel, setSemestreNivelSel] = useState("3");
+    const [semestreNivelSel, setSemestreNivelSel] = useState(estudiante.semestre);
     const [correo, setCorreo] = useState("JCAJSDNOINC@GMAIL.COM");
+    const [cargando, setCargando] = useState(false);
+    const { edicionMasivaEstudiantes } = useAjax();  
 
     let cambiaApePaterno = (e) => setApePaterno(e.target.value.toUpperCase());
     let cambiaApeMaterno = (e) => setApeMaterno(e.target.value.toUpperCase());
@@ -45,7 +45,7 @@ let ExpendienteEdicion = () => {
     let cambiaBoleta = (e) => {
         let valor = e.target.value;
         for(let i=0; i<valor.length; i++)
-            if( !(valor.charAt(i).charCodeAt() > 47 && valor.charCodeAt(i) < 58) )
+            if( !(valor.charAt(i).charCodeAt() > 47 && valor.charAt(i).charCodeAt() < 58) )
                 valor = valor.replace(valor.charAt(i), "");
         if( valor.length > 10 )
             valor = valor.substring(0, 10);
@@ -79,10 +79,42 @@ let ExpendienteEdicion = () => {
         setNacimiento(dayjs(e.target.value));
     };
 
+    const handleActualizar = async () => {
+        setCargando(true);
+
+        const datos = {
+            estudiantes: [
+                {
+                    paterno: apePaterno,
+                    materno: apeMaterno,
+                    nombre: nombres,
+                    curp: curp,
+                    sexo: sexo,
+                    fechaNacimiento: nacimiento.format('YYYY/MM/DD'),
+                    boleta: parseInt(boletaState, 10),
+                    carrera: parseInt(carreraSel, 10),
+                    semestre: parseInt(semestreNivelSel, 10),
+                    plan: 1,
+                    estatus: 1,
+                    usuario: "Itzel"  
+                }
+            ]
+        };
+
+        try {
+            const resultado = await edicionMasivaEstudiantes(datos, setCargando);
+            console.log("Resultado de la actualización:", resultado);
+        } catch (error) {
+            console.error("Error al actualizar:", error);
+        }
+
+        setCargando(false);
+    };
+
     return (
         <>
-            <Cargando/>
-            <Navegacion/>
+            <Cargando open={cargando} />
+            <Navegacion />
             <Grid container justifyContent="center">
                 <Grid item xs={12} md={10}>
                     <Paper>
@@ -148,7 +180,7 @@ let ExpendienteEdicion = () => {
                                     <Grid item xs={12} sm={4}>
                                         <TextField
                                             label="Boleta"
-                                            value={boleta}
+                                            value={boletaState}
                                             onChange={cambiaBoleta}
                                             fullWidth
                                         />
@@ -192,7 +224,7 @@ let ExpendienteEdicion = () => {
                                         />
                                     </Grid>
                                     <Grid item xs={12} display="flex" justifyContent="center">
-                                        <Button variant="contained" color="primary">
+                                        <Button variant="contained" color="primary" onClick={handleActualizar}>
                                             Actualizar
                                         </Button>
                                     </Grid>

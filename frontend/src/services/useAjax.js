@@ -21,13 +21,18 @@ const rutas = {
     VALIDAR_ESTUDIANTE : "/validarEstudiante",
     REGISTRO_ESTUDIANTE: "/registroEstudiante",
     REGISTRO_ESTUDIANTE_TOKEN: "/registroEstudianteToken",
-    ALTA_ESTUDIANTES: "/personalGestionEscolar/altaMasivaEstudiantes",
     CONSTANCIA_ESTUDIOS: "/estudiante/getConstanciaEstudios",
     CONSTANCIA_INSCRIPCION: "/estudiante/getConstanciaInscripcion",
     CONSTANCIA_BECAS: "/estudiante/getConstanciaBecas",
     CONSTANCIA_SERVICIO: "/estudiante/getConstanciaServicio",
-    VERIFICA_DOCUMENTO: "/estudiante/getVerificarConstancia"
-};
+    VERIFICA_DOCUMENTO: "/estudiante/getVerificarConstancia",
+    ALTA_ESTUDIANTES: "/personalGestionEscolar/altaMasivaEstudiantes",
+    EDICION_ESTUDIANTES: "/personalGestionEscolar/edicionMasivaEstudiantes",
+    BAJA_ESTUDIANTES: "/personalGestionEscolar/bajaMasivaEstudiantes",
+    MAPEO_MATERIAS_ESTUDIANTES: "/personalGestionEscolar/mapeoMateriasEstudiantes",
+    LISTA_ESTUDIANTES: "/personalGestionEscolar/getListaEstudiantes",
+    EXPEDIENTE_ESTUDIANTE: "/personalGestionEscolar/getExpedienteEstudiante"
+    };
 
 const ajax = axios.create({
     baseURL : rutas.URL
@@ -564,7 +569,156 @@ let useAjax = () => {
             return false;
         }
     };
+    // edición masiva de estudiantes
+    let edicionMasivaEstudiantes = async (datos, setEspera) => {
+        console.log("Edición masiva de estudiantes", datos);
+        setEspera(true);
+        try {
+            let resp = await ajax.post(rutas.EDICION_ESTUDIANTES, datos, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
 
+            console.log("Respuesta del servidor", resp.data);
+            setEspera(false);
+            return resp.data;
+        } catch (error) {
+            console.error("Error en la petición", error);
+            setEspera(false);
+            await creaAlerta({
+                titulo: "Error",
+                mensaje: "No se pudo realizar la edición masiva de estudiantes.",
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+        }
+    };
+
+// baja masiva de estudiantes
+    let bajaMasivaEstudiantes = async (datos, setEspera) => {
+        console.log("Baja masiva de estudiantes", datos);
+        setEspera(true);
+        try {
+            let resp = await ajax.post(rutas.BAJA_ESTUDIANTES, datos, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            console.log("Respuesta del servidor", resp.data);
+            setEspera(false);
+            return resp.data;
+        } catch (error) {
+            console.error("Error en la petición", error);
+            setEspera(false);
+            await creaAlerta({
+                titulo: "Error",
+                mensaje: "No se pudo realizar la baja masiva de estudiantes.",
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+        }
+    };
+
+// mapeo de materias de estudiantes
+    let mapeoMateriasEstudiantes = async (datos, setEspera) => {
+        console.log("Mapeo de materias de estudiantes", datos);
+        setEspera(true);
+        try {
+            let resp = await ajax.post(rutas.MAPEO_MATERIAS_ESTUDIANTES, datos, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            console.log("Respuesta del servidor", resp.data);
+            setEspera(false);
+            return resp.data;
+        } catch (error) {
+            console.error("Error en la petición", error);
+            setEspera(false);
+            await creaAlerta({
+                titulo: "Error",
+                mensaje: "No se pudo realizar el mapeo de materias de estudiantes.",
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+        }
+    };
+
+// obtener la lista de estudiantes
+    let getListaEstudiantes = async (datos, setEspera) => {
+        console.log("Obtener lista de estudiantes", datos);
+        setEspera(true);
+        try {
+            let resp = await ajax.post(rutas.LISTA_ESTUDIANTES, datos, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            console.log("Respuesta del servidor", resp.data);
+            setEspera(false);
+            return resp.data;
+        } catch (error) {
+            console.error("Error en la petición", error);
+            setEspera(false);
+            await creaAlerta({
+                titulo: "Error",
+                mensaje: "No se pudo obtener la lista de estudiantes.",
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+        }
+    };
+
+// obtener el expediente de un estudiante
+    let getExpedienteEstudiante = async (datos, setEspera) => {
+        console.log("Obtener expediente de estudiante", datos);
+        setEspera(true);
+        try {
+            let resp = await ajax.post(rutas.EXPEDIENTE_ESTUDIANTE, datos, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            console.log("Respuesta del servidor", resp.data);
+            setEspera(false);
+            return resp.data;
+        } catch (error) {
+            console.error("Error en la petición", error);
+            setEspera(false);
+            await creaAlerta({
+                titulo: "Error",
+                mensaje: "No se pudo obtener el expediente del estudiante.",
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+        }
+    };
+    
     return {
         iniciarConexion,
         restablecerContrasena,
@@ -576,7 +730,12 @@ let useAjax = () => {
         registrarEstudianteToken,
         altaEstudiantes,
         crearConstancia,
-        verificarDocumento
+        verificarDocumento,
+        edicionMasivaEstudiantes,
+        bajaMasivaEstudiantes,
+        mapeoMateriasEstudiantes,
+        getListaEstudiantes,
+        getExpedienteEstudiante
     };
 };
 
