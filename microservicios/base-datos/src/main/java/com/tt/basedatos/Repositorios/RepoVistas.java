@@ -48,6 +48,13 @@ public interface RepoVistas extends CrudRepository<ComodinVistas, Integer>{
 
     @Query
     (
+        value = "SELECT COUNT(*) AS cant FROM v_lista_estudiantes",
+        nativeQuery = true
+    )
+    public Map<String, Object> getListaEstudianteCant();
+
+    @Query
+    (
         value = "SELECT * FROM v_list_est_expe_estudiantil "+
                 "WHERE num_boleta = :boleta",
         nativeQuery = true

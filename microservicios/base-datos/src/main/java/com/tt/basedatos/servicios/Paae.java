@@ -1,6 +1,7 @@
 package com.tt.basedatos.servicios;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -108,11 +109,16 @@ public class Paae {
 
     public ResponseEntity getListaEstudiante(AjaxListaEstudiante estu)
     {
+        HashMap<String, Object> sal = new HashMap<String, Object>();
+
         try {
-            return ResponseEntity.ok(vista.getListaEstudiante(estu.getPaginacion()));
+            sal.put("lista", vista.getListaEstudiante(estu.getPaginacion()));
+            sal.put("cant", vista.getListaEstudianteCant());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+
+        return ResponseEntity.ok(sal);
     }
 
     public ResponseEntity getExpedienteEstuDatos(AjaxExpedienteEst estu)
