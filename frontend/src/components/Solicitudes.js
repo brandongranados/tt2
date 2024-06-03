@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { useSelector } from 'react-redux';
+
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
@@ -12,13 +14,31 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Cargando from "./Cargando";
 import Navegacion from "./Navegacion";
 import VerPdf from './VerPdf';
+import useAjax from '../services/useAjax';
 
 let Solicitudes = () => {
+    const ObjAjax = useAjax();
+    const usuario = useSelector( state => state.DatosUsuario.DatosUsuario );
 
     const [espera, setEspera] = useState(false);
     const [abrirPdf, setAbrirPdf] = useState(false);
+    const [crudoPDF, setCrudoPDF] = useState(null);
 
-    let cerrarModal = () => setAbrirPdf(false);
+    let constancia = async (opc) => {
+        let crudo = await ObjAjax.crearConstancia({usuario:usuario}, setEspera, opc);
+        
+        if( crudo )
+        {
+            setCrudoPDF(crudo);
+            setEspera(false);
+            abrirModal();
+        }
+    };
+
+    let cerrarModal = () => {
+        setAbrirPdf(false);
+        setCrudoPDF(null);
+    }
     let abrirModal = () => setAbrirPdf(true);
 
     return(
@@ -49,70 +69,37 @@ let Solicitudes = () => {
                                 <Typography 
                                 sx={{border:"solid #006699 1px", borderRadius:"4px", cursor:"pointer"}} 
                                 variant="h6" 
-                                component={"p"}>
+                                component={"p"}
+                                onClick={ e => constancia(1) }>
                                     Constancia de estudios
                                 </Typography>
                                 <Typography 
                                 sx={{border:"solid #006699 1px", borderRadius:"4px", cursor:"pointer"}}
                                 variant="h6" 
-                                component={"p"}>
+                                component={"p"}
+                                onClick={ e => constancia(2) }>
                                     Constancia de inscripci&oacute;n
                                 </Typography>
                                 <Typography
                                 sx={{border:"solid #006699 1px", borderRadius:"4px", cursor:"pointer"}}
                                 variant="h6" 
-                                component={"p"}>
+                                component={"p"}
+                                onClick={ e => constancia(3) }>
                                     Constancia para becas
                                 </Typography>
                                 <Typography
                                 sx={{border:"solid #006699 1px", borderRadius:"4px", cursor:"pointer"}}
                                 variant="h6"
-                                component={"p"}>
-                                    Constancia de periodo vacacional de estudios
-                                </Typography>
-                                <Typography
-                                sx={{border:"solid #006699 1px", borderRadius:"4px", cursor:"pointer"}}
-                                variant="h6"
-                                component={"p"}>
+                                component={"p"}
+                                onClick={ e => constancia(5) }>
                                     Constancia de servicio social
-                                </Typography>
-                            </AccordionDetails>
-                        </Accordion>
-                    </Grid>
-                    <Grid item xs={12} sx={{marginTop:"0.3%"}}>
-                        <Accordion>
-                            <AccordionSummary
-                            sx={{border:"solid #006699 3px", borderRadius:"4px", cursor:"pointer"}}
-                            expandIcon={<KeyboardArrowDownIcon/>}>
-                                <Typography variant="h5" element="span" fontWeight={"bold"}>
-                                    Boleta
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Typography 
-                                sx={{border:"solid #006699 1px", borderRadius:"4px", cursor:"pointer"}} 
-                                variant="h6" 
-                                component={"p"}>
-                                    Boleta global
-                                </Typography>
-                                <Typography 
-                                sx={{border:"solid #006699 1px", borderRadius:"4px", cursor:"pointer"}}
-                                variant="h6" 
-                                component={"p"}>
-                                    Boleta certificada
-                                </Typography>
-                                <Typography
-                                sx={{border:"solid #006699 1px", borderRadius:"4px", cursor:"pointer"}}
-                                variant="h6" 
-                                component={"p"}>
-                                    Boleta informativa
                                 </Typography>
                             </AccordionDetails>
                         </Accordion>
                     </Grid>
                 </Grid>
             </Box>
-            <VerPdf open={abrirPdf} cerrarPdf={cerrarModal} base64={""} />
+            <VerPdf open={abrirPdf} cerrarPdf={cerrarModal} base64={crudoPDF} />
         </>
     )
 };

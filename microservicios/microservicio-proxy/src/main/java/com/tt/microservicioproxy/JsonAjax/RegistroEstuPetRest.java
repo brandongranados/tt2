@@ -17,6 +17,7 @@ public class RegistroEstuPetRest {
     @NotBlank
     @SQLInjectionSafe
     @NotNull
+    @Size(max = 88, min = 88, message = "Su usuario no cumple con el tamano estipulado")
     private String usuario;
     @NotBlank
     @SQLInjectionSafe
@@ -26,6 +27,7 @@ public class RegistroEstuPetRest {
     @NotBlank
     @SQLInjectionSafe
     @NotNull
+    @Size(max = 88, min = 88, message = "Su usuario no cumple con el tamano estipulado")
     private String contrasena;
     @NotBlank
     @SQLInjectionSafe

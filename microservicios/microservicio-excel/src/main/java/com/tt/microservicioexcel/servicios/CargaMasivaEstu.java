@@ -29,13 +29,17 @@ public class CargaMasivaEstu {
 
         try {
 
-            ByteArrayInputStream crudo = new ByteArrayInputStream(Base64.getDecoder().decode(estu.getDocuemnto()));
-            ArrayList<Map<String, Object>> sal = cargarEstudiantes(crudo);
+            ArrayList<Map<String, Object>> sal = cargarEstudiantes(estu.getDocuemnto());
+            ArrayList<Map<String, Object>> materias = mapeoMateriasEstudiante(estu.getDocuemnto());
 
             if( sal == null )
                 throw new Exception();
 
+            if( materias == null )
+                throw new Exception();
+
             salHttp.put("docEstudiante", sal);
+            salHttp.put("mapeoMateriaEstudiante", materias);
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -44,13 +48,15 @@ public class CargaMasivaEstu {
         return ResponseEntity.ok(salHttp);
     }
 
-    private ArrayList<Map<String, Object>> cargarEstudiantes(ByteArrayInputStream ent)
+    private ArrayList<Map<String, Object>> cargarEstudiantes(String cadena)
     {
         SimpleDateFormat fromato = new SimpleDateFormat("yyyy-MM-dd");
         ArrayList<Map<String, Object>> sal = new ArrayList<Map<String, Object>>();
         Workbook libroExcel = null;
+        ByteArrayInputStream ent = null;
 
         try {
+            ent = new ByteArrayInputStream(Base64.getDecoder().decode(cadena));
             libroExcel = new XSSFWorkbook(ent);
 
             Sheet pestanaExcelEstu = libroExcel.getSheetAt(0);
@@ -76,6 +82,46 @@ public class CargaMasivaEstu {
                 estudiante.put("semestre", this.getValorCelda(reg.getCell(8)));
                 estudiante.put("plan", this.getValorCelda(reg.getCell(9)));
                 estudiante.put("estatus", this.getValorCelda(reg.getCell(10)));
+
+                sal.add(estudiante);
+            }
+
+            libroExcel.close();
+        } catch (Exception e) {
+            sal = null;
+        }
+        finally{
+            try {
+                libroExcel.close();
+            } catch (Exception e) {}
+        }
+
+        return sal;
+    }
+
+    private ArrayList<Map<String, Object>> mapeoMateriasEstudiante(String cadena)
+    {
+        ByteArrayInputStream ent = null;
+        ArrayList<Map<String, Object>> sal = new ArrayList<Map<String, Object>>();
+        Workbook libroExcel = null;
+
+        try {
+            ent = new ByteArrayInputStream(Base64.getDecoder().decode(cadena));
+            libroExcel = new XSSFWorkbook(ent);
+
+            Sheet pestanaExcelEstu = libroExcel.getSheetAt(1);
+            Iterator<Row> iteRow = pestanaExcelEstu.iterator();
+
+            Row ignora = iteRow.next();
+
+            while (iteRow.hasNext()) 
+            {
+                Map<String, Object> estudiante = new HashMap<String, Object>();
+                Row reg = iteRow.next();
+
+                estudiante.put("boleta", this.getValorCelda(reg.getCell(0)));
+                estudiante.put("unidad_aprendizaje", this.getValorCelda(reg.getCell(1)));
+                estudiante.put("grupo", this.getValorCelda(reg.getCell(2)));
 
                 sal.add(estudiante);
             }

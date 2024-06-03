@@ -29,6 +29,9 @@ public class Correo {
             case 1:
                 asunto = "Autenticacion de correo electronico";
                 break;
+            case 2:
+                asunto = "Restablecimiento de contrasena";
+                break;
             default:
                 break;
         }

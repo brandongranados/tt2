@@ -3,13 +3,16 @@ import { useEffect } from 'react';
 
 import axios from 'axios';
 
+import { useNavigate } from 'react-router-dom';
+
 import { getAutenticacion, setAutenticacion } from './Autenticacion';
+import { getDatosUsuario, setDatosUsuario } from './DatosUsuario';
 
 import useAlerta from '../components/hooks/useAlerta';
 import useArchivo from '../components/hooks/useArchivo';
 
 const rutas = {
-    URL : "http://158.23.81.60:3030",
+    URL : "http://158.23.81.60:9090",
     INICIO_SESION : "/login",
     RESTABLECER : "/restablecer",
     VERIFICACION_MASIVA_ESTUDIANTES : "/verificarMasivaEstudiante",
@@ -18,7 +21,12 @@ const rutas = {
     VALIDAR_ESTUDIANTE : "/validarEstudiante",
     REGISTRO_ESTUDIANTE: "/registroEstudiante",
     REGISTRO_ESTUDIANTE_TOKEN: "/registroEstudianteToken",
-    ALTA_ESTUDIANTES: "/personalGestionEscolar/altaEstudiantes",
+    ALTA_ESTUDIANTES: "/personalGestionEscolar/altaMasivaEstudiantes",
+    CONSTANCIA_ESTUDIOS: "/estudiante/getConstanciaEstudios",
+    CONSTANCIA_INSCRIPCION: "/estudiante/getConstanciaInscripcion",
+    CONSTANCIA_BECAS: "/estudiante/getConstanciaBecas",
+    CONSTANCIA_SERVICIO: "/estudiante/getConstanciaServicio",
+    VERIFICA_DOCUMENTO: "/estudiante/getVerificarConstancia"
 };
 
 const ajax = axios.create({
@@ -31,9 +39,11 @@ let useAjax = () => {
     const [creaAlerta] = useAlerta();
     const [ archivo, descargaExcelDesdeBase64 ] = useArchivo();
     const Authorization = useSelector( state => state.Autenticacion.Autenticacion );
+    const navegar = useNavigate();
 
     useEffect( () => {
         despacha(getAutenticacion());
+        despacha(getDatosUsuario());
     }, [] );
 
     //AJAX INICIO DE SESION
@@ -44,8 +54,17 @@ let useAjax = () => {
         try {
             let resp = await ajax.post(rutas.INICIO_SESION, datos);
             let dat = await resp.data;
+            let roles = JSON.parse(dat.rol);
+
+            switch(roles[0].role)
+            {
+                case "ROLE_ESTUDIANTE":
+                    navegar("/estudiante/solicitudes");
+                break;
+            }
 
             despacha(setAutenticacion(dat.token));
+            despacha(setDatosUsuario(datos.usuario));
 
             setEspera(false);
 
@@ -412,7 +431,9 @@ let useAjax = () => {
         }
     };
      //alta estudiante   
-    let altaEstudiantes = async (datos, setEspera) => {
+     let altaEstudiantes = async (datos, setEspera) => {
+        console.log("estos son los datos", datos);
+        console.log("esta es la ruta", rutas.ALTA_ESTUDIANTES);
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.ALTA_ESTUDIANTES, datos, {
@@ -420,9 +441,27 @@ let useAjax = () => {
                     'Content-Type': 'application/json',
                 }
             });
+    
+            console.log("respuesta del servidor", resp.data); // Loguea la respuesta del servidor
+    
             setEspera(false);
+    
+            if (resp.data) {
+                await creaAlerta({
+                    titulo: "Éxito",
+                    mensaje: "Alta de estudiantes realizada correctamente.",
+                    icono: 1,
+                    boolBtnCancel: false,
+                    ColorConfirmar: "#2e7d32",
+                    ColorCancel: "",
+                    MensajeConfirmar: "OK",
+                    MensajeCancel: ""
+                });
+            }
+    
             return resp.data;
         } catch (error) {
+            console.error("Error en la petición", error); // Loguea el error
             setEspera(false);
             await creaAlerta({
                 titulo: "Error",
@@ -436,6 +475,95 @@ let useAjax = () => {
             });
         }
     };
+    
+
+    //AJAX CREAR CONSTANCIAS.
+    let crearConstancia = async (datos, setEspera, opc) => {
+        try {
+
+            let liga = "";
+
+            setEspera(true);
+
+            switch(opc)
+            {
+                case 1:
+                    liga = rutas.CONSTANCIA_ESTUDIOS;
+                break;
+                case 2:
+                    liga = rutas.CONSTANCIA_INSCRIPCION;
+                break;
+                case 3:
+                    liga = rutas.CONSTANCIA_BECAS;
+                break;
+                case 5:
+                    liga = rutas.CONSTANCIA_SERVICIO;
+                break;
+                default:
+                    liga = rutas.CONSTANCIA_ESTUDIOS;
+                break;
+            }
+
+            let data = await ajax.post(liga, datos, {
+                headers:{
+                    'Content-Type': 'application/json',
+                    Authorization: Authorization
+                }
+            });
+
+            return await data.data.documento;
+
+        } catch (error) {
+            setEspera(false);
+
+            await creaAlerta({
+                titulo : "Error",
+                mensaje : "No fue posible crear su constancia inrentelo de nuevo mas tarde.",
+                icono : 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "",
+                MensajeConfirmar : "OK",
+                MensajeCancel : ""
+            });
+
+            return null;
+        }
+    };
+
+    let verificarDocumento = async (datos, setEspera) => {
+        setEspera(true);
+        try {
+
+            let respuesta = await ajax.post(rutas.VERIFICA_DOCUMENTO, datos, {
+                headers:{
+                    'Content-Type': 'application/json',
+                    Authorization: Authorization
+                }
+            });
+
+            setEspera(false);
+            return respuesta.data;
+
+        } catch (error) {
+            setEspera(false);
+
+            await creaAlerta({
+                titulo : "Error",
+                mensaje : "Documento corrupto.",
+                icono : 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "",
+                MensajeConfirmar : "OK",
+                MensajeCancel : ""
+            });
+
+            navegar("/");
+
+            return false;
+        }
+    };
 
     return {
         iniciarConexion,
@@ -446,7 +574,9 @@ let useAjax = () => {
         cargarEstudiante,
         registrarEstudiante,
         registrarEstudianteToken,
-        altaEstudiantes
+        altaEstudiantes,
+        crearConstancia,
+        verificarDocumento
     };
 };
 

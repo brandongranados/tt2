@@ -1,5 +1,8 @@
 package com.tt.microserviciocryptografia;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,16 +35,17 @@ public class Paginas {
     public ResponseEntity getVerificacionContenidos(@RequestBody AjaxDocFirSAT entrada)
     {
         try {
-            boolean sal = firmasDocSat.getVerificaDocumento(entrada.getDocumento());
+            String sal = firmasDocSat.getVerificaDocumento(entrada.getDocumento());
+            entrada.setDocumento(sal);
 
-            if( !sal )
+            if( sal == null )
                 throw new Exception();
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(entrada);
     }
 
 }
