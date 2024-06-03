@@ -447,11 +447,9 @@ let useAjax = () => {
                 }
             });
     
-            console.log("respuesta del servidor", resp.data); // Loguea la respuesta del servidor
-    
             setEspera(false);
     
-            if (resp.data) {
+            if (resp.status === 200) {
                 await creaAlerta({
                     titulo: "Éxito",
                     mensaje: "Alta de estudiantes realizada correctamente.",

@@ -19,14 +19,13 @@ import Navegacion from "./Navegacion";
 import useAjax from '../services/useAjax';  
 
 let ExpendienteEdicion = ({ estudiante }) => {
+    console.log("estudiante", estudiante );
 
-    const [apePaterno, setApePaterno] = useState(estudiante.paterno);
-    const [apeMaterno, setApeMaterno] = useState(estudiante.materno);
     const [nombres, setNombres] = useState(estudiante.nombre);
     const [curp, setCurp] = useState(estudiante.curp);
     const [sexo, setSexo] = useState(estudiante.sexo);
     const [nacimiento, setNacimiento] = useState(dayjs(estudiante.fechaNacimiento));
-    const [boletaState, setBoleta] = useState(estudiante.boleta);
+    const [boletaState, setBoleta] = useState(estudiante.num_boleta);
     const [carreraOpc, setCarreraOpc] = useState(["1", "2", "3"]);  
     const [carreraSel, setCarreraSel] = useState(estudiante.carrera);
     const [semestreNivel, setSemestreNivel] = useState(["1", "2", "3"]);
@@ -35,8 +34,6 @@ let ExpendienteEdicion = ({ estudiante }) => {
     const [cargando, setCargando] = useState(false);
     const { edicionMasivaEstudiantes } = useAjax();  
 
-    let cambiaApePaterno = (e) => setApePaterno(e.target.value.toUpperCase());
-    let cambiaApeMaterno = (e) => setApeMaterno(e.target.value.toUpperCase());
     let cambiaNombres = (e) => setNombres(e.target.value.toUpperCase());
     let cambiaCarrera = (e) => setCarreraSel(e.target.value);
     let cambiaSemestreNivel = (e) => setSemestreNivelSel(e.target.value);
@@ -85,8 +82,6 @@ let ExpendienteEdicion = ({ estudiante }) => {
         const datos = {
             estudiantes: [
                 {
-                    paterno: apePaterno,
-                    materno: apeMaterno,
                     nombre: nombres,
                     curp: curp,
                     sexo: sexo,
@@ -125,22 +120,8 @@ let ExpendienteEdicion = ({ estudiante }) => {
                             
                             <Box mb={4}>
                                 <Grid container spacing={3} justifyContent="center">
-                                    <Grid item xs={12} sm={4}>
-                                        <TextField
-                                            label="Apellido Paterno"
-                                            value={apePaterno}
-                                            onChange={cambiaApePaterno}
-                                            fullWidth
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={4}>
-                                        <TextField
-                                            label="Apellido Materno"
-                                            value={apeMaterno}
-                                            onChange={cambiaApeMaterno}
-                                            fullWidth
-                                        />
-                                    </Grid>
+                                    
+                            
                                     <Grid item xs={12} sm={4}>
                                         <TextField
                                             label="Nombre(s)"
@@ -180,7 +161,7 @@ let ExpendienteEdicion = ({ estudiante }) => {
                                     <Grid item xs={12} sm={4}>
                                         <TextField
                                             label="Boleta"
-                                            value={boletaState}
+                                            value={num_boleta}
                                             onChange={cambiaBoleta}
                                             fullWidth
                                         />

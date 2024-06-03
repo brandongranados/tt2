@@ -20,7 +20,7 @@ import Modal from '@mui/material/Modal';
 import Cargando from "./Cargando";
 import Navegacion from "./Navegacion";
 import useAjax from '../services/useAjax';
-import ExpendienteEdicion from './ExpendienteEdicion';  // Importar el componente del modal
+import ExpendienteEdicion from './ExpedienteEdicion';  // Importar el componente del modal
 
 const style = {
   position: 'absolute',
@@ -47,6 +47,7 @@ let ExpedienteEstudiantil = () => {
     let listaEstudiantes = async (pagina) => {
         let resp = await ObjAjax.getListaEstudiantes({paginacion:pagina}, setEspera);
         setDatos(resp.lista);
+        console.log('datos Expediente ', resp.lista);
         setCantDatos( parseInt(resp.cant.cant/100)+1 );
     };
 
