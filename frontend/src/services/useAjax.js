@@ -9,7 +9,7 @@ import useAlerta from '../components/hooks/useAlerta';
 import useArchivo from '../components/hooks/useArchivo';
 
 const rutas = {
-    URL : "http://localhost:9090",
+    URL : "http://158.23.81.60:3030",
     INICIO_SESION : "/login",
     RESTABLECER : "/restablecer",
     VERIFICACION_MASIVA_ESTUDIANTES : "/verificarMasivaEstudiante",
@@ -17,7 +17,8 @@ const rutas = {
     EJEMPLO_EXCEL_MASIVA_EST : "/ejemploExcelMasivaEst",
     VALIDAR_ESTUDIANTE : "/validarEstudiante",
     REGISTRO_ESTUDIANTE: "/registroEstudiante",
-    REGISTRO_ESTUDIANTE_TOKEN: "/registroEstudianteToken"
+    REGISTRO_ESTUDIANTE_TOKEN: "/registroEstudianteToken",
+    ALTA_ESTUDIANTES: "/personalGestionEscolar/altaEstudiantes",
 };
 
 const ajax = axios.create({
@@ -410,6 +411,31 @@ let useAjax = () => {
             return false;
         }
     };
+     //alta estudiante   
+    let altaEstudiantes = async (datos, setEspera) => {
+        setEspera(true);
+        try {
+            let resp = await ajax.post(rutas.ALTA_ESTUDIANTES, datos, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            setEspera(false);
+            return resp.data;
+        } catch (error) {
+            setEspera(false);
+            await creaAlerta({
+                titulo: "Error",
+                mensaje: "No se pudo realizar el alta de estudiantes.",
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+        }
+    };
 
     return {
         iniciarConexion,
@@ -419,7 +445,8 @@ let useAjax = () => {
         descargarEjemploExcel,
         cargarEstudiante,
         registrarEstudiante,
-        registrarEstudianteToken
+        registrarEstudianteToken,
+        altaEstudiantes
     };
 };
 
