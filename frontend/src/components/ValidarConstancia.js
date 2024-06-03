@@ -64,9 +64,6 @@ const ValidarConstancia = () => {
                     </Typography>
                     <Box display="flex" justifyContent="center" mt={2}>
                         <Paper elevation={3} sx={{ padding: 2, width: '80%' }}>
-                            <Typography variant="body1" component="p" sx={{ mb: 2, textAlign: 'center' }}>
-                                El código de seguridad ha sido modificado o la información de la trayectoria del alumno ha sufrido cambios con respecto al documento emitido, por favor solicite una constancia actualizada.
-                            </Typography>
                             <Typography variant="body1" component="p" sx={{ mb: 2 }}>
                                 <strong>Nombre del estudiante:</strong> {datos.nombre}
                             </Typography>

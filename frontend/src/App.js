@@ -37,6 +37,7 @@ let Inicio = () => {
       <Route path="/administrador/altaEstudianteValidacion" element={<AltaEstudianteValidacion/>} />
       <Route path="/administrador/altaEstValEdicion" element={<AltaEstValEdicion/>} />
       <Route path="/administrador/expedienteEstudiantil" element={<ExpedienteEstudiantil/>} />
+      <Route path="/personalGestion/expedienteEstudiantil" element={<ExpedienteEstudiantil/>} />
       <Route path="/administrador/expEstEdicion" element={<ExpendienteEdicion/>} />
       <Route path="/auditor/bitacora" element={<Bitacora/>} />
       <Route path="/otro" element={<RegistroUsuario/>} />     
