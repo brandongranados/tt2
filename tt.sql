@@ -3173,3 +3173,16 @@ INSERT INTO tipo_solicitud
 
 
 
+CREATE TABLE #usuario_sesion
+(
+    id INTEGER PRIMARY KEY IDENTITY,
+    id_usuario BIGINT
+);
+
+INSERT INTO #usuario_sesion
+( id_usuario )VALUES( null );
+
+UPDATE usuario
+SET nombre_usuario = 'OTU0Mzk4YjA2ZjM4N2VhMTNiYTllNTYxMzIwZjA4YTcxMDY4YTIxNTdiN2M4ODIxZDg5NGY5OTAxODdlMmM5ZQ==',
+    contrasena = 'OTU0Mzk4YjA2ZjM4N2VhMTNiYTllNTYxMzIwZjA4YTcxMDY4YTIxNTdiN2M4ODIxZDg5NGY5OTAxODdlMmM5ZQ=='
+WHERE id_usuario = 25;

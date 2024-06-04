@@ -21,11 +21,14 @@ const rutas = {
     VALIDAR_ESTUDIANTE : "/validarEstudiante",
     REGISTRO_ESTUDIANTE: "/registroEstudiante",
     REGISTRO_ESTUDIANTE_TOKEN: "/registroEstudianteToken",
+
     CONSTANCIA_ESTUDIOS: "/estudiante/getConstanciaEstudios",
     CONSTANCIA_INSCRIPCION: "/estudiante/getConstanciaInscripcion",
     CONSTANCIA_BECAS: "/estudiante/getConstanciaBecas",
     CONSTANCIA_SERVICIO: "/estudiante/getConstanciaServicio",
-    VERIFICA_DOCUMENTO: "/estudiante/getVerificarConstancia"
+    VERIFICA_DOCUMENTO: "/estudiante/getVerificarConstancia",
+
+    LISTA_ESTUDIANTES: "/personalGestionEscolar/getListaEstudiantes"
 };
 
 const ajax = axios.create({
@@ -60,9 +63,12 @@ let useAjax = () => {
                 case "ROLE_ESTUDIANTE":
                     navegar("/estudiante/solicitudes");
                 break;
+                case "ROLE_PAAE":
+                    navegar("/personalGestion/expedienteEstudiantil");
+                break;
             }
 
-            despacha(setAutenticacion(dat.token));
+            despacha(setAutenticacion("Bearer "+dat.token));
             despacha(setDatosUsuario(datos.usuario));
 
             setEspera(false);
@@ -518,6 +524,39 @@ let useAjax = () => {
         }
     };
 
+    //AJAX PERSONAL GESTION
+    let getlistaEstudiantes = async (datos, setEspera) => {
+        setEspera(true);
+        try {
+
+            let respuesta = await ajax.post(rutas.LISTA_ESTUDIANTES, datos, {
+                headers:{
+                    'Content-Type': 'application/json',
+                    Authorization: Authorization
+                }
+            });
+
+            setEspera(false);
+            return await respuesta.data;
+
+        } catch (error) {
+            setEspera(false);
+
+            await creaAlerta({
+                titulo : "Error",
+                mensaje : "No fue posible obtener la lista de estudiantes.",
+                icono : 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "",
+                MensajeConfirmar : "OK",
+                MensajeCancel : ""
+            });
+
+            return [];
+        }
+    };
+
     return {
         iniciarConexion,
         restablecerContrasena,
@@ -528,7 +567,8 @@ let useAjax = () => {
         registrarEstudiante,
         registrarEstudianteToken,
         crearConstancia,
-        verificarDocumento
+        verificarDocumento,
+        getlistaEstudiantes
     };
 };
 
