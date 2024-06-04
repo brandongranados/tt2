@@ -13,7 +13,10 @@ import ExpedienteEstudiantil from "./components/ExpedienteEstudiantil";
 import AltaEstValEdicion from "./components/AltaEstValEdicion";
 import ExpendienteEdicion from "./components/ExpedienteEdicion";
 import Bitacora from "./components/Bitacora";
+import AltaPersonal from "./components/AltaPersonal";
+import ListaPersonal from "./components/ListaPersonal";
 import ValidarConstancia from "./components/ValidarConstancia";
+
 
 let App = () => {
   return (
@@ -28,6 +31,7 @@ let App = () => {
 let Inicio = () => {
   return (
     <Routes>
+      
       <Route path="/" element={<InicioSesion />} />
       <Route path="/restablecer" element={<RestablecerContrasena/>} />
       <Route path="/registroEstudiante" element={<RegistroEstudiante/>} />
@@ -37,11 +41,15 @@ let Inicio = () => {
       <Route path="/administrador/altaEstudianteValidacion" element={<AltaEstudianteValidacion/>} />
       <Route path="/administrador/altaEstValEdicion" element={<AltaEstValEdicion/>} />
       <Route path="/administrador/expedienteEstudiantil" element={<ExpedienteEstudiantil/>} />
-      <Route path="/personalGestion/expedienteEstudiantil" element={<ExpedienteEstudiantil/>} />
       <Route path="/administrador/expEstEdicion" element={<ExpendienteEdicion/>} />
+      <Route path="/administrador/altaPersonal" element={<AltaPersonal/>}/>
+      <Route path="/administrador/listaPersonal" element={<ListaPersonal/>}/>
       <Route path="/auditor/bitacora" element={<Bitacora/>} />
       <Route path="/otro" element={<RegistroUsuario/>} />     
       <Route path="/estudiante/solicitudes" element={<Solicitudes />} />
+      <Route path="/personalGestion/altaEstudiante" element={<AltaEstudiante/>} />
+      <Route path="/personalGestion/expedienteEstudiantil" element={<ExpedienteEstudiantil/>} />
+      <Route path="/personalGestion/expEstEdicion" element={<ExpendienteEdicion/>} />
     </Routes>
   );
 };
