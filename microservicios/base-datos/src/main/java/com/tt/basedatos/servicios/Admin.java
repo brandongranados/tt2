@@ -1,5 +1,7 @@
 package com.tt.basedatos.servicios;
 
+import java.util.HashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -73,10 +75,16 @@ public class Admin {
 
     public ResponseEntity getListaPersonal(AjaxListaEstudiante lista)
     {
+        HashMap<String, Object> sal = new HashMap<String, Object>();
+
         try {
-            return ResponseEntity.ok(vista.getListaPersonal(lista.getPaginacion()));
+            sal.put("lista", vista.getListaPersonal(lista.getPaginacion()));
+            sal.put("cant", vista.getListaPersonalCant());
+            
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+
+        return ResponseEntity.ok(sal);
     }
 }

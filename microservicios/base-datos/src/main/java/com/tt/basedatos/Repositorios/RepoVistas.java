@@ -117,4 +117,11 @@ public interface RepoVistas extends CrudRepository<ComodinVistas, Integer>{
         @Param("paginacion") int paginacion
     );
 
+    @Query
+    (
+        value = "SELECT COUNT(*) AS cant FROM v_lista_personal",
+        nativeQuery = true
+    )
+    public List<Map<String, Object>> getListaPersonalCant();
+
 }

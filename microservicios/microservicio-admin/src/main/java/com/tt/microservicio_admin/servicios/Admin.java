@@ -69,14 +69,14 @@ public class Admin {
     public ResponseEntity setListaPersonal(AjaxListaPersonal personal)
     {
         HashMap<String, Object> resPet = null;
-        List<HashMap<String, Object>> salida = null;
+        HashMap<String, Object> salida = null;
         int codigo = 400;
 
         try {
             
             resPet = peticiones.getRespuestaRest(LISTA_PERSONAL, personal);
             codigo = (int)resPet.get("codigo");
-            salida = obj.fromJson((String)resPet.get("datos"), List.class);
+            salida = obj.fromJson((String)resPet.get("datos"), HashMap.class);
 
             if( codigo != 200 )
                 throw new Exception();
