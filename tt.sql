@@ -1420,7 +1420,9 @@ CREATE VIEW v_list_est_expe_estudiantil AS
 		c.nom_carrera,
 		c.nom_carrera_num,
 		p.nom_periodo,
-		p.nom_periodo_num
+		p.nom_periodo_num,
+		pe.nombre_plan,
+		pe.nombre_plan_numero
 	FROM estudiante_situacion_academica esa
 	INNER JOIN estudiante e
 		ON esa.id_est = e.id_est
@@ -1430,7 +1432,9 @@ CREATE VIEW v_list_est_expe_estudiantil AS
 	INNER JOIN carrera c
 		ON uappcg.id_carrera = c.id_carrera
 	INNER JOIN periodo p
-		ON uappcg.id_periodo = p.id_periodo;
+		ON uappcg.id_periodo = p.id_periodo
+    INNER JOIN plan_estudios pe
+        ON uappcg.id_plan = pe.id_plan;
 
 
 CREATE VIEW v_docuemntos_expediente AS
@@ -2969,9 +2973,22 @@ VALUES
 
 
 INSERT INTO periodo (nom_periodo, nom_periodo_num)
-VALUES ('Semestre 2024/2', 1),
-       ('Semestre 2025/1', 2),
-       ('Semestre 2025/2', 3);
+VALUES ('Nivel 1', 1),
+       ('Nivel 2', 2),
+       ('Nivel 3', 3);
+
+INSERT INTO periodo (nom_periodo, nom_periodo_num)
+VALUES ('Nivel 4', 4),
+       ('Nivel 5', 5),
+       ('Semestre 1', 6),
+       ('Semestre 2', 7),
+       ('Semestre 3', 8),
+       ('Semestre 4', 9),
+       ('Semestre 5', 10),
+       ('Semestre 6', 11),
+       ('Semestre 7', 12),
+       ('Semestre 8', 13),
+       ('Semestre 9', 14);
 
 INSERT INTO plan_estudios (nombre_plan, nombre_plan_numero)
 VALUES ('Plan 2009', 1),
@@ -3182,7 +3199,6 @@ CREATE TABLE #usuario_sesion
 INSERT INTO #usuario_sesion
 ( id_usuario )VALUES( null );
 
-UPDATE usuario
-SET nombre_usuario = 'OTU0Mzk4YjA2ZjM4N2VhMTNiYTllNTYxMzIwZjA4YTcxMDY4YTIxNTdiN2M4ODIxZDg5NGY5OTAxODdlMmM5ZQ==',
-    contrasena = 'OTU0Mzk4YjA2ZjM4N2VhMTNiYTllNTYxMzIwZjA4YTcxMDY4YTIxNTdiN2M4ODIxZDg5NGY5OTAxODdlMmM5ZQ=='
-WHERE id_usuario = 25;
+UPDATE periodo
+SET nom_periodo = 'Nivel 3'
+WHERE id_periodo = 3;

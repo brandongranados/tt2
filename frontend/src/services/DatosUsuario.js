@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { json } from 'react-router';
 
 export const DatosUsuarioSlice = createSlice({
     name: "DatosUsuario",
@@ -27,12 +28,28 @@ export const DatosUsuarioSlice = createSlice({
         setListaEstudiantes: (state, action) => {
             state.ListaEstudiantes = action.payload;
         },
+        getExpEstudiante: (state, action) => {
+            let ExpEstudiante = JSON.parse(sessionStorage.getItem("ExpEstudiante"));
+
+            if( ExpEstudiante )
+                state.ExpEstudiante = ExpEstudiante;
+            else
+                state.ExpEstudiante = null;
+        },
         setExpEstudiante: (state, action) => {
             state.ExpEstudiante = action.payload;
+            sessionStorage.setItem("ExpEstudiante", JSON.stringify(state.ExpEstudiante));
         }
     }
 })
 
-export const { getDatosUsuario, setDatosUsuario, setEstudiante, setListaEstudiantes, setExpEstudiante } = DatosUsuarioSlice.actions;
+export const { 
+                getDatosUsuario, 
+                setDatosUsuario, 
+                setEstudiante, 
+                setListaEstudiantes,
+                getExpEstudiante,
+                setExpEstudiante
+             } = DatosUsuarioSlice.actions;
 
 export default DatosUsuarioSlice.reducer;

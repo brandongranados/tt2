@@ -12,7 +12,7 @@ import useAlerta from '../components/hooks/useAlerta';
 import useArchivo from '../components/hooks/useArchivo';
 
 const rutas = {
-    URL : "http://158.23.81.60:9090",
+    URL : "http://localhost:9090",
     INICIO_SESION : "/login",
     RESTABLECER : "/restablecer",
     VERIFICACION_MASIVA_ESTUDIANTES : "/verificarMasivaEstudiante",
@@ -69,6 +69,9 @@ let useAjax = () => {
                 break;
                 case "ROLE_PAAE":
                     navegar("/personalGestion/expedienteEstudiantil");
+                break;
+                default:
+                    navegar("/estudiante/solicitudes");
                 break;
             }
 
@@ -573,8 +576,35 @@ let useAjax = () => {
     };
     // edición masiva de estudiantes
     let edicionMasivaEstudiantes = async (datos, setEspera) => {
-        console.log("Edición masiva de estudiantes", datos);
+
+        let msm = await creaAlerta({
+            titulo: "Advertencia",
+            mensaje: "Esta seguro de continuar?.",
+            icono: 5,
+            boolBtnCancel: true,
+            ColorConfirmar: "#2e7d32",
+            ColorCancel: "#DD3333",
+            MensajeConfirmar: "OK",
+            MensajeCancel: "Cancelar"
+        });
+
+        if( !msm )
+        {
+            await creaAlerta({
+                titulo: "Cancelado",
+                mensaje: "Operacion cancelada.",
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+            return;
+        }
+
         setEspera(true);
+
         try {
             let resp = await ajax.post(rutas.EDICION_ESTUDIANTES, datos, {
                 headers: {
@@ -582,11 +612,20 @@ let useAjax = () => {
                 }
             });
 
-            console.log("Respuesta del servidor", resp.data);
             setEspera(false);
-            return resp.data;
+
+            await creaAlerta({
+                titulo: "Ok",
+                mensaje: "Se actulizo con exito.",
+                icono: 1,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+
         } catch (error) {
-            console.error("Error en la petición", error);
             setEspera(false);
             await creaAlerta({
                 titulo: "Error",
@@ -671,9 +710,6 @@ let useAjax = () => {
                     'Content-Type': 'application/json',
                 }
             });
-
-            console.log("Respuesta del servidor", resp.data);
-            setEspera(false);
             return resp.data;
         } catch (error) {
             console.error("Error en la petición", error);
@@ -693,7 +729,6 @@ let useAjax = () => {
 
 // obtener el expediente de un estudiante
     let getExpedienteEstudiante = async (datos, setEspera) => {
-        console.log("Obtener expediente de estudiante", datos);
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.EXPEDIENTE_ESTUDIANTE, datos, {
@@ -702,11 +737,9 @@ let useAjax = () => {
                 }
             });
 
-            console.log("Respuesta del servidor", resp.data);
             setEspera(false);
             return resp.data;
         } catch (error) {
-            console.error("Error en la petición", error);
             setEspera(false);
             await creaAlerta({
                 titulo: "Error",
@@ -718,8 +751,10 @@ let useAjax = () => {
                 MensajeConfirmar: "OK",
                 MensajeCancel: ""
             });
+            return null;
         }
     };
+    
     
     return {
         iniciarConexion,
