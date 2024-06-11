@@ -83,8 +83,6 @@ public class Paginas {
     @PostMapping("/validaRestablecer")
     public ResponseEntity restablecer(@Valid @RequestBody ValidarRestablecerSolicitud datos)
     {
-
-        datos.setUsuario(iny.getCadenaDepuradaInyecciones(datos.getUsuario()));
         
         return sesion.validaRestablecer(datos);
     }
