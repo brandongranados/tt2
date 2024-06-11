@@ -34,7 +34,8 @@ public class Admin {
                 personal.getMaterno(), 
                 personal.getNombre(), 
                 personal.getNumeroEmpleado(), 
-                personal.getCorreo(), 
+                personal.getCorreo(),
+                personal.getUsuarioPersonal(),
                 personal.getUsuario()
             );
 

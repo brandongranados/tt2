@@ -6,6 +6,7 @@ public class AjaxAltaPeersonal {
     private String nombre;
     private String numeroEmpleado;
     private String correo;
+    private String usuarioPersonal;
     private String usuario;
 
 
@@ -38,6 +39,12 @@ public class AjaxAltaPeersonal {
     }
     public void setCorreo(String correo) {
         this.correo = correo;
+    }
+    public String getUsuarioPersonal() {
+        return usuarioPersonal;
+    }
+    public void setUsuarioPersonal(String usuarioPersonal) {
+        this.usuarioPersonal = usuarioPersonal;
     }
     public String getUsuario() {
         return usuario;

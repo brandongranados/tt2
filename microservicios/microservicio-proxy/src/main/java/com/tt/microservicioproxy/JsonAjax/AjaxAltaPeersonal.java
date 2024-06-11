@@ -33,6 +33,11 @@ public class AjaxAltaPeersonal {
     @SQLInjectionSafe
     @NotNull
     @Size(max = 88, min = 88, message = "Su usuario no cumple con el tamano estipulado")
+    private String usuarioPersonal;
+    @NotBlank
+    @SQLInjectionSafe
+    @NotNull
+    @Size(max = 88, min = 88, message = "Su usuario no cumple con el tamano estipulado")
     private String usuario;
 
 
@@ -65,6 +70,12 @@ public class AjaxAltaPeersonal {
     }
     public void setCorreo(String correo) {
         this.correo = correo;
+    }
+    public String getUsuarioPersonal() {
+        return usuarioPersonal;
+    }
+    public void setUsuarioPersonal(String usuarioPersonal) {
+        this.usuarioPersonal = usuarioPersonal;
     }
     public String getUsuario() {
         return usuario;

@@ -156,6 +156,7 @@ public interface RepoSp extends CrudRepository<ComodinVistas, Integer> {
         @Param("nombre") String nombre,
         @Param("numero_empleado") String numeroEmpleado,
         @Param("correo") String correo,
+        @Param("usuario_personal") String usuarioPersonal,
         @Param("usuario_alta") String usuarioAlta
     );
 

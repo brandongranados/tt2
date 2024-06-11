@@ -60,6 +60,8 @@ public class Configuracion {
                     .permitAll()
                 .requestMatchers(HttpMethod.POST, "/registroEstudianteToken")
                     .permitAll()
+                .requestMatchers(HttpMethod.POST, "/estudiante/getVerificarConstancia")
+                    .permitAll()
                 
                 .requestMatchers(HttpMethod.POST, "/admin/**")
                     .permitAll()
