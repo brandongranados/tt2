@@ -68,6 +68,16 @@ public class CargaMasivaEstu {
             {
                 Map<String, Object> estudiante = new HashMap<String, Object>();
                 Row reg = iteRow.next();
+
+                if( reg.getCell(0) == null || reg.getCell(1) == null || reg.getCell(2) == null )
+                    continue;
+                if( reg.getCell(3) == null || reg.getCell(4) == null || reg.getCell(5) == null )
+                    continue;
+                if( reg.getCell(6) == null || reg.getCell(7) == null || reg.getCell(8) == null )
+                    continue;
+                if( reg.getCell(9) == null || reg.getCell(10) == null )
+                    continue;
+
                 String valSexo = (String)this.getValorCelda(reg.getCell(4));
                 Date fech = DateUtil.getJavaDate(Double.parseDouble((String)this.getValorCelda(reg.getCell(5))));
 
@@ -118,6 +128,9 @@ public class CargaMasivaEstu {
             {
                 Map<String, Object> estudiante = new HashMap<String, Object>();
                 Row reg = iteRow.next();
+
+                if( reg.getCell(0) == null || reg.getCell(1) == null || reg.getCell(2) == null )
+                    continue;
 
                 estudiante.put("boleta", this.getValorCelda(reg.getCell(0)));
                 estudiante.put("unidad_aprendizaje", this.getValorCelda(reg.getCell(1)));
