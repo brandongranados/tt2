@@ -59,30 +59,14 @@ let ValidarToken = () => {
             return;
         }
 
-        if( !await ObjAjax.registrarEstudianteToken(datos, setEspera) )
-        {
-            await creaAlerta({
-                titulo : "Error",
-                mensaje : "Error interno",
-                icono : 2,
-                boolBtnCancel: false,
-                ColorConfirmar: "#2e7d32",
-                ColorCancel : "",
-                MensajeConfirmar : "OK",
-                MensajeCancel : ""
-            });
-
-            navegar("/");
-            return;
-        }
-
+        await ObjAjax.registrarEstudianteToken(datos, setEspera);
         navegar("/");
 
     }; 
     
     return(
         <>
-            <Cargando bool={espera}/>
+            <Cargando open={espera}/>
             <Navegacion />
             <Grid container >
                 <Grid item xs={12}>

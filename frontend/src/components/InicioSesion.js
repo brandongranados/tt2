@@ -56,7 +56,7 @@ let InicioSesion = () => {
 
     return(
         <>
-            <Cargando bool={espera}/>
+            <Cargando open={espera}/>
             <NavegacionInicioSesion />
             <Grid container>
                 <Grid item xs sm></Grid>
@@ -94,7 +94,7 @@ let InicioSesion = () => {
                         dir={"/restablecer"} texto={"Restablecer contraseña"} />
                         <LinkLetras 
                         sx={{width:"50%", textAlign:"center"}} 
-                        dir={"/registroEstudiante"} texto={"Registro de usuario"} />
+                        dir={"/registroEstudiante"} texto={"Registro de estudiante"} />
                     </Box>
                     <BotonAzul 
                     sx={{marginTop:"1.5%", width:"100%"}}

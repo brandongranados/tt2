@@ -1,12 +1,14 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 
 import { useNavigate } from 'react-router-dom';
 
-import { getAutenticacion, setAutenticacion } from './Autenticacion';
-import { getDatosUsuario, setDatosUsuario } from './DatosUsuario';
+import { setAutenticacion } from './Autenticacion';
+import { setDatosUsuario, setRol, setMasivas } from './DatosUsuario';
+import { getAutenticacion } from './Autenticacion';
+import { getDatosUsuario, getRol } from './DatosUsuario';
 
 import useAlerta from '../components/hooks/useAlerta';
 import useArchivo from '../components/hooks/useArchivo';
@@ -14,25 +16,33 @@ import useArchivo from '../components/hooks/useArchivo';
 const rutas = {
     URL : "http://localhost:9090",
     INICIO_SESION : "/login",
-    RESTABLECER : "/restablecer",
+    RESTABLECER : "/registroRestablecer",
+    VALIDAR_TOKEN_RESTABLECER: "/validaRestablecer",
+
     VERIFICACION_MASIVA_ESTUDIANTES : "/verificarMasivaEstudiante",
-    LEER_EXCEL_VERIFICACION_MASIVA_ESTUDIANTES : "/leerExcelVerificarMasivaEstudiante",
-    EJEMPLO_EXCEL_MASIVA_EST : "/ejemploExcelMasivaEst",
     VALIDAR_ESTUDIANTE : "/validarEstudiante",
     REGISTRO_ESTUDIANTE: "/registroEstudiante",
-    REGISTRO_ESTUDIANTE_TOKEN: "/registroEstudianteToken",
+    
 
     CONSTANCIA_ESTUDIOS: "/estudiante/getConstanciaEstudios",
     CONSTANCIA_INSCRIPCION: "/estudiante/getConstanciaInscripcion",
     CONSTANCIA_BECAS: "/estudiante/getConstanciaBecas",
     CONSTANCIA_SERVICIO: "/estudiante/getConstanciaServicio",
     VERIFICA_DOCUMENTO: "/estudiante/getVerificarConstancia",
+
     ALTA_ESTUDIANTES: "/personalGestionEscolar/altaMasivaEstudiantes",
     EDICION_ESTUDIANTES: "/personalGestionEscolar/edicionMasivaEstudiantes",
     BAJA_ESTUDIANTES: "/personalGestionEscolar/bajaMasivaEstudiantes",
     MAPEO_MATERIAS_ESTUDIANTES: "/personalGestionEscolar/mapeoMateriasEstudiantes",
     LISTA_ESTUDIANTES: "/personalGestionEscolar/getListaEstudiantes",
-    EXPEDIENTE_ESTUDIANTE: "/personalGestionEscolar/getExpedienteEstudiante"
+    EXPEDIENTE_ESTUDIANTE: "/personalGestionEscolar/getExpedienteEstudiante",
+
+    ALTA_PERSONAL: "/admin/setPersonalApoyo",
+    LISTA_PERSONAL: "/admin/setListaPersonalApoyo",
+    BAJA_PERSONAL: "/admin/setBajaPersonalApoyo",
+
+    EJEMPLO_EXCEL_MASIVA_EST : "/personalGestionEscolar/ejemploCargaMasiva",
+    LEER_EXCEL_VERIFICACION_MASIVA_ESTUDIANTES : "/personalGestionEscolar/cargaMasivaEstudiantes"
     };
 
 const ajax = axios.create({
@@ -50,6 +60,7 @@ let useAjax = () => {
     useEffect( () => {
         despacha(getAutenticacion());
         despacha(getDatosUsuario());
+        despacha(getRol());
     }, [] );
 
     //AJAX INICIO DE SESION
@@ -62,6 +73,10 @@ let useAjax = () => {
             let dat = await resp.data;
             let roles = JSON.parse(dat.rol);
 
+            despacha(setAutenticacion("Bearer "+dat.token));
+            despacha(setDatosUsuario(datos.usuario));
+            despacha(setRol(roles[0].role));
+
             switch(roles[0].role)
             {
                 case "ROLE_ESTUDIANTE":
@@ -70,13 +85,16 @@ let useAjax = () => {
                 case "ROLE_PAAE":
                     navegar("/personalGestion/expedienteEstudiantil");
                 break;
+                case "ROLE_ADMIN":
+                    navegar("/personalGestion/expedienteEstudiantil");
+                break;
+                case "ROLE_AUDITOR":
+                    navegar("/personalGestion/expedienteEstudiantil");
+                break;
                 default:
                     navegar("/estudiante/solicitudes");
                 break;
             }
-
-            despacha(setAutenticacion("Bearer "+dat.token));
-            despacha(setDatosUsuario(datos.usuario));
 
             setEspera(false);
 
@@ -111,14 +129,15 @@ let useAjax = () => {
             setEspera(false);
             await creaAlerta({
                 titulo : "OK",
-                mensaje : "Se envió un correo a "+correo.correo,
-                icono : 2,
+                mensaje : "Se envió un token a su direccion de correo electronico que dio de alta. Favor de ingresarlo en la ventana a donde se redireccionara.",
+                icono : 1,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
                 ColorCancel : "",
                 MensajeConfirmar : "OK",
                 MensajeCancel : ""
             });
+            navegar("/validarToken");
 
         } catch (error) {
             setEspera(false);
@@ -140,6 +159,7 @@ let useAjax = () => {
     let verificacionMasivaEstudiantes = async (datos, setEspera) => {
 
         setEspera(true);
+        
         try {
 
             let resp = await ajax.post(rutas.VERIFICACION_MASIVA_ESTUDIANTES, 
@@ -171,12 +191,14 @@ let useAjax = () => {
         }
     };
 
-    let interpretarExcelMasivo = async (datos, setEspera) => {
-
-        let retorno = null;
+    let convertExcelAJSON = async (arch, setEspera) => {
 
         setEspera(true);
+        
         try {
+
+            let leido = await archivo(arch);
+            let datos = { docuemnto : leido.archBase64 };
             
             let resp = await ajax.post(rutas.LEER_EXCEL_VERIFICACION_MASIVA_ESTUDIANTES, 
                 datos, {
@@ -186,30 +208,41 @@ let useAjax = () => {
                     }
             });
 
-            retorno = { codigo: 200, datos: await resp.data };
+            let json = await resp.data;
 
+            despacha(setMasivas(json));
             setEspera(false);
+            navegar("/administrador/altaEstudianteValidacion");
 
         } catch (error) {
-            retorno = { codigo: 400, datos: null };
             setEspera(false);
+            await creaAlerta({
+                titulo : "Error",
+                mensaje : "Ocurrio un error interno contactar a sistemas",
+                icono : 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "",
+                MensajeConfirmar : "OK",
+                MensajeCancel : ""
+            });
         }
-
-        return retorno;
     };
 
-    let descargarEjemploExcel = async (setEspera) => {
+    //EJMEPLO DE EXCEL ALTA MASIVA
+
+    let descargarEjemploExcelAltaMasiva = async (setEspera) => {
         setEspera(true);
         try {
 
-            let resp = await ajax.post(rutas.EJEMPLO_EXCEL_MASIVA_EST, null, {
+            let resp = await ajax.post(rutas.EJEMPLO_EXCEL_MASIVA_EST, {
                 headers:{
                     'Content-Type': 'application/json',
                     Authorization: Authorization
                 }
             });
 
-            descargaExcelDesdeBase64(await resp.data);
+            descargaExcelDesdeBase64(await resp.data.documento);
 
             setEspera(false);
 
@@ -403,7 +436,7 @@ let useAjax = () => {
 
             setEspera(true);
 
-            await ajax.post(rutas.REGISTRO_ESTUDIANTE_TOKEN, datos, {
+            await ajax.post(rutas.VALIDAR_TOKEN_RESTABLECER, datos, {
                 headers:{
                     'Content-Type': 'application/json',
                     Authorization: Authorization
@@ -444,8 +477,6 @@ let useAjax = () => {
     };
      //alta estudiante   
      let altaEstudiantes = async (datos, setEspera) => {
-        console.log("estos son los datos", datos);
-        console.log("esta es la ruta", rutas.ALTA_ESTUDIANTES);
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.ALTA_ESTUDIANTES, datos, {
@@ -456,22 +487,18 @@ let useAjax = () => {
     
             setEspera(false);
     
-            if (resp.status === 200) {
-                await creaAlerta({
-                    titulo: "Éxito",
-                    mensaje: "Alta de estudiantes realizada correctamente.",
-                    icono: 1,
-                    boolBtnCancel: false,
-                    ColorConfirmar: "#2e7d32",
-                    ColorCancel: "",
-                    MensajeConfirmar: "OK",
-                    MensajeCancel: ""
-                });
-            }
+            await creaAlerta({
+                titulo: "Éxito",
+                mensaje: "Alta de estudiantes realizada correctamente.",
+                icono: 1,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
     
-            return resp.data;
         } catch (error) {
-            console.error("Error en la petición", error); // Loguea el error
             setEspera(false);
             await creaAlerta({
                 titulo: "Error",
@@ -486,6 +513,110 @@ let useAjax = () => {
         }
     };
     
+    //ALTA MASIVA Y MAPEO DE MATERIAS DESDE EXCEL
+    let altaMasivaEstuMaterias = async (datos, datos2, setEspera) => {
+        setEspera(false);
+
+        try {
+
+            let pregunta = await creaAlerta({
+                titulo : "Advertencia",
+                mensaje : "Está seguro de continuar.",
+                icono : 4,
+                boolBtnCancel: true,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "#dc3741",
+                MensajeConfirmar : "De acuerdo",
+                MensajeCancel : "Cancelar"
+            });
+
+            if( !pregunta )
+            {
+                await creaAlerta({
+                    titulo : "Cancelado",
+                    mensaje : "Operación cancelada.",
+                    icono : 2,
+                    boolBtnCancel: false,
+                    ColorConfirmar: "#2e7d32",
+                    ColorCancel : "#dc3741",
+                    MensajeConfirmar : "OK",
+                    MensajeCancel : "Cancelar"
+                });
+                return;
+            }
+
+            setEspera(true);
+
+            await ajax.post(rutas.ALTA_ESTUDIANTES, datos, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            setEspera(false);
+
+            await creaAlerta({
+                titulo: "Éxito",
+                mensaje: "Alta de estudiantes realizada correctamente.",
+                icono: 1,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+        } catch (error) {
+            setEspera(false);
+            await creaAlerta({
+                titulo: "Error",
+                mensaje: "No se pudo realizar el alta de estudiantes.",
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+            return;
+        }
+
+        try {
+
+            await ajax.post(rutas.MAPEO_MATERIAS_ESTUDIANTES, datos2, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+    
+            setEspera(false);
+    
+            await creaAlerta({
+                titulo: "Éxito",
+                mensaje: "Alta materias por estudiante realizada correctamente.",
+                icono: 1,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+    
+        } catch (error) {
+            setEspera(false);
+            await creaAlerta({
+                titulo: "Error",
+                mensaje: "No se pudo realizar el alta de materias por estudiante pruebe mediante reinscripcion.",
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+        }
+
+            navegar("/personalGestion/altaEstudiante");
+    };
 
     //AJAX CREAR CONSTANCIAS.
     let crearConstancia = async (datos, setEspera, opc) => {
@@ -571,7 +702,7 @@ let useAjax = () => {
 
             navegar("/");
 
-            return false;
+            return null;
         }
     };
     // edición masiva de estudiantes
@@ -672,7 +803,6 @@ let useAjax = () => {
 
 // mapeo de materias de estudiantes
     let mapeoMateriasEstudiantes = async (datos, setEspera) => {
-        console.log("Mapeo de materias de estudiantes", datos);
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.MAPEO_MATERIAS_ESTUDIANTES, datos, {
@@ -681,11 +811,9 @@ let useAjax = () => {
                 }
             });
 
-            console.log("Respuesta del servidor", resp.data);
             setEspera(false);
             return resp.data;
         } catch (error) {
-            console.error("Error en la petición", error);
             setEspera(false);
             await creaAlerta({
                 titulo: "Error",
@@ -702,7 +830,6 @@ let useAjax = () => {
 
 // obtener la lista de estudiantes
     let getListaEstudiantes = async (datos, setEspera) => {
-        console.log("Obtener lista de estudiantes", datos);
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.LISTA_ESTUDIANTES, datos, {
@@ -712,7 +839,6 @@ let useAjax = () => {
             });
             return resp.data;
         } catch (error) {
-            console.error("Error en la petición", error);
             setEspera(false);
             await creaAlerta({
                 titulo: "Error",
@@ -754,14 +880,148 @@ let useAjax = () => {
             return null;
         }
     };
+
+    //ALTA DE PAAE
+
+    let altaPersonal = async (datos, setEspera) => {
+        setEspera(true);
+        try {
+            await ajax.post(rutas.ALTA_PERSONAL, datos, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+    
+            setEspera(false);
+    
+            await creaAlerta({
+                titulo: "Éxito",
+                mensaje: "Alta de personal realizada correctamente.",
+                icono: 1,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+    
+        } catch (error) {
+            setEspera(false);
+            await creaAlerta({
+                titulo: "Error",
+                mensaje: "No se pudo realizar el alta del personal.",
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+        }
+    };
+
+    //LISTA DE PERSONAL
+    let getListaPersonal = async (datos, setEspera) => {
+        setEspera(true);
+        try {
+            let resp = await ajax.post(rutas.LISTA_PERSONAL, datos, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            return await resp.data;
+        } catch (error) {
+            setEspera(false);
+            await creaAlerta({
+                titulo: "Error",
+                mensaje: "No se pudo obtener la lista de personal.",
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+            return null;
+        }
+    };
+
+    //BAJA DE PERSONAL
+    let setBajaPersonal = async (datos, setEspera) => {
+
+        let pregunta = await creaAlerta({
+            titulo : "Advertencia",
+            mensaje : "Está seguro de eliminar al personal.",
+            icono : 4,
+            boolBtnCancel: true,
+            ColorConfirmar: "#2e7d32",
+            ColorCancel : "#dc3741",
+            MensajeConfirmar : "De acuerdo",
+            MensajeCancel : "Cancelar"
+        });
+
+        if( !pregunta )
+        {
+            await creaAlerta({
+                titulo : "Cancelado",
+                mensaje : "Operación cancelada.",
+                icono : 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "#dc3741",
+                MensajeConfirmar : "OK",
+                MensajeCancel : "Cancelar"
+            });
+            return false;
+        }
+
+        setEspera(true);
+
+        try {
+            await ajax.post(rutas.BAJA_PERSONAL, datos, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            setEspera(false);
+
+            await creaAlerta({
+                titulo: "Éxito",
+                mensaje: "Baja de personal realizada correctamente.",
+                icono: 1,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+
+            return true;
+            
+        } catch (error) {
+            setEspera(false);
+            await creaAlerta({
+                titulo: "Error",
+                mensaje: "No se pudo dar de baja al personal.",
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+            return false;
+        }
+    };
     
     
     return {
         iniciarConexion,
         restablecerContrasena,
-        interpretarExcelMasivo,
+        convertExcelAJSON,
         verificacionMasivaEstudiantes,
-        descargarEjemploExcel,
+        descargarEjemploExcelAltaMasiva,
         cargarEstudiante,
         registrarEstudiante,
         registrarEstudianteToken,
@@ -772,7 +1032,11 @@ let useAjax = () => {
         bajaMasivaEstudiantes,
         mapeoMateriasEstudiantes,
         getListaEstudiantes,
-        getExpedienteEstudiante
+        getExpedienteEstudiante,
+        altaMasivaEstuMaterias,
+        altaPersonal,
+        getListaPersonal,
+        setBajaPersonal
     };
 };
 

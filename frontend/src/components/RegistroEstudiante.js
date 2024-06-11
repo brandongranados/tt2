@@ -177,7 +177,7 @@ let RegistroEstudiante = () => {
 
     return(
         <>
-            <Cargando bool={espera}/>
+            <Cargando open={espera}/>
             <NavegacionInicioSesion />
             <Grid container >
                 <Grid item xs={12}>

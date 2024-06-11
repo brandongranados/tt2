@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+
+import * as yup from 'yup';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -10,10 +12,10 @@ import Cargando from "./Cargando";
 import InputTextBorderAzul from '../assets/js/InpuTextBorderAzul';
 import BotonAzul from '../assets/js/BotonAzul';
 import Navegacion from './Navegacion';
-import { setDatosUsuario } from '../services/DatosUsuario';
 
 import useAjax from '../services/useAjax';
 import useAlerta from '../components/hooks/useAlerta';
+import useCadenaUnica from './hooks/useCadenaUnica';
 
 let AltaPersonal = () => {
     // Estilos generales
@@ -25,9 +27,19 @@ let AltaPersonal = () => {
 
     // Servicios
     const ObjAjax = useAjax();
-    const despacha = useDispatch();
     const navegar = useNavigate();
     const [creaAlerta] = useAlerta();
+    const [crearHash512] = useCadenaUnica();
+    const usuario = useSelector( state => state.DatosUsuario.DatosUsuario );
+    const validacion = yup.object().shape({
+        paterno: yup.string().required('El apellido paterno es obligatorio'),
+        materno: yup.string().required('El apellido materno es obligatorio'),
+        nombre: yup.string().required('El nombre es obligatorio'),
+        numeroEmpleado: yup.string().required('El numero de empleado es obligatorio'),
+        correo: yup.string().email("Correo electrónico no válido").required("El correo no puede estar vacio."),
+        usuarioPersonal: yup.string().required('El usuario es obligatorio').length(88, "El usuario no es valido"),
+        usuario: yup.string().required('El usuario es obligatorio').length(88, "El usuario no es valido")
+      });
 
     // AJAX CARGANDO
     const [espera, setEspera] = useState(false);
@@ -48,9 +60,35 @@ let AltaPersonal = () => {
 
     // AJAX
     let peticion = async () => {
-        try {
-            let obj = validaDatos();
+        setEspera(true);
+        let datos= {
+            paterno: apePaterno,
+            materno: apeMaterno,
+            nombre: nombres,
+            numeroEmpleado: noEmpleado,
+            correo: correo,
+            usuarioPersonal: crearHash512(noEmpleado),
+            usuario : usuario
+        };
 
+        try {
+            await validacion.validate(datos);
+        } catch (error) {
+            setEspera(false);
+            await creaAlerta({
+                titulo: "Revise el formulario",
+                mensaje: error.message,
+                icono: 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel: "",
+                MensajeConfirmar: "OK",
+                MensajeCancel: ""
+            });
+            return;
+        }
+        try {
+            setEspera(false);
             let resp = await creaAlerta({
                 titulo: "Advertencia",
                 mensaje: "¿Está seguro de que su información es correcta?",
@@ -80,73 +118,12 @@ let AltaPersonal = () => {
 
             setEspera(true);
 
-            if (!obj.bool) {
-                setEspera(false);
-
-                await creaAlerta({
-                    titulo: "Revise el formulario",
-                    mensaje: obj.msm,
-                    icono: 2,
-                    boolBtnCancel: false,
-                    ColorConfirmar: "#2e7d32",
-                    ColorCancel: "",
-                    MensajeConfirmar: "OK",
-                    MensajeCancel: ""
-                });
-                return;
-            }
-
-            despacha(setDatosUsuario([{
-                apePaterno: apePaterno,
-                apeMaterno: apeMaterno,
-                nombre: nombres,
-                noEmpleado: noEmpleado,
-                correo: correo
-            }]));
+            await ObjAjax.altaPersonal(datos, setEspera);
 
             setEspera(false);
             navegar("/administrador/listaPersonal");
 
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    let validaDatos = () => {
-        let respuesta = { bool: true, msm: "" };
-
-        if (apePaterno.trim().length === 0) {
-            respuesta.bool = false;
-            respuesta.msm += "Le falta el apellido paterno. ";
-        }
-
-        if (apeMaterno.trim().length === 0) {
-            respuesta.bool = false;
-            respuesta.msm += "Le falta el apellido materno. ";
-        }
-
-        if (nombres.trim().length === 0) {
-            respuesta.bool = false;
-            respuesta.msm += "Le falta el nombre(s). ";
-        }
-
-        if (noEmpleado.trim().length === 0) {
-            respuesta.bool = false;
-            respuesta.msm += "Le falta el número de empleado. ";
-        } else if (!/^\d+$/.test(noEmpleado)) {
-            respuesta.bool = false;
-            respuesta.msm += "El número de empleado debe contener solo números. ";
-        }
-
-        if (correo.trim().length === 0) {
-            respuesta.bool = false;
-            respuesta.msm += "Le falta el correo electrónico. ";
-        } else if (!/\S+@\S+\.\S+/.test(correo)) {
-            respuesta.bool = false;
-            respuesta.msm += "El correo electrónico no es válido. ";
-        }
-
-        return respuesta;
+        } catch (error) {}
     };
 
     useEffect(() => {
@@ -167,7 +144,7 @@ let AltaPersonal = () => {
 
     return (
         <>
-            <Cargando bool={espera} />
+            <Cargando open={espera} />
             <Navegacion />
             <Grid container>
                 <Grid item xs={12}>

@@ -50,19 +50,24 @@ let ExpendienteEdicion = () => {
     };
     let cambiaCarrera = (e) => {
         let asignado = e.target.value.split("-");
-        let temp = 0;
+        let carr = 0;
+        let  temp = 0;
         switch(e.target.value)
         {
             case "Ingenieria en Sistemas Computacionales-2009":
+                carr = 1;
                 temp = 1;
                 break;
             case "Ingenieria en Sistemas Computacionales-2020":
+                carr = 2;
                 temp = 2;
                 break;
             case "Ingenieria en Inteligencia Artificial-2020":
+                carr = 3;
                 temp = 2;
                 break;
             default :
+                carr = 4;
                 temp = 2;
                 break;
         }
@@ -70,7 +75,7 @@ let ExpendienteEdicion = () => {
             nom_periodo : datos.nom_periodo,
             num_boleta : datos.num_boleta,
             correo_electronico : datos.correo_electronico,
-            nom_carrera_num : datos.nom_carrera_num,
+            nom_carrera_num : carr,
             nom_periodo_num : datos.nom_periodo_num,
             nombre_plan_numero : temp,
             fecha_nacimiento : datos.fecha_nacimiento,

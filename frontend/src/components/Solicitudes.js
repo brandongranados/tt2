@@ -25,13 +25,14 @@ let Solicitudes = () => {
     const [crudoPDF, setCrudoPDF] = useState(null);
 
     let constancia = async (opc) => {
+
         let crudo = await ObjAjax.crearConstancia({usuario:usuario}, setEspera, opc);
         
         if( crudo )
         {
             setCrudoPDF(crudo);
-            setEspera(false);
             abrirModal();
+            setEspera(false);
         }
     };
 
@@ -44,7 +45,7 @@ let Solicitudes = () => {
     return(
         <>
             <Navegacion />
-            <Cargando bool={espera} />
+            <Cargando open={espera} />
             <Grid container >
                 <Grid item xs={12}>
                     <Box sx={{margin:"3%"}}>

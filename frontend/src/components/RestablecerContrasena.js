@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 
-import Navegacion from "./Navegacion";
+import NavegacionInicioSesion from "./NavegacionInicioSesion";
 import InputTextBorderAzul from "../assets/js/InpuTextBorderAzul";
 import BotonAzul from "../assets/js/BotonAzul";
 import Cargando from "./Cargando";
@@ -18,6 +18,7 @@ let RestablecerContrasena = () => {
     const [crearHash512] = useCadenaUnica();
 
     const [usuario, setUsuario] = useState("");
+    const [contrasena, setContrasena] = useState("");
     const [tamTitulo, setTamTitulo] = useState("h3");
     const [espera, setEspera] = useState(false);
     const ObjAjax = useAjax();
@@ -32,9 +33,10 @@ let RestablecerContrasena = () => {
             setTamTitulo("h3");
     };
 
-    let iniciar = async () => await ObjAjax.restablecerContrasena({ usuario : crearHash512(usuario) }, setEspera);
+    let iniciar = async () => await ObjAjax.restablecerContrasena({ usuario : crearHash512(usuario), contrasena: crearHash512(contrasena) }, setEspera);
 
     let cambiarUsuario = (e) => setUsuario(e.target.value);
+    let cambiarContrasena = (e) => setContrasena(e.target.value);
 
     useEffect( () => {
 
@@ -46,8 +48,8 @@ let RestablecerContrasena = () => {
 
     return(
         <>
-            <Cargando bool={espera}/>
-            <Navegacion />
+            <Cargando open={espera}/>
+            <NavegacionInicioSesion />
             <Grid container>
                 <Grid item xs={12}>
                     <Box sx={{marginTop:"3%"}}>
@@ -66,6 +68,14 @@ let RestablecerContrasena = () => {
                         etiqueta={"Usuario"}
                         value={usuario}
                         onChange={ (e) => { cambiarUsuario(e) } } />
+                    </Box>
+                </Grid>
+                <Grid item xs={12}>
+                    <Box sx={{marginTop:"2%"}}>
+                        <InputTextBorderAzul
+                        etiqueta={"Nueva contrasena"}
+                        value={contrasena}
+                        onChange={ (e) => { cambiarContrasena(e) } } />
                     </Box>
                 </Grid>
                 <Grid item xs={12}>

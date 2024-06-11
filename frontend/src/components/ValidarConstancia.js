@@ -33,7 +33,11 @@ const ValidarConstancia = () => {
         let verifica = async () => {
             
             let resp = await ObjAjax.verificarDocumento({documento:token}, setEspera);
-            let cadena = resp.documento.replace("<br>", "").replace("\n", "");
+
+            if( resp == null )
+                return;
+            
+            let cadena = await resp.documento.replace("<br>", "").replace("\n", "");
             let array = cadena.split("|");
             setDatos({
                 nombre: array[7],
@@ -56,7 +60,7 @@ const ValidarConstancia = () => {
     return (
         <>
             <NavegacionInicioSesion />
-            <Cargando bool={espera}/>
+            <Cargando open={espera}/>
             <Grid container spacing={3} sx={{ marginTop: 2 }}>
                 <Grid item xs={12}>
                     <Typography variant="h4" component="h1" fontWeight="bold" textAlign="center">
