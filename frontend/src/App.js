@@ -18,6 +18,7 @@ import Bitacora from "./components/Bitacora";
 import AltaPersonal from "./components/AltaPersonal";
 import ListaPersonal from "./components/ListaPersonal";
 import ValidarConstancia from "./components/ValidarConstancia";
+import ValidarTokenNuevoEstudiante from "./components/ValidarTokenNuevoEstudiante";
 
 
 let App = () => {
@@ -39,6 +40,7 @@ let Inicio = () => {
       <Route path="/restablecer" element={<RestablecerContrasena/>} />
       <Route path="/registroEstudiante" element={<RegistroEstudiante/>} />
       <Route path="/validarToken" element={<ValidarToken/>} />
+      <Route path="/validarTokenNE" element={<ValidarTokenNuevoEstudiante/>} />
       <Route path="/validarConstancia" element={<ValidarConstancia/>} />
 
       <Route path="/estudiante/solicitudes" element={<Solicitudes />} />

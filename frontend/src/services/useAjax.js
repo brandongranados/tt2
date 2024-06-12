@@ -22,6 +22,7 @@ const rutas = {
     VERIFICACION_MASIVA_ESTUDIANTES : "/verificarMasivaEstudiante",
     VALIDAR_ESTUDIANTE : "/validarEstudiante",
     REGISTRO_ESTUDIANTE: "/registroEstudiante",
+    VALIDAR_TOKEN_ESTUDIANTE_NUEVO: "/registroEstudianteToken",
     
 
     CONSTANCIA_ESTUDIOS: "/estudiante/getConstanciaEstudios",
@@ -129,7 +130,7 @@ let useAjax = () => {
             setEspera(false);
             await creaAlerta({
                 titulo : "OK",
-                mensaje : "Se envió un token a su direccion de correo electronico que dio de alta. Favor de ingresarlo en la ventana a donde se redireccionara.",
+                mensaje : "Se envió un token a su dirección de correo electrónico que dio de alta. Favor de ingresarlo en la ventana a donde se redireccionará.",
                 icono : 1,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
@@ -154,6 +155,77 @@ let useAjax = () => {
         }
     };
 
+    let restablecerContrasenaValidaToken = async (datos, setEspera) => {
+        try {
+
+            let pregunta = await creaAlerta({
+                titulo : "Advertencia",
+                mensaje : "¿Está seguro de enviar la información?",
+                icono : 4,
+                boolBtnCancel: true,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "#dc3741",
+                MensajeConfirmar : "Continuar",
+                MensajeCancel : "Cancelar"
+            });
+
+            if( !pregunta )
+            {
+                await creaAlerta({
+                    titulo : "Cancelado",
+                    mensaje : "Operación cancelada.",
+                    icono : 2,
+                    boolBtnCancel: false,
+                    ColorConfirmar: "#2e7d32",
+                    ColorCancel : "#dc3741",
+                    MensajeConfirmar : "OK",
+                    MensajeCancel : "Cancelar"
+                });
+                return;
+            }
+
+            setEspera(true);
+
+            await ajax.post(rutas.VALIDAR_TOKEN_RESTABLECER, datos, {
+                headers:{
+                    'Content-Type': 'application/json',
+                    Authorization: Authorization
+                }
+            });
+
+            setEspera(false);
+
+            await creaAlerta({
+                titulo : "OK",
+                mensaje : "Se restableció la contraseña correctamente, ya puede iniciar sesión.",
+                icono : 1,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "",
+                MensajeConfirmar : "OK",
+                MensajeCancel : ""
+            });
+
+            return true;
+
+        } catch (error) {
+            setEspera(false);
+
+            await creaAlerta({
+                titulo : "Error",
+                mensaje : "Usuario o token incorrectos o token expirado",
+                icono : 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "",
+                MensajeConfirmar : "OK",
+                MensajeCancel : ""
+            });
+
+            return false;
+        }
+    };
+
     //AJAX VERIFICACION DESDE EXCEL ESTUDIANTES
 
     let verificacionMasivaEstudiantes = async (datos, setEspera) => {
@@ -170,17 +242,17 @@ let useAjax = () => {
                     }
             });
 
-            let datos = await resp.data;
+            let datosResp = await resp.data;
 
             setEspera(false);
 
-            return datos;
+            return datosResp;
 
         } catch (error) {
             setEspera(false);
             await creaAlerta({
                 titulo : "Error",
-                mensaje : "Ocurrio un error interno contactar a sistemas",
+                mensaje : "Ocurrió un error interno al contactar a sistemas",
                 icono : 2,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
@@ -218,7 +290,7 @@ let useAjax = () => {
             setEspera(false);
             await creaAlerta({
                 titulo : "Error",
-                mensaje : "Ocurrio un error interno contactar a sistemas",
+                mensaje : "Ocurrió un error interno al contactar a sistemas.",
                 icono : 2,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
@@ -250,7 +322,7 @@ let useAjax = () => {
             setEspera(false);
             await creaAlerta({
                 titulo : "Error",
-                mensaje : "No fue posible descargar archivo",
+                mensaje : "No fue posible descargar archivo.",
                 icono : 2,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
@@ -269,7 +341,7 @@ let useAjax = () => {
 
             let pregunta = await creaAlerta({
                 titulo : "Advertencia",
-                mensaje : "Está seguro de la modificación.",
+                mensaje : "¿Está seguro de la modificación?",
                 icono : 4,
                 boolBtnCancel: true,
                 ColorConfirmar: "#2e7d32",
@@ -338,7 +410,7 @@ let useAjax = () => {
 
             let pregunta = await creaAlerta({
                 titulo : "Advertencia",
-                mensaje : "Está seguro de enviar la informacion.",
+                mensaje : "¿Está seguro de enviar la información?",
                 icono : 4,
                 boolBtnCancel: true,
                 ColorConfirmar: "#2e7d32",
@@ -375,8 +447,8 @@ let useAjax = () => {
 
             await creaAlerta({
                 titulo : "OK",
-                mensaje : "Se envio un token a la direccion de correo electronico registrada. "
-                            +"Debera ingresar el token en la ventana donde se le redireccionara para verificar la direccion de correo electronico. ",
+                mensaje : "Se envió un token a la dirección de correo electrónico registrada. "
+                            +"Deberá ingresar el token en la ventana donde se le redireccionará para verificar la dirección de correo electrónico.",
                 icono : 1,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
@@ -405,12 +477,12 @@ let useAjax = () => {
         }
     };
 
-    let registrarEstudianteToken = async (datos, setEspera) => {
+    let registrarEstudianteValidaToken = async (datos, setEspera) => {
         try {
 
             let pregunta = await creaAlerta({
                 titulo : "Advertencia",
-                mensaje : "Está seguro de enviar la informacion.",
+                mensaje : "¿Está seguro de enviar la información?",
                 icono : 4,
                 boolBtnCancel: true,
                 ColorConfirmar: "#2e7d32",
@@ -436,7 +508,7 @@ let useAjax = () => {
 
             setEspera(true);
 
-            await ajax.post(rutas.VALIDAR_TOKEN_RESTABLECER, datos, {
+            await ajax.post(rutas.VALIDAR_TOKEN_ESTUDIANTE_NUEVO, datos, {
                 headers:{
                     'Content-Type': 'application/json',
                     Authorization: Authorization
@@ -447,7 +519,7 @@ let useAjax = () => {
 
             await creaAlerta({
                 titulo : "OK",
-                mensaje : "Se auntentico el correo electronico correctamente ya puede iniciar sesion. ",
+                mensaje : "Se autenticó el registro de estudiante. Verificar que gestión escolar realice alta sus datos como estudiante, hasta entonces podrá iniciar sesión.",
                 icono : 1,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
@@ -475,6 +547,7 @@ let useAjax = () => {
             return false;
         }
     };
+
      //alta estudiante   
      let altaEstudiantes = async (datos, setEspera) => {
         setEspera(true);
@@ -521,7 +594,7 @@ let useAjax = () => {
 
             let pregunta = await creaAlerta({
                 titulo : "Advertencia",
-                mensaje : "Está seguro de continuar.",
+                mensaje : "¿Está seguro de continuar?",
                 icono : 4,
                 boolBtnCancel: true,
                 ColorConfirmar: "#2e7d32",
@@ -605,7 +678,7 @@ let useAjax = () => {
             setEspera(false);
             await creaAlerta({
                 titulo: "Error",
-                mensaje: "No se pudo realizar el alta de materias por estudiante pruebe mediante reinscripcion.",
+                mensaje: "No se pudo realizar el alta de materias por estudiante pruebe mediante reinscripción.",
                 icono: 2,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
@@ -659,7 +732,7 @@ let useAjax = () => {
 
             await creaAlerta({
                 titulo : "Error",
-                mensaje : "No fue posible crear su constancia inrentelo de nuevo mas tarde.",
+                mensaje : "No fue posible crear su constancia, inténtelo de nuevo más tarde.",
                 icono : 2,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
@@ -710,7 +783,7 @@ let useAjax = () => {
 
         let msm = await creaAlerta({
             titulo: "Advertencia",
-            mensaje: "Esta seguro de continuar?.",
+            mensaje: "¿Está seguro de continuar?",
             icono: 5,
             boolBtnCancel: true,
             ColorConfirmar: "#2e7d32",
@@ -723,7 +796,7 @@ let useAjax = () => {
         {
             await creaAlerta({
                 titulo: "Cancelado",
-                mensaje: "Operacion cancelada.",
+                mensaje: "Operación cancelada.",
                 icono: 2,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
@@ -747,7 +820,7 @@ let useAjax = () => {
 
             await creaAlerta({
                 titulo: "Ok",
-                mensaje: "Se actulizo con exito.",
+                mensaje: "Se actualizó con éxito.",
                 icono: 1,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
@@ -773,7 +846,6 @@ let useAjax = () => {
 
 // baja masiva de estudiantes
     let bajaMasivaEstudiantes = async (datos, setEspera) => {
-        console.log("Baja masiva de estudiantes", datos);
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.BAJA_ESTUDIANTES, datos, {
@@ -782,11 +854,9 @@ let useAjax = () => {
                 }
             });
 
-            console.log("Respuesta del servidor", resp.data);
             setEspera(false);
             return resp.data;
         } catch (error) {
-            console.error("Error en la petición", error);
             setEspera(false);
             await creaAlerta({
                 titulo: "Error",
@@ -951,7 +1021,7 @@ let useAjax = () => {
 
         let pregunta = await creaAlerta({
             titulo : "Advertencia",
-            mensaje : "Está seguro de eliminar al personal.",
+            mensaje : "¿Está seguro de eliminar al personal?",
             icono : 4,
             boolBtnCancel: true,
             ColorConfirmar: "#2e7d32",
@@ -1024,7 +1094,8 @@ let useAjax = () => {
         descargarEjemploExcelAltaMasiva,
         cargarEstudiante,
         registrarEstudiante,
-        registrarEstudianteToken,
+        restablecerContrasenaValidaToken,
+        registrarEstudianteValidaToken,
         altaEstudiantes,
         crearConstancia,
         verificarDocumento,

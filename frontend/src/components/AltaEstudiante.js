@@ -32,18 +32,18 @@ let AltaEstudiante = () => {
     const [creaAlerta] = useAlerta();
     const [espera, setEspera] = useState(false);
     const validacion = yup.object().shape({
-        paterno: yup.string().required('El apellido paterno es obligatorio'),
-        materno: yup.string().required('El apellido materno es obligatorio'),
-        nombre: yup.string().required('El nombre es obligatorio'),
-        curp: yup.string().required('El curp es obligatorio').length(18, "El curp no es valido"),
-        sexo: yup.string().required('El sexo es obligatorio').length(1, "El sexo no es valido"),
-        fechaNacimiento: yup.date().required('La fecha de nacimiento es obligatorioa'),
+        paterno: yup.string().required('El apellido paterno es obligatorio.'),
+        materno: yup.string().required('El apellido materno es obligatorio.'),
+        nombre: yup.string().required('El nombre es obligatorio.'),
+        curp: yup.string().required('El curp es obligatorio.').length(18, "El curp no es válido"),
+        sexo: yup.string().required('El sexo es obligatorio.').length(1, "El sexo no es válido"),
+        fechaNacimiento: yup.date().required('La fecha de nacimiento es obligatoria.'),
         boleta: yup.number().required('La boleta es obligatoria'),
         carrera: yup.number().required('La carrera es obligatoria'),
         semestre: yup.number().required('El semestre/nivel es obligatorio'),
         plan: yup.number().required('El plan de estudios es obligatorio'),
         estatus: yup.number().required('Error interno'),
-        usuario: yup.string().required('Su usuario es obligatorio').length(88, "El usuario no es valido")
+        usuario: yup.string().required('Su usuario es obligatorio').length(88, "El usuario no es válido")
       });
 
     const [tamTitulo, setTamTitulo] = useState("h3");
@@ -264,9 +264,9 @@ let AltaEstudiante = () => {
 
         let pregunta = await creaAlerta({
             titulo : "Advertencia",
-            mensaje : "Se visulizaran los estudiantes en otra ventana. La informacion "+
-                        "del mapeo de materias por estidnate no se mostrara sin embargo "+
-                        "al realizar la carga masiva se cargaran automaticamente.",
+            mensaje : "Se visualizarán los estudiantes en otra ventana. La información "+
+                        "del mapeo de materias por estudiarte no se mostrará, sin embargo, "+
+                        "al realizar la carga masiva, se registrarán automáticamente.",
             icono : 4,
             boolBtnCancel: true,
             ColorConfirmar: "#2e7d32",

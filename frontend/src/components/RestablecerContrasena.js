@@ -73,7 +73,7 @@ let RestablecerContrasena = () => {
                 <Grid item xs={12}>
                     <Box sx={{marginTop:"2%"}}>
                         <InputTextBorderAzul
-                        etiqueta={"Nueva contrasena"}
+                        etiqueta={"Nueva contraseña"}
                         value={contrasena}
                         onChange={ (e) => { cambiarContrasena(e) } } />
                     </Box>

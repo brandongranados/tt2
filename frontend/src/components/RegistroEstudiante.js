@@ -18,28 +18,30 @@ import useAjax from '../services/useAjax';
 import useCadenaUnica from './hooks/useCadenaUnica';
 
 import useAlerta from '../components/hooks/useAlerta';
+import useArchivo from './hooks/useArchivo';
 
 let RegistroEstudiante = () => {
 
     //HOOKS PERSONALES
     const [crearHash512] = useCadenaUnica();
+    const [archivo] = useArchivo();
     //AJAX CARGANDO
     const [espera, setEspera] = useState(false);
     //tamano de titulo
     const [tamTitulo, setTamTitulo] = useState("h3");
     //VALIDACION
     const valida = Yup.object().shape({
-        boleta: Yup.number().required("Ingrese un boleta valida."),
+        boleta: Yup.number().required("Ingrese una boleta válida."),
         usuario: Yup.string()
-                    .required("El usuario no puede estar vacio."),
+                    .required("El usuario no puede estar vacío."),
         correo: Yup.string().email("Correo electrónico no válido")
-                    .required("El correo no puede estar vacio."),
+                    .required("El correo no puede estar vacío."),
         conCorreo: Yup.string().email("Correo electrónico no válido")
-                    .required("El correo de confirmacion no puede estar vacio."),
+                    .required("El correo de confirmación no puede estar vacío."),
         contrasena: Yup.string()
-                    .required("La contrasena no puede estar vacia."),
+                    .required("La contraseña no puede estar vacía."),
         conContrasena: Yup.string()
-                    .required("La contrasena de confirmacion no puede estar vacia.")
+                    .required("La contraseña de confirmación no puede estar vacía.")
     });
 
     //FORMULARIO
@@ -101,7 +103,7 @@ let RegistroEstudiante = () => {
             return;
         }
 
-        navegar("/validarToken");
+        navegar("/validarTokenNE");
 
     };
 
@@ -167,6 +169,26 @@ let RegistroEstudiante = () => {
     });
     let evitaCopiaPega = (e) =>  e.preventDefault();
 
+    let cargarPdf = async e => {
+        let archivo = e.target.files[0];
+        let tamano = archivo.size;
+
+        if( tamano > (10*1024*1024) )
+        {
+            await creaAlerta({
+                titulo : "Error",
+                mensaje : "El archivo es mayor a 10MB",
+                icono : 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "",
+                MensajeConfirmar : "OK",
+                MensajeCancel : ""
+            });
+            return;
+        }
+    };
+
     useEffect( () => {
 
         try {
@@ -179,6 +201,10 @@ let RegistroEstudiante = () => {
         <>
             <Cargando open={espera}/>
             <NavegacionInicioSesion />
+            <input type="file" id="pdfDoc" 
+                    onChange={ e => cargarPdf(e) }
+                    accept="application/pdf" 
+                    style={{display:"none"}}/>
             <Grid container >
                 <Grid item xs={12}>
                     <Box sx={{margin:"3%"}}>

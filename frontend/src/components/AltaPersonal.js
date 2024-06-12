@@ -35,10 +35,10 @@ let AltaPersonal = () => {
         paterno: yup.string().required('El apellido paterno es obligatorio'),
         materno: yup.string().required('El apellido materno es obligatorio'),
         nombre: yup.string().required('El nombre es obligatorio'),
-        numeroEmpleado: yup.string().required('El numero de empleado es obligatorio'),
-        correo: yup.string().email("Correo electrónico no válido").required("El correo no puede estar vacio."),
-        usuarioPersonal: yup.string().required('El usuario es obligatorio').length(88, "El usuario no es valido"),
-        usuario: yup.string().required('El usuario es obligatorio').length(88, "El usuario no es valido")
+        numeroEmpleado: yup.string().required('El número de empleado es obligatorio'),
+        correo: yup.string().email("Correo electrónico no válido").required("El correo no puede estar vacío."),
+        usuarioPersonal: yup.string().required('El usuario es obligatorio').length(88, "El usuario no es válido"),
+        usuario: yup.string().required('El usuario es obligatorio').length(88, "El usuario no es válido")
       });
 
     // AJAX CARGANDO

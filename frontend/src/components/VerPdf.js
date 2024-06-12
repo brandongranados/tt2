@@ -4,8 +4,6 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
-import Cargando from "./Cargando";
-
 let VerPdf = ({ open, cerrarPdf, base64 }) => {
 
     const [altura, setAltura] = useState(0);

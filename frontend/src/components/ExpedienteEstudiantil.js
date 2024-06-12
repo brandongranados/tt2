@@ -92,7 +92,7 @@ let ExpedienteEstudiantil = () => {
                                             <Typography
                                             fontWeight={"bold"}
                                             textAlign={"center"}>
-                                                Numero de boleta
+                                                N&uacute;mero de boleta
                                             </Typography>
                                         </TableCell>
                                         <TableCell>

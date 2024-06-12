@@ -14,9 +14,9 @@ import Cargando from "./Cargando";
 import useAjax from '../services/useAjax';
 import useCadenaUnica from './hooks/useCadenaUnica';
 
-import useAlerta from '../components/hooks/useAlerta';
+import useAlerta from './hooks/useAlerta';
 
-let ValidarToken = () => {
+let ValidarTokenNuevoEstudiante = () => {
 
     //HOOKS PERSONALES
     const [crearHash512] = useCadenaUnica();
@@ -48,7 +48,7 @@ let ValidarToken = () => {
             e.preventDefault();
             await creaAlerta({
                 titulo : "Error",
-                mensaje : "El usuario no puede estar vacio.",
+                mensaje : "El usuario no puede estar vacío.",
                 icono : 2,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
@@ -59,7 +59,7 @@ let ValidarToken = () => {
             return;
         }
 
-        await ObjAjax.restablecerContrasenaValidaToken(datos, setEspera);
+        await ObjAjax.registrarEstudianteValidaToken(datos, setEspera);
         navegar("/");
 
     }; 
@@ -112,4 +112,4 @@ let ValidarToken = () => {
     )
 };
 
-export default ValidarToken;
+export default ValidarTokenNuevoEstudiante;

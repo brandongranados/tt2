@@ -286,7 +286,7 @@ let ExpendienteEdicion = () => {
                     <Paper>
                         <Box p={3}>
                             <Typography variant="h4" component="p" fontWeight="bold" align="center" gutterBottom mb={6}>
-                                Expediente Digital
+                                Expediente Estudiantil
                             </Typography>
                             
                             <Box mb={4}>

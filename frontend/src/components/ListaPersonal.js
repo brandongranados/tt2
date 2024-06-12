@@ -104,14 +104,14 @@ let PersonalGestionEscolar = () => {
                                                         <Typography
                                                             fontWeight={"bold"}
                                                             textAlign={"center"}>
-                                                            Número de empleado
+                                                            N&uacute;mero de empleado
                                                         </Typography>
                                                     </TableCell>
                                                     <TableCell>
                                                         <Typography
                                                             fontWeight={"bold"}
                                                             textAlign={"center"}>
-                                                            Correo electrónico
+                                                            Correo electr&oacute;nico
                                                         </Typography>
                                                     </TableCell>
                                                     <TableCell />
