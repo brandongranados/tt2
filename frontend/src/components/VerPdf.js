@@ -13,32 +13,35 @@ let VerPdf = ({ open, cerrarPdf, base64 }) => {
     }, [] )
 
     return(
-        <Modal
-        open={open}>
-            <Box sx={{width:"100%", display:"flex", 
-                        justifyContent:"center", 
-                        alignItems:"center",
-                        flexDirection:"column"}}>
-                <Button
-                    onClick={cerrarPdf} 
-                    variant="contained" 
-                    color="error"
-                    sx={{paddingTop:"1%"}} >
-                        Cerrar documento
-                </Button>
-                <Box
-                sx={{paddingTop:"1%", width:"100%",
-                display:"flex", 
-                justifyContent:"center", 
-                alignItems:"center"
-                }}>
-                    <iframe
-                    width={"95%"}
-                        src={"data:application/pdf;base64,"+base64}
-                        height={altura} />
+        <>
+            <Modal
+            open={open}>
+                
+                <Box sx={{width:"100%", display:"flex", 
+                            justifyContent:"center", 
+                            alignItems:"center",
+                            flexDirection:"column"}}>
+                    <Button
+                        onClick={cerrarPdf} 
+                        variant="contained" 
+                        color="error"
+                        sx={{paddingTop:"1%"}} >
+                            Cerrar documento
+                    </Button>
+                    <Box
+                    sx={{paddingTop:"1%", width:"100%",
+                    display:"flex", 
+                    justifyContent:"center", 
+                    alignItems:"center"
+                    }}>
+                        <iframe
+                            width={"95%"}
+                            src={"data:application/pdf;base64,"+base64}
+                            height={altura}/>
+                    </Box>
                 </Box>
-            </Box>
-        </Modal>
+            </Modal>
+        </>
     )
 };
 

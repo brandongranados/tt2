@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { setAutenticacion } from '../services/Autenticacion';
 import { setDatosUsuario, setEstudiante, setListaEstudiantes, setExpEstudiante } from '../services/DatosUsuario';
@@ -19,11 +19,11 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import tt from '../assets/img/tt.png';
 
 let Navegacion = () => {
-
     const [anchorEl, setAnchorEl] = useState(null);
     const abierto = Boolean(anchorEl);
     const navegar = useNavigate();
     const despacha = useDispatch();
+    const [ventanas, setVentanas] = useState([]);
 
     let abrirMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -42,6 +42,64 @@ let Navegacion = () => {
         sessionStorage.clear();
         navegar("/");
     };
+
+    let dirigir = ruta => navegar(ruta);
+
+    useEffect( () => {
+        try {
+            let rol = sessionStorage.getItem("Rol");
+            switch(rol)
+            {
+                case "ROLE_ESTUDIANTE":
+                    setVentanas([]);
+                break;
+                case "ROLE_PAAE":
+                    setVentanas([
+                        {
+                            key: 1,
+                            ruta:"/personalGestion/expedienteEstudiantil",
+                            ruta_nombre: "Lista de estudiantes"
+                        },
+                        {
+                            key: 2,
+                            ruta:"/personalGestion/altaEstudiante",
+                            ruta_nombre: "Alta estudiante"
+                        }
+                    ]);
+                break;
+                case "ROLE_ADMIN":
+                    setVentanas([
+                        {
+                            key: 1,
+                            ruta:"/personalGestion/expedienteEstudiantil",
+                            ruta_nombre: "Lista de estudiantes"
+                        },
+                        {
+                            key: 2,
+                            ruta:"/personalGestion/altaEstudiante",
+                            ruta_nombre: "Alta estudiante"
+                        },
+                        {
+                            key: 3,
+                            ruta:"/administrador/altaPersonal",
+                            ruta_nombre: "Alta personal"
+                        },
+                        {
+                            key: 4,
+                            ruta:"/administrador/listaPersonal",
+                            ruta_nombre: "Lista personal"
+                        }
+                    ]);
+                break;
+                case "ROLE_AUDITOR":
+                    setVentanas([]);
+                break;
+                default:
+                    setVentanas([]);
+                break;
+            }
+        } catch (error) {}
+    }, [] );
 
     return(
         <AppBar position="static" sx={{backgroundColor:"#006699", height:"8vh"}}>
@@ -74,6 +132,19 @@ let Navegacion = () => {
                             MenuListProps={{
                             'aria-labelledby': 'basic-button',
                             }}>
+                            {
+                                ventanas.map( iterador => {
+                                    return(
+                                        <MenuItem key={iterador.key} onClick={ e => { dirigir(iterador.ruta) } } >
+                                            <Typography variant='p' component={"span"} >
+                                                {
+                                                    iterador.ruta_nombre
+                                                }
+                                            </Typography>
+                                        </MenuItem>
+                                    )
+                                } )
+                            }
                             <MenuItem onClick={ cerrar } >
                                 <Typography variant='p' component={"span"} >
                                     <Button variant="contained" color="error" onClick={cerarSesion}>

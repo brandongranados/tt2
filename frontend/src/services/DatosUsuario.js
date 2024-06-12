@@ -1,13 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { json } from 'react-router';
 
 export const DatosUsuarioSlice = createSlice({
     name: "DatosUsuario",
     initialState: {
         DatosUsuario: null,
+        Rol: null,
         Estudiante: {},
         ListaEstudiantes: [],
-        ExpEstudiante: {}
+        ExpEstudiante: {},
+        Masivas: null
     },
     reducers:{
         setDatosUsuario: (state, action) => {
@@ -28,7 +29,7 @@ export const DatosUsuarioSlice = createSlice({
         setListaEstudiantes: (state, action) => {
             state.ListaEstudiantes = action.payload;
         },
-        getExpEstudiante: (state, action) => {
+        getExpEstudiante: (state) => {
             let ExpEstudiante = JSON.parse(sessionStorage.getItem("ExpEstudiante"));
 
             if( ExpEstudiante )
@@ -39,6 +40,21 @@ export const DatosUsuarioSlice = createSlice({
         setExpEstudiante: (state, action) => {
             state.ExpEstudiante = action.payload;
             sessionStorage.setItem("ExpEstudiante", JSON.stringify(state.ExpEstudiante));
+        },
+        getRol: (state) => {
+            let rol = sessionStorage.getItem("Rol");
+
+            if( rol )
+                state.Rol = rol;
+            else
+                state.Rol = null;
+        },
+        setRol: (state, action) => {
+            state.Rol = action.payload;
+            sessionStorage.setItem("Rol", state.Rol);
+        },
+        setMasivas: (state, action) => {
+            state.Masivas = action.payload;
         }
     }
 })
@@ -49,7 +65,10 @@ export const {
                 setEstudiante, 
                 setListaEstudiantes,
                 getExpEstudiante,
-                setExpEstudiante
+                setExpEstudiante,
+                getRol,
+                setRol,
+                setMasivas
              } = DatosUsuarioSlice.actions;
 
 export default DatosUsuarioSlice.reducer;

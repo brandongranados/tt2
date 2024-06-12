@@ -32,12 +32,13 @@ let ExpedienteEstudiantil = () => {
     const despacha = useDispatch();
 
     const [datos, setDatos] = useState([]);
-    const [cantDatos, setCantDatos] = useState([]);
+    const [cantDatos, setCantDatos] = useState(0);
     const [espera, setEspera] = useState(false);
 
     let paginarLista = async (e, valor) => await listaEstudiantes(valor);
 
     let listaEstudiantes = async (pagina) => {
+        setEspera(true);
         let resp = await ObjAjax.getListaEstudiantes({paginacion:pagina}, setEspera);
         setDatos(resp.lista);
         setCantDatos( parseInt(resp.cant.cant/100)+1 );
@@ -59,7 +60,7 @@ let ExpedienteEstudiantil = () => {
 
     return (
         <>
-            <Cargando bool={espera}/>
+            <Cargando open={espera}/>
             <Navegacion />
             <Grid container>
                 <Grid item xs={12}>
@@ -91,7 +92,7 @@ let ExpedienteEstudiantil = () => {
                                             <Typography
                                             fontWeight={"bold"}
                                             textAlign={"center"}>
-                                                Numero de boleta
+                                                N&uacute;mero de boleta
                                             </Typography>
                                         </TableCell>
                                         <TableCell>

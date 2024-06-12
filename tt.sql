@@ -2018,7 +2018,7 @@ CREATE PROCEDURE sp_valida_restablece_contrasena
 			RETURN;
 		END
 
-		IF @fecha_solicitud >= @fecha_expiracion
+		IF GETDATE() >= @fecha_expiracion
 		BEGIN
 			SET @bool = 7;
 			RETURN;
@@ -2720,6 +2720,7 @@ CREATE PROCEDURE sp_insertar_personal_gestion
 	@nombre VARCHAR(MAX),
 	@numero_empleado VARCHAR(MAX),
 	@correo VARCHAR(MAX),
+	@usuario_personal VARCHAR(MAX),
 	@usuario_alta VARCHAR(MAX),
 	@bool SMALLINT OUTPUT
 	AS BEGIN
@@ -2772,6 +2773,12 @@ CREATE PROCEDURE sp_insertar_personal_gestion
 			RETURN;
 		END
 
+		IF EXISTS( SELECT * FROM personal WHERE numero_personal = @numero_empleado )
+		BEGIN
+            SET @bool = 17;
+			RETURN;
+        END
+
 		BEGIN TRY
 
 			INSERT INTO personal
@@ -2800,8 +2807,8 @@ CREATE PROCEDURE sp_insertar_personal_gestion
 			)
 			VALUES
 			(
-				@numero_empleado,
-				@numero_empleado
+				@usuario_personal,
+				@usuario_personal
 			);
 
 			SET @id_usuario = SCOPE_IDENTITY();
@@ -3199,6 +3206,77 @@ CREATE TABLE #usuario_sesion
 INSERT INTO #usuario_sesion
 ( id_usuario )VALUES( null );
 
-UPDATE periodo
-SET nom_periodo = 'Nivel 3'
-WHERE id_periodo = 3;
+
+UPDATE usuario
+    SET contrasena = 'YzRkNTAxNzY4NjZlOTI0NWZiZDQ4NzcyZDVhMzczYzJmOWYwMmRmODAwODgzNmE0NDVlNDVjNmMyZGM3ZDFhNw==',
+       nombre_usuario = 'ZDQ1ODQ1NDdjN2Y2YTAxYTQwYmI4ZDg2M2FiMmMxMzRlMGM1MWNlMzUzYzBjYTJmZDkzODU3OTYxZDc1MDY1OA=='
+WHERE id_usuario = 28;
+
+
+INSERT INTO usuario
+(
+    nombre_usuario,
+    contrasena
+)
+VALUES
+(
+    'ZDQ1ODQ1NDdjN2Y2YTAxYTQwYmI4ZDg2M2FiMmMxMzRlMGM1MWNlMzUzYzBjYTJmZDkzODU3OTYxZDc1MDY1OA==',
+    'YzRkNTAxNzY4NjZlOTI0NWZiZDQ4NzcyZDVhMzczYzJmOWYwMmRmODAwODgzNmE0NDVlNDVjNmMyZGM3ZDFhNw=='
+);
+
+INSERT INTO personal
+(
+    nombres,
+    apellido_paterno,
+    apellido_materno,
+    correo_electronico,
+    numero_personal
+)
+VALUES
+(
+    'NidiaELizabeth',
+    'CortezMoreno',
+    'GalvanDuarte',
+    'estrem_@hotmail.com',
+    'CIC-ADMIN-0001'
+);
+
+
+INSERT INTO rol_personal_usuario
+(id_personal, id_rol, id_usuario)
+VALUES
+(
+    12, 2, 35
+);
+
+
+
+SELECT nom_uni_apren, nombre_plan, nom_periodo, nom_carrera, nom_grupo
+FROM uni_apren_plan_per_car_grup uappcg
+INNER JOIN unidad_aprendizaje a on uappcg.id_uni_apren = a.id_uni_apren
+INNER JOIN plan_estudios pe2 on uappcg.id_plan = pe2.id_plan
+INNER JOIN periodo p2 on uappcg.id_periodo = p2.id_periodo
+INNER JOIN carrera c2 on uappcg.id_carrera = c2.id_carrera
+INNER JOIN grupo g2 on uappcg.id_grupo = g2.id_grupo;
+
+
+
+SELECT * FROM rol_usuario_est
+WHERE id_rol IN (
+    SELECT id_rol FROM roles WHERE nombre_rol = 'ROLE_ADMIN'
+    );
+
+INSERT INTO usuario
+(nombre_usuario, contrasena)
+VALUES
+    (
+     'ZDQ1ODQ1NDdjN2Y2YTAxYTQwYmI4ZDg2M2FiMmMxMzRlMGM1MWNlMzUzYzBjYTJmZDkzODU3OTYxZDc1MDY1OA==',
+     'YzRkNTAxNzY4NjZlOTI0NWZiZDQ4NzcyZDVhMzczYzJmOWYwMmRmODAwODgzNmE0NDVlNDVjNmMyZGM3ZDFhNw=='
+    );
+
+DECLARE @bool SMALLINT;
+
+
+
+
+

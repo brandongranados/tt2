@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Provider } from "react-redux";
+
+import { Provider } from 'react-redux';
+
 import Store from "./services/Store";
 import InicioSesion from "./components/InicioSesion";
 import RestablecerContrasena from "./components/RestablecerContrasena";
@@ -16,9 +18,11 @@ import Bitacora from "./components/Bitacora";
 import AltaPersonal from "./components/AltaPersonal";
 import ListaPersonal from "./components/ListaPersonal";
 import ValidarConstancia from "./components/ValidarConstancia";
+import ValidarTokenNuevoEstudiante from "./components/ValidarTokenNuevoEstudiante";
 
 
 let App = () => {
+
   return (
     <Provider store={Store}>
       <BrowserRouter>
@@ -36,20 +40,27 @@ let Inicio = () => {
       <Route path="/restablecer" element={<RestablecerContrasena/>} />
       <Route path="/registroEstudiante" element={<RegistroEstudiante/>} />
       <Route path="/validarToken" element={<ValidarToken/>} />
+      <Route path="/validarTokenNE" element={<ValidarTokenNuevoEstudiante/>} />
       <Route path="/validarConstancia" element={<ValidarConstancia/>} />
-      <Route path="/administrador/altaEstudiante" element={<AltaEstudiante/>} />
-      <Route path="/administrador/altaEstudianteValidacion" element={<AltaEstudianteValidacion/>} />
-      <Route path="/administrador/altaEstValEdicion" element={<AltaEstValEdicion/>} />
-      <Route path="/administrador/expedienteEstudiantil" element={<ExpedienteEstudiantil/>} />
-      <Route path="/administrador/expEstEdicion" element={<ExpendienteEdicion/>} />
-      <Route path="/administrador/altaPersonal" element={<AltaPersonal/>}/>
-      <Route path="/administrador/listaPersonal" element={<ListaPersonal/>}/>
-      <Route path="/auditor/bitacora" element={<Bitacora/>} />
-      <Route path="/otro" element={<RegistroUsuario/>} />     
+
       <Route path="/estudiante/solicitudes" element={<Solicitudes />} />
+
       <Route path="/personalGestion/altaEstudiante" element={<AltaEstudiante/>} />
       <Route path="/personalGestion/expedienteEstudiantil" element={<ExpedienteEstudiantil/>} />
       <Route path="/personalGestion/expEstEdicion" element={<ExpendienteEdicion/>} />
+
+      <Route path="/administrador/altaEstudiante" element={<AltaEstudiante/>} />
+      <Route path="/administrador/expedienteEstudiantil" element={<ExpedienteEstudiantil/>} />
+      <Route path="/administrador/expEstEdicion" element={<ExpendienteEdicion/>} />
+      <Route path="/administrador/altaEstudianteValidacion" element={<AltaEstudianteValidacion/>} />
+      <Route path="/administrador/altaEstValEdicion" element={<AltaEstValEdicion/>} />
+
+      <Route path="/administrador/altaPersonal" element={<AltaPersonal/>}/>
+      <Route path="/administrador/listaPersonal" element={<ListaPersonal/>}/>
+
+      <Route path="/auditor/bitacora" element={<Bitacora/>} />
+
+      <Route path="/otro" element={<RegistroUsuario/>} />
     </Routes>
   );
 };
