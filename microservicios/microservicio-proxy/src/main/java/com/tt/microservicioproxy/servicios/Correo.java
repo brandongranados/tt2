@@ -30,8 +30,8 @@ public class Correo {
                 asunto = "Autenticación de correo electrónico";
                 cuerpo = "Buenas estimado usuario SAGEDD. </br>"+
                         "Le hacemos llegar por este medio un token para "+
-                        "continuar con el proceso de autenticación de correo electrónico:</br>"+
-                        cuerpo+"</br>"+
+                        "continuar con el proceso de autenticación de correo electrónico:</br></br>"+
+                        "<b>"+cuerpo+"</b></br></br>"+
                         "Saludos cordiales.";
                 break;
             case 2:
@@ -39,7 +39,7 @@ public class Correo {
                 cuerpo = "Buenas estimado usuario SAGEDD. </br>"+
                         "Le hacemos llegar por este medio un token para "+
                         "continuar con el proceso de restablecimiento de contraseña:</br>"+
-                        cuerpo+"</br>"+
+                        "</br><b>"+cuerpo+"</b></br></br>"+
                         "Saludos cordiales.";
                 break;
             default:
