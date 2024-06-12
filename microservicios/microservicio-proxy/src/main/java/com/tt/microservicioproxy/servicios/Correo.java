@@ -27,10 +27,20 @@ public class Correo {
         switch (msm) 
         {
             case 1:
-                asunto = "Autenticacion de correo electronico";
+                asunto = "Autenticación de correo electrónico";
+                cuerpo = "Buenas estimado usuario SAGEDD. </br>"+
+                        "Le hacemos llegar por este medio un token para "+
+                        "continuar con el proceso de autenticación de correo electrónico:</br></br>"+
+                        "<b>"+cuerpo+"</b></br></br>"+
+                        "Saludos cordiales.";
                 break;
             case 2:
-                asunto = "Restablecimiento de contrasena";
+                asunto = "Restablecimiento de contraseña";
+                cuerpo = "Buenas estimado usuario SAGEDD. </br>"+
+                        "Le hacemos llegar por este medio un token para "+
+                        "continuar con el proceso de restablecimiento de contraseña:</br>"+
+                        "</br><b>"+cuerpo+"</b></br></br>"+
+                        "Saludos cordiales.";
                 break;
             default:
                 break;

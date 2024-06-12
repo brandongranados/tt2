@@ -141,14 +141,14 @@ public class ABCEstudiantes {
     public ResponseEntity getListaEstudiantes(AjaxListaEstudiante estu)
     {
         HashMap<String, Object> resPet = null;
-        List<HashMap<Object, Object>> salida = null;
+        HashMap<Object, Object> salida = null;
         int codigo = 400;
 
         try {
             
             resPet = peticiones.getRespuestaRest(RUTA_LISTA_ESTUDIANTES, estu);
             codigo = (int)resPet.get("codigo");
-            salida = obj.fromJson((String)resPet.get("datos"), List.class);
+            salida = obj.fromJson((String)resPet.get("datos"), HashMap.class);
 
             if( codigo != 200 )
                 throw new Exception();

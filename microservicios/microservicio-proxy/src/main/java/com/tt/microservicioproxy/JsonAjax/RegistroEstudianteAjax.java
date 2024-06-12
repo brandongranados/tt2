@@ -19,6 +19,7 @@ public class RegistroEstudianteAjax {
     @NotBlank
     @SQLInjectionSafe
     @NotNull
+    @Size(max = 88, min = 88, message = "Su usuario no cumple con el tamano estipulado")
     private String usuario;
     @Email(message = "Correo no valido")
     @SQLInjectionSafe
@@ -33,10 +34,12 @@ public class RegistroEstudianteAjax {
     @NotBlank
     @SQLInjectionSafe
     @NotNull
+    @Size(max = 88, min = 88, message = "Su usuario no cumple con el tamano estipulado")
     private String contrasena;
     @NotBlank
     @SQLInjectionSafe
     @NotNull
+    @Size(max = 88, min = 88, message = "Su usuario no cumple con el tamano estipulado")
     private String conContrasena;
 
 

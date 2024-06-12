@@ -7,18 +7,20 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class EdicionEstudiantePAAE {
-    
+    @NotNull
     private int boleta;
-    @Size(min = 1, max = 3, message = "Revisar el excel de ejmplo el tipo de entrada")
+    @NotNull
     private int carrera;
+    @NotNull
     private int plan;
-    @Size(min = 1, max = 2, message = "Revisar el excel de ejmplo el tipo de entrada")
+    @NotNull
     private int turno;
-    @Size(min = 1, max = 5, message = "Revisar el excel de ejmplo el tipo de entrada")
+    @NotNull
     private int estatus;
     @NotBlank
     @SQLInjectionSafe
     @NotNull
+    @Size(max = 88, min = 88, message = "Su usuario no cumple con el tamano estipulado")
     private String usuarioAlta;
 
 

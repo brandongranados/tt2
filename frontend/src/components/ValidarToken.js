@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 import InputTextBorderAzul from '../assets/js/InpuTextBorderAzul';
 import BotonAzul from '../assets/js/BotonAzul';
-import Navegacion from './Navegacion';
+import NavegacionInicioSesion from './NavegacionInicioSesion';
 import Cargando from "./Cargando";
 
 import useAjax from '../services/useAjax';
@@ -59,31 +59,15 @@ let ValidarToken = () => {
             return;
         }
 
-        if( !await ObjAjax.registrarEstudianteToken(datos, setEspera) )
-        {
-            await creaAlerta({
-                titulo : "Error",
-                mensaje : "Error interno",
-                icono : 2,
-                boolBtnCancel: false,
-                ColorConfirmar: "#2e7d32",
-                ColorCancel : "",
-                MensajeConfirmar : "OK",
-                MensajeCancel : ""
-            });
-
-            navegar("/");
-            return;
-        }
-
+        await ObjAjax.restablecerContrasenaValidaToken(datos, setEspera);
         navegar("/");
 
     }; 
     
     return(
         <>
-            <Cargando bool={espera}/>
-            <Navegacion />
+            <Cargando open={espera}/>
+            <NavegacionInicioSesion />
             <Grid container >
                 <Grid item xs={12}>
                     <Box sx={{margin:"%"}}>

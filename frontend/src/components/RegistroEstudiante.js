@@ -4,11 +4,13 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
+import * as Yup from 'yup';
+
 import { useNavigate } from 'react-router-dom';
 
 import InputTextBorderAzul from '../assets/js/InpuTextBorderAzul';
 import BotonAzul from '../assets/js/BotonAzul';
-import Navegacion from './Navegacion';
+import NavegacionInicioSesion from './NavegacionInicioSesion';
 import InputTextOcultaText from '../assets/js/InputTextOcultaText';
 import Cargando from "./Cargando";
 
@@ -16,23 +18,41 @@ import useAjax from '../services/useAjax';
 import useCadenaUnica from './hooks/useCadenaUnica';
 
 import useAlerta from '../components/hooks/useAlerta';
+import useArchivo from './hooks/useArchivo';
 
 let RegistroEstudiante = () => {
 
     //HOOKS PERSONALES
     const [crearHash512] = useCadenaUnica();
-
+    const [archivo] = useArchivo();
     //AJAX CARGANDO
     const [espera, setEspera] = useState(false);
     //tamano de titulo
     const [tamTitulo, setTamTitulo] = useState("h3");
+    //VALIDACION
+    const valida = Yup.object().shape({
+        boleta: Yup.number().required("Ingrese una boleta válida."),
+        usuario: Yup.string()
+                    .required("El usuario no puede estar vacío."),
+        correo: Yup.string().email("Correo electrónico no válido")
+                    .required("El correo no puede estar vacío."),
+        conCorreo: Yup.string().email("Correo electrónico no válido")
+                    .required("El correo de confirmación no puede estar vacío."),
+        contrasena: Yup.string()
+                    .required("La contraseña no puede estar vacía."),
+        conContrasena: Yup.string()
+                    .required("La contraseña de confirmación no puede estar vacía.")
+    });
+
     //FORMULARIO
-    const [boleta, setBoleta] = useState("");
-    const [usuario, setUsuario] = useState("");
-    const [correo, setCorreo] = useState("");
-    const [conCorreo, setConCorreo] = useState("");
-    const [contrasena, setContrasena] = useState("");
-    const [conContrasena, setConContrasena] = useState("");
+    const [formulario, setFormulario] = useState({
+        boleta: "",
+        usuario: "",
+        correo: "",
+        conCorreo: "",
+        contrasena: "",
+        conContrasena: ""
+    });
 
     const ObjAjax = useAjax();
     const navegar = useNavigate();
@@ -48,84 +68,18 @@ let RegistroEstudiante = () => {
             setTamTitulo("h3");
     };
 
-    let cambiaBoleta = (e) => {
-        let valor = e.target.value;
-
-        for(let i=0; i<valor.length; i++)
-            if( !(valor.charAt(i).charCodeAt() > 47 && valor.charAt(i).charCodeAt() < 58) )
-                valor = valor.replace(valor.charAt(i), "");
-
-        if( valor.length > 10 )
-            valor = valor.substring(0, 10);
-
-        setBoleta(valor);
-    };
-
-    let validaFormulario = () => {
-
-        let retorna = { error:"", bool:true };
-        const expCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if( boleta.length != 10 )
-        {
-            retorna.bool = false;
-            retorna.error += "Ingrese un boleta valida. ";
-        }
-
-        if( expCorreo.test( correo ) )
-            retorna.error += "Ingrese un correo valido. ";
-
-        if( expCorreo.test( conCorreo ) )
-            retorna.error += "Ingrese un correo valido en la confirmacion. ";
-
-        if( correo != conCorreo )
-        {
-            retorna.bool = false;
-            retorna.error += "Los correos ingresados no son iguales. ";
-        }
-
-        if( contrasena != conContrasena )
-        {
-            retorna.bool = false;
-            retorna.error += "Las contraseñas ingresadas no son iguales. ";
-        }
-
-        if( usuario.replace(" ", "").length == 0 )
-        {
-            retorna.bool = false;
-            retorna.error += "El usuario no puede estar vacio. ";
-        }
-        
-        retorna.bool = expCorreo.test( correo );
-        retorna.bool = expCorreo.test( conCorreo );
-
-        return retorna;
-
-    };
-
     let ejecutaPeticion = async (e) => {
+        let usuario = crearHash512(formulario.usuario);
+        let contra = crearHash512(formulario.contrasena);
+        let contra2 = crearHash512(formulario.conContrasena);
 
-        let contra = crearHash512(contrasena);
-        let contra2 = crearHash512(conContrasena);
-
-        let datos = 
-        {
-            boleta: boleta,
-            usuario: crearHash512(usuario),
-            correo: correo,
-            conCorreo: conCorreo,
-            contrasena: contra,
-            conContrasena: contra2
-        };
-
-        let validacion = validaFormulario();
-
-        if( !validacion.bool )
-        {
+        try {
+            await valida.validate(formulario);
+        } catch (error) {
             e.preventDefault();
             await creaAlerta({
                 titulo : "Error",
-                mensaje : validacion.error,
+                mensaje : error.errors,
                 icono : 2,
                 boolBtnCancel: false,
                 ColorConfirmar: "#2e7d32",
@@ -136,33 +90,104 @@ let RegistroEstudiante = () => {
             return;
         }
 
-        if( !await ObjAjax.registrarEstudiante(datos, setEspera) )
+        if( !await ObjAjax.registrarEstudiante({
+            boleta: formulario.boleta,
+            usuario: usuario,
+            correo: formulario.correo,
+            conCorreo: formulario.conCorreo,
+            contrasena: contra,
+            conContrasena: contra2
+        }, setEspera) )
         {
-            await creaAlerta({
-                titulo : "Error",
-                mensaje : "Error interno",
-                icono : 2,
-                boolBtnCancel: false,
-                ColorConfirmar: "#2e7d32",
-                ColorCancel : "",
-                MensajeConfirmar : "OK",
-                MensajeCancel : ""
-            });
-
             navegar("/");
             return;
         }
 
-        navegar("/validarToken");
+        navegar("/validarTokenNE");
 
     };
 
-    let cambiaUsuario = (e) => setUsuario(e.target.value);
-    let cambiarCorreo = (e) => setCorreo(e.target.value);
-    let cambiarConCorreo = (e) => setConCorreo(e.target.value);
-    let cambiaContrasena = (e) => setContrasena(e.target.value);
-    let cambiaConContrasena = (e) => setConContrasena(e.target.value);
+    let cambiaBoleta = (e) => {
+        let valor = e.target.value;
+        let expresion = /^\d+$/;
+
+        if( valor.length > 10 || !expresion.test(valor) )
+        {
+            e.preventDefault();
+            return;
+        }
+
+        setFormulario({
+            boleta: valor, 
+            usuario: formulario.usuario,
+            correo: formulario.correo, 
+            conCorreo: formulario.conCorreo,
+            contrasena: formulario.contrasena,
+            conContrasena: formulario.conContrasena
+        });
+    };
+
+    let cambiaUsuario = (e) => setFormulario({
+        boleta: formulario.boleta,
+        usuario: e.target.value,
+        correo: formulario.correo,
+        conCorreo: formulario.conCorreo,
+        contrasena: formulario.contrasena,
+        conContrasena: formulario.conContrasena
+    });
+    let cambiarCorreo = (e) => setFormulario({
+        boleta: formulario.boleta,
+        usuario: formulario.usuario,
+        correo: e.target.value,
+        conCorreo: formulario.conCorreo,
+        contrasena: formulario.contrasena,
+        conContrasena: formulario.conContrasena
+    });
+    let cambiarConCorreo = (e) => setFormulario({
+        boleta: formulario.boleta,
+        usuario: formulario.value,
+        correo: formulario.correo,
+        conCorreo: e.target.value,
+        contrasena: formulario.contrasena,
+        conContrasena: formulario.conContrasena
+    });
+    let cambiaContrasena = (e) => setFormulario({
+        boleta: formulario.boleta,
+        usuario: formulario.value,
+        correo: formulario.correo,
+        conCorreo: formulario.conCorreo,
+        contrasena: e.target.value,
+        conContrasena: formulario.conContrasena
+    });
+    let cambiaConContrasena = (e) => setFormulario({
+        boleta: formulario.boleta,
+        usuario: formulario.value,
+        correo: formulario.correo,
+        conCorreo: formulario.conCorreo,
+        contrasena: formulario.contrasena,
+        conContrasena: e.target.value
+    });
     let evitaCopiaPega = (e) =>  e.preventDefault();
+
+    let cargarPdf = async e => {
+        let archivo = e.target.files[0];
+        let tamano = archivo.size;
+
+        if( tamano > (10*1024*1024) )
+        {
+            await creaAlerta({
+                titulo : "Error",
+                mensaje : "El archivo es mayor a 10MB",
+                icono : 2,
+                boolBtnCancel: false,
+                ColorConfirmar: "#2e7d32",
+                ColorCancel : "",
+                MensajeConfirmar : "OK",
+                MensajeCancel : ""
+            });
+            return;
+        }
+    };
 
     useEffect( () => {
 
@@ -174,8 +199,12 @@ let RegistroEstudiante = () => {
 
     return(
         <>
-            <Cargando bool={espera}/>
-            <Navegacion />
+            <Cargando open={espera}/>
+            <NavegacionInicioSesion />
+            <input type="file" id="pdfDoc" 
+                    onChange={ e => cargarPdf(e) }
+                    accept="application/pdf" 
+                    style={{display:"none"}}/>
             <Grid container >
                 <Grid item xs={12}>
                     <Box sx={{margin:"3%"}}>
@@ -196,14 +225,14 @@ let RegistroEstudiante = () => {
                             <InputTextBorderAzul 
                             etiqueta={"Boleta"} 
                             sx={{marginTop:"1.5%", paddingLeft: "4px", paddingRight: "4px"}}
-                            value={boleta}
+                            value={formulario.boleta}
                             onChange={ (e) => { cambiaBoleta(e) } }/>
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <InputTextBorderAzul 
                             etiqueta={"Nombre del usuario"} 
                             sx={{marginTop:"1.5%", paddingLeft: "4px", paddingRight: "4px"}}
-                            value={usuario}
+                            value={formulario.usuario}
                             onChange={ (e) => { cambiaUsuario(e) } }/>
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -213,7 +242,7 @@ let RegistroEstudiante = () => {
                             onCopy={ (e) => { evitaCopiaPega(e) } }
                             onPaste={ (e) => { evitaCopiaPega(e) } }
                             onChange={ (e) => { cambiarCorreo(e) } }
-                            value={correo}/>
+                            value={formulario.correo}/>
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <InputTextBorderAzul 
@@ -222,7 +251,7 @@ let RegistroEstudiante = () => {
                             onCopy={ (e) => { evitaCopiaPega(e) } }
                             onPaste={ (e) => { evitaCopiaPega(e) } }
                             onChange={ (e) => { cambiarConCorreo(e) } }
-                            value={conCorreo}/>
+                            value={formulario.conCorreo}/>
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <InputTextOcultaText 
@@ -231,7 +260,7 @@ let RegistroEstudiante = () => {
                             onCopy={ (e) => { evitaCopiaPega(e) } }
                             onPaste={ (e) => { evitaCopiaPega(e) } }
                             onChange={ (e) => { cambiaContrasena(e) } }
-                            value={contrasena}/>
+                            value={formulario.contrasena}/>
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <InputTextOcultaText 
@@ -240,7 +269,7 @@ let RegistroEstudiante = () => {
                             onCopy={ (e) => { evitaCopiaPega(e) } }
                             onPaste={ (e) => { evitaCopiaPega(e) } }
                             onChange={ (e) => { cambiaConContrasena(e) } }
-                            value={conContrasena}/>
+                            value={formulario.conContrasena}/>
                         </Grid>
                     </Grid>
                     <BotonAzul 

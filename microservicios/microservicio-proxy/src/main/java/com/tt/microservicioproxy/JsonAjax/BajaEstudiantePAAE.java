@@ -4,16 +4,18 @@ import com.github.rkpunjal.sqlsafe.SQLInjectionSafe;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class BajaEstudiantePAAE {
-    @Size(min = 10, max = 10, message = "Revisar el excel de ejmplo el tipo de entrada")
+    @NotNull
     private int boleta;
-    @Size(min = 1, max = 1, message = "Revisar el excel de ejmplo el tipo de entrada")
+    @NotNull
     private int estatus;
     @SQLInjectionSafe
     @NotBlank
     @NotEmpty
+    @NotNull
     private String usuarioAlta;
 
 

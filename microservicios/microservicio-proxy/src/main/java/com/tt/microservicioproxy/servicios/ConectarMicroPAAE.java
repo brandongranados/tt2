@@ -145,13 +145,13 @@ public class ConectarMicroPAAE {
     public ResponseEntity getListaEstudiantes(AjaxListaEstudiante estudiantes)
     {
         HashMap<String, Object> respRest = null;
-        List<HashMap<Object, Object>> salida = null;
+        HashMap<Object, Object> salida = null;
         int codigo = 400;
         
         try {
             respRest = rest.getRespuestaRest(PAAE_LISTA_ESTUDIANTES, estudiantes);
             codigo = (int)respRest.get("codigo");
-            salida = obj.fromJson((String)respRest.get("datos"), List.class);
+            salida = obj.fromJson((String)respRest.get("datos"), HashMap.class);
 
             if( codigo != 200 )
                 throw new Exception();

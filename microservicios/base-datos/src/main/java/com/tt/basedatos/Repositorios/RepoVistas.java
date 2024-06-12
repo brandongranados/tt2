@@ -48,6 +48,13 @@ public interface RepoVistas extends CrudRepository<ComodinVistas, Integer>{
 
     @Query
     (
+        value = "SELECT COUNT(*) AS cant FROM v_lista_estudiantes",
+        nativeQuery = true
+    )
+    public Map<String, Object> getListaEstudianteCant();
+
+    @Query
+    (
         value = "SELECT * FROM v_list_est_expe_estudiantil "+
                 "WHERE num_boleta = :boleta",
         nativeQuery = true
@@ -97,5 +104,24 @@ public interface RepoVistas extends CrudRepository<ComodinVistas, Integer>{
         nativeQuery = true
     )
     public Map<String, Object> getDatosSemestreActivo();
+
+    @Query
+    (
+        value = "SELECT * FROM v_lista_personal ORDER BY nombre ASC "+
+                "OFFSET (( :paginacion - 1 )* 100 ) "+
+                "ROWS FETCH NEXT ( :paginacion * 100 ) ROWS ONLY",
+        nativeQuery = true
+    )
+    public List<Map<String, Object>> getListaPersonal
+    (
+        @Param("paginacion") int paginacion
+    );
+
+    @Query
+    (
+        value = "SELECT COUNT(*) AS cant FROM v_lista_personal",
+        nativeQuery = true
+    )
+    public List<Map<String, Object>> getListaPersonalCant();
 
 }

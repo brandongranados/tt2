@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.tt.microservicioestudiante.ajax.AjaxDocFirSAT;
+import com.tt.microservicioestudiante.ajax.AjaxEstudianteConstancias;
 import com.tt.microservicioestudiante.ajax.AjaxExpedienteEst;
 import com.tt.microservicioestudiante.ajax.PetQr;
 
@@ -43,6 +44,8 @@ public class Pdf {
     private String QR_CREA;
     @Value("${rutas.firma.firma}")
     private String FIRMA_SAT_FIRMA;
+    @Value("${rutas.constancia.solicitada}")
+    private String CONSTANCIA_SOLICITADA;
     @Autowired
     private ConsumoRest peticiones;
     @Autowired
@@ -61,7 +64,7 @@ public class Pdf {
             this.plantillaBecas = (JasperReport) JRLoader.loadObjectFromFile(CONSTANCIA_BECAS);
             this.plantillaServicio = (JasperReport) JRLoader.loadObjectFromFile(CONSTANCIA_SERVICIO);
         } catch (Exception e) {
-            this.plantillaEstudios = null;
+            e.getStackTrace();
         }
     }
 
@@ -131,6 +134,16 @@ public class Pdf {
         }
 
         return ResponseEntity.ok(sal);
+    }
+
+    public ResponseEntity setRegistroConstancia(AjaxEstudianteConstancias estu)
+    {
+        HashMap<String, Object> sp = restUnElementov2(CONSTANCIA_SOLICITADA, estu);
+
+        if( sp == null )
+            return ResponseEntity.badRequest().build();
+        else
+            return ResponseEntity.ok().build();
     }
 
     private HashMap<String, Object> getParametrosConstanciaGenericos(int boleta)
@@ -289,6 +302,25 @@ public class Pdf {
             return null;
         }
         return salida;
+    }
+
+    private HashMap<String, Object> restUnElementov2(String rutaGenerica, Object datos)
+    {
+        HashMap<String, Object> resPet = null;
+        int codigo = 400;
+
+        try {
+            
+            resPet = peticiones.getRespuestaRest(rutaGenerica, datos);
+            codigo = (int)resPet.get("codigo");
+
+            if( codigo != 200 )
+                throw new Exception();
+
+        } catch (Exception e) {
+            return null;
+        }
+        return new HashMap<String, Object>();
     }
 
 }

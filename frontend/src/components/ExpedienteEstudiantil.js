@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { useDispatch } from 'react-redux';
+
+import { useNavigate } from 'react-router-dom';
 
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -10,173 +14,149 @@ import Typography from "@mui/material/Typography";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import TablePagination from "@mui/material/TablePagination";
-import Checkbox from "@mui/material/Checkbox";
 import TableBody from "@mui/material/TableBody";
 import CreateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import Pagination from "@mui/material/Pagination";
 
 import Cargando from "./Cargando";
 import Navegacion from "./Navegacion";
+import useAjax from '../services/useAjax';
+import { getExpEstudiante, setExpEstudiante } from '../services/DatosUsuario';
 
 let ExpedienteEstudiantil = () => {
+    const ObjAjax = useAjax();
+    const navegar = useNavigate();
+    const despacha = useDispatch();
 
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [datos, setDatos] = useState([]);
+    const [cantDatos, setCantDatos] = useState(0);
+    const [espera, setEspera] = useState(false);
 
-    const [datos, setDatos] = useState([{
-            nombre: "Brandon Antonio",
-            apePaterno: "Casiano",
-            apeMaterno: "Granados",
-            curp : "CAGB980704HMCSRR07",
-            sexo : "HOMBRE",
-            nacimiento : "1998-07-04",
-            boleta: 201930043476,
-            carrera: "uno",
-            semestre: "uno"
-    }]);
+    let paginarLista = async (e, valor) => await listaEstudiantes(valor);
 
-    let handleChangePage = (event, newPage) => {
-        setPage(newPage);
+    let listaEstudiantes = async (pagina) => {
+        setEspera(true);
+        let resp = await ObjAjax.getListaEstudiantes({paginacion:pagina}, setEspera);
+        setDatos(resp.lista);
+        setCantDatos( parseInt(resp.cant.cant/100)+1 );
+        setEspera(false);
     };
 
-    let handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(10);
-        setPage(0);
+    const editar = (estudiante) => {
+        despacha(setExpEstudiante(estudiante));
+        despacha(getExpEstudiante());
+        navegar("/personalGestion/expEstEdicion");
     };
 
-    let editarExpediente = (iterador) => {
-        
-    };
+    useEffect(() => {
+        let ajax = async () => {
+            await listaEstudiantes(1);
+        };
+        ajax();
+    }, []);
 
-    return(
+    return (
         <>
-            <Cargando />
+            <Cargando open={espera}/>
             <Navegacion />
             <Grid container>
-                <Card sx={{width:"100%"}}>
-                    <CardContent>
-                        <Grid item xs={12}>
+                <Grid item xs={12}>
+                    <Card>
+                        <CardContent>
                             <Typography
                             variant="h4" 
                             component={"p"} 
                             fontWeight={"bold"}>
                                 Estudiantes
                             </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Paper>
-                                <TableContainer>
-                                    <Table stickyHeader>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell/>
-                                                <TableCell>
-                                                    <Typography
-                                                    fontWeight={"bold"}
-                                                    textAlign={"center"}>
-                                                        Nombre
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography
-                                                    fontWeight={"bold"}
-                                                    textAlign={"center"}>
-                                                        Numero de boleta
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography
-                                                    fontWeight={"bold"}
-                                                    textAlign={"center"}>
-                                                        Carrera
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography
-                                                    fontWeight={"bold"}
-                                                    textAlign={"center"}>
-                                                        Semestre
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell/>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {
-                                                datos.map( iterador => {
-                                                    return(
-                                                        <TableRow key={iterador.boleta}>
-                                                            <TableCell>
-                                                                <Checkbox
-                                                                sx={{
-                                                                    color: "black",
-                                                                    '&.Mui-checked': {
-                                                                    color: "black",
-                                                                    },
-                                                                }} />
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Typography
-                                                                textAlign={"center"}>
-                                                                    {iterador.apePaterno+" "+iterador.apeMaterno+" "+iterador.nombre}
-                                                                </Typography>
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Typography
-                                                                textAlign={"center"}>
-                                                                    {iterador.boleta}
-                                                                </Typography>
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Typography
-                                                                textAlign={"center"}>
-                                                                    {iterador.carrera}
-                                                                </Typography>
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Typography
-                                                                textAlign={"center"}>
-                                                                    {iterador.semestre}
-                                                                </Typography>
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Box sx={{
-                                                                    display:"flex",
-                                                                    justifyContent:"center"
-                                                                }}>
-                                                                    <Button onClick={ editarExpediente(iterador) }>
-                                                                        <CreateIcon
-                                                                        sx={{color:"black", cursor:"pointer"}}/>
-                                                                    </Button>
-                                                                    <Button>
-                                                                        <DeleteIcon
-                                                                        sx={{color:"black", cursor:"pointer"}} />
-                                                                    </Button>
-                                                                </Box>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    )
-                                                } )
-                                            }
-                                        </TableBody>
-                                    </Table>
-                                    <TablePagination
-                                        rowsPerPageOptions={[10]}
-                                        component="div"
-                                        count={datos.length}
-                                        rowsPerPage={rowsPerPage}
-                                        page={page}
-                                        onPageChange={handleChangePage}
-                                        onRowsPerPageChange={handleChangeRowsPerPage}
-                                    />
-                                </TableContainer>
-                            </Paper>
-                        </Grid>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12}>
+                    <Paper sx={{height:"73vh", scrollBehavior:"smooth", overflow:"scroll"}}>
+                        <TableContainer>
+                            <Table stickyHeader>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>
+                                            <Typography
+                                            fontWeight={"bold"}
+                                            textAlign={"center"}>
+                                                Nombre
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography
+                                            fontWeight={"bold"}
+                                            textAlign={"center"}>
+                                                N&uacute;mero de boleta
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography
+                                            fontWeight={"bold"}
+                                            textAlign={"center"}>
+                                                Carrera
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography
+                                            fontWeight={"bold"}
+                                            textAlign={"center"}>
+                                                Semestre
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell/>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {datos.map(iterador => (
+                                    <TableRow key={iterador.boleta}>
+                                        <TableCell>
+                                            <Typography textAlign={"center"}>
+                                                {iterador.nombre}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography textAlign={"center"}>
+                                                {iterador.num_boleta}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography textAlign={"center"}>
+                                                {iterador.nom_carrera}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography textAlign={"center"}>
+                                                {iterador.nom_periodo}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Box sx={{display:"flex", justifyContent:"center"}}>
+                                                <Button onClick={() => editar(iterador)}>
+                                                    <CreateIcon sx={{color:"black", cursor:"pointer"}}/>
+                                                </Button>
+                                                <Button>
+                                                    <DeleteIcon sx={{color:"black", cursor:"pointer"}} />
+                                                </Button>
+                                            </Box>
+                                        </TableCell>
+                                    </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Paper>
+                    <Paper>
+                        <Box display={"flex"} flexDirection={"row-reverse"}>
+                            <Pagination count={cantDatos} onChange={paginarLista} size="large" />
+                        </Box>
+                    </Paper>
+                </Grid>
             </Grid>
         </>
     )

@@ -56,18 +56,13 @@ public class Configuracion {
                     .permitAll()
                 .requestMatchers(HttpMethod.POST, "/validaRestablecer")
                     .permitAll()
-
-
-
-
                 .requestMatchers(HttpMethod.POST, "/registroEstudiante")
                     .permitAll()
                 .requestMatchers(HttpMethod.POST, "/registroEstudianteToken")
                     .permitAll()
+                .requestMatchers(HttpMethod.POST, "/estudiante/getVerificarConstancia")
+                    .permitAll()
                 
-
-
-
                 .requestMatchers(HttpMethod.POST, "/admin/**")
                     .permitAll()
                 .requestMatchers(HttpMethod.POST, "/personalGestionEscolar/**")
@@ -75,7 +70,7 @@ public class Configuracion {
                 .requestMatchers(HttpMethod.POST, "/auditor/**")
                     .permitAll()
                 .requestMatchers(HttpMethod.POST, "/estudiante/**")
-                    .permitAll()
+                    .hasRole("ESTUDIANTE")
                 .anyRequest().permitAll()
                 //.requestMatchers(HttpMethod.POST, "/admin/**")
                   //  .hasRole("ADMIN")
@@ -83,8 +78,6 @@ public class Configuracion {
                   //  .hasRole("PAAE")
                 //.requestMatchers(HttpMethod.POST, "/auditor/**")
                 //    .hasRole("AUDITOR")
-                //.requestMatchers(HttpMethod.POST, "/estudiante/**")
-                //    .hasRole("ESTUDIANTE")
                 //.anyRequest().authenticated()
                     .and()
                 .addFilter(new AutenticacionPlataforma(authenticationConfiguration.getAuthenticationManager()))

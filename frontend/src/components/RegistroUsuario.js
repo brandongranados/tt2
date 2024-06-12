@@ -43,7 +43,7 @@ let RegistroUsuario = () => {
     return(
         <>
             <Navegacion/>
-            <Cargando bool={espera} />
+            <Cargando open={espera} />
             <Grid container >
                 <Grid item xs={12}>
                     <Box sx={{margin:"3%"}}>

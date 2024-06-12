@@ -6,12 +6,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tt.microservicioproxy.JsonAjax.AjaxAltaPeersonal;
 import com.tt.microservicioproxy.JsonAjax.AjaxArrayMasivaEstu;
+import com.tt.microservicioproxy.JsonAjax.AjaxBajaPersonal;
 import com.tt.microservicioproxy.JsonAjax.AjaxConstanciaEstudios;
+import com.tt.microservicioproxy.JsonAjax.AjaxConstanciaUsuario;
 import com.tt.microservicioproxy.JsonAjax.AjaxDocFirSAT;
 import com.tt.microservicioproxy.JsonAjax.AjaxExcelCargaEstuMas;
 import com.tt.microservicioproxy.JsonAjax.AjaxExpedienteEst;
 import com.tt.microservicioproxy.JsonAjax.AjaxListaEstudiante;
+import com.tt.microservicioproxy.JsonAjax.AjaxListaPersonal;
 import com.tt.microservicioproxy.JsonAjax.BajaEstudiantePAAEMasiva;
 import com.tt.microservicioproxy.JsonAjax.EdicionEstudiantePAAEMasivo;
 import com.tt.microservicioproxy.JsonAjax.MapMateriaGrupEstuPAAEMasiva;
@@ -19,6 +23,7 @@ import com.tt.microservicioproxy.JsonAjax.RegEstuTokenAjax;
 import com.tt.microservicioproxy.JsonAjax.RegistroEstudianteAjax;
 import com.tt.microservicioproxy.JsonAjax.RestablecerSolicitud;
 import com.tt.microservicioproxy.JsonAjax.ValidarRestablecerSolicitud;
+import com.tt.microservicioproxy.servicios.Admin;
 import com.tt.microservicioproxy.servicios.BloquearInyecciones;
 import com.tt.microservicioproxy.servicios.ConectarMicroPAAE;
 import com.tt.microservicioproxy.servicios.Estudiante;
@@ -44,6 +49,9 @@ public class Paginas {
 
     @Autowired
     private Estudiante conexEstu;
+
+    @Autowired
+    private Admin admin;
 
     //VALIDACION CORREOS Y RESGITRO PARCIAL DESDE VENTANAS ESTUDIANTE
     @PostMapping("/registroEstudiante")
@@ -75,8 +83,6 @@ public class Paginas {
     @PostMapping("/validaRestablecer")
     public ResponseEntity restablecer(@Valid @RequestBody ValidarRestablecerSolicitud datos)
     {
-
-        datos.setUsuario(iny.getCadenaDepuradaInyecciones(datos.getUsuario()));
         
         return sesion.validaRestablecer(datos);
     }
@@ -129,25 +135,25 @@ public class Paginas {
 
     //MANEJO DE PUNTOS DE ACCESO EN ESTUDIANTES
     @PostMapping("/estudiante/getConstanciaEstudios")
-    public ResponseEntity getConstanciaEstudios(@Valid @RequestBody AjaxConstanciaEstudios estu)
+    public ResponseEntity getConstanciaEstudios(@Valid @RequestBody AjaxConstanciaUsuario estu)
     {
         return conexEstu.getConstanciaEstudios(estu);
     }
 
     @PostMapping("/estudiante/getConstanciaInscripcion")
-    public ResponseEntity getConstanciaInscripcion(@Valid @RequestBody AjaxConstanciaEstudios estu)
+    public ResponseEntity getConstanciaInscripcion(@Valid @RequestBody AjaxConstanciaUsuario estu)
     {
         return conexEstu.getConstanciaInscripcion(estu);
     }
 
     @PostMapping("/estudiante/getConstanciaBecas")
-    public ResponseEntity getConstanciaBecas(@Valid @RequestBody AjaxConstanciaEstudios estu)
+    public ResponseEntity getConstanciaBecas(@Valid @RequestBody AjaxConstanciaUsuario estu)
     {
         return conexEstu.getConstanciaBecas(estu);
     }
 
     @PostMapping("/estudiante/getConstanciaServicio")
-    public ResponseEntity getConstanciaServicio(@Valid @RequestBody AjaxConstanciaEstudios estu)
+    public ResponseEntity getConstanciaServicio(@Valid @RequestBody AjaxConstanciaUsuario estu)
     {
         return conexEstu.getConstanciaServicio(estu);
     }
@@ -158,6 +164,36 @@ public class Paginas {
         return conexEstu.getVerificaDocumento(estu);
     }
 
+
+
+
+
+
+
+
+
+
+
+
+    //MANEJO DE PUNTOS DE ACCESO EN ADMIN
+
+    @PostMapping("/admin/setPersonalApoyo")
+    public ResponseEntity setPersonalApoyo(@RequestBody AjaxAltaPeersonal personal)
+    {
+        return admin.setPersonalNuevo(personal);
+    }
+
+    @PostMapping("/admin/setBajaPersonalApoyo")
+    public ResponseEntity setBajaPersonalApoyo(@RequestBody AjaxBajaPersonal personal)
+    {
+        return admin.setPersonalBaja(personal);
+    }
+
+    @PostMapping("/admin/setListaPersonalApoyo")
+    public ResponseEntity setListaPersonalApoyo(@RequestBody AjaxListaPersonal personal)
+    {
+        return admin.setListaPersonal(personal);
+    }
 
 
 

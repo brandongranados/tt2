@@ -8,12 +8,12 @@ import InputTextBorderAzul from '../assets/js/InpuTextBorderAzul';
 import escom from '../assets/img/escom.png';
 import LinkLetras from '../assets/js/LinkLetras';
 import BotonAzul from '../assets/js/BotonAzul';
-import Navegacion from './Navegacion';
 import InputTextOcultaText from '../assets/js/InputTextOcultaText';
 import Cargando from "./Cargando";
 
 import useAjax from '../services/useAjax';
 import useCadenaUnica from './hooks/useCadenaUnica';
+import NavegacionInicioSesion from './NavegacionInicioSesion';
 
 let InicioSesion = () => {
 
@@ -56,8 +56,8 @@ let InicioSesion = () => {
 
     return(
         <>
-            <Cargando bool={espera}/>
-            <Navegacion />
+            <Cargando open={espera}/>
+            <NavegacionInicioSesion />
             <Grid container>
                 <Grid item xs sm></Grid>
                 <Grid item xs={12} sm={6}>
@@ -94,7 +94,7 @@ let InicioSesion = () => {
                         dir={"/restablecer"} texto={"Restablecer contraseña"} />
                         <LinkLetras 
                         sx={{width:"50%", textAlign:"center"}} 
-                        dir={"/registroEstudiante"} texto={"Registro de usuario"} />
+                        dir={"/registroEstudiante"} texto={"Registro de estudiante"} />
                     </Box>
                     <BotonAzul 
                     sx={{marginTop:"1.5%", width:"100%"}}
