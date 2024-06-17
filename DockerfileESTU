@@ -1,0 +1,11 @@
+FROM ubuntu:latest
+
+RUN apt-get update && apt-get install -y openjdk-17-jdk
+
+WORKDIR /home
+
+COPY microservicio-estudiante.jar .
+
+EXPOSE 5555
+
+CMD ["java", "-jar", "microservicio-estudiante.jar"]

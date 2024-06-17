@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: expedientes
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azure-fileshare
+  resources:
+    requests:
+      storage: 1Gi
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservicio-excel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microservicio-excel
+  template:
+    metadata:
+      labels:
+        app: microservicio-excel
+    spec:
+      containers:
+        - name: microservicio-excel
+          image: microservicio-excel:1
+          ports:
+            - containerPort: 4040
+          volumeMounts:
+            - mountPath: /home/expediente
+              name: azure-fileshare-volume
+      volumes:
+        - name: azure-fileshare-volume
+          persistentVolumeClaim:
+            claimName: azure-fileshare-pvc
