@@ -1,6 +1,15 @@
 FROM ubuntu:latest
 
-RUN apt-get update && apt-get install -y openjdk-17-jdk
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk
+
+RUN mkdir -p /media/expediente/jasper
+COPY ESCOM.jpg /media/expediente/jasper
+COPY IPN.png /media/expediente/jasper
+COPY becas.jasper /media/expediente/jasper
+COPY estudios.jasper /media/expediente/jasper
+COPY inscripcion.jasper /media/expediente/jasper
+COPY servicio.jasper /media/expediente/jasper
 
 WORKDIR /home
 
