@@ -106,6 +106,20 @@ spec:
       targetPort: 2020
 
 
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicio-front
+spec:
+  type: LoadBalancer
+  selector:
+    app: servicio-front
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+
+
 #DESPLIEGUES DE KUBERMNETES DONDE SE ESPECICA LA 
 #IMAGEN DE DOCKER A USAR Y LA CANTIDAD DE REPLICAS
 
@@ -408,3 +422,25 @@ spec:
             - name: LLAVE_SAT_PUBLICA
               value: "base64(LLAVE PUBLICA SAT)"
 
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: despliegue-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicio-front
+  template:
+    metadata:
+      labels:
+        app: servicio-front
+    spec:
+      containers:
+        - name: contenedor-front
+          image: brandongranados/tt-front:latest
+          ports:
+            - containerPort: 3000
