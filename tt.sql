@@ -2291,10 +2291,6 @@ CREATE PROCEDURE sp_mapeo_materia_grupo_estudiante
 			@id_est
 		);
 
-		DELETE FROM uni_apren_plan_per_car_grup
-		WHERE id_uni_apren IS NULL AND
-				id_grupo IS NULL;
-
 	END TRY
 	BEGIN CATCH
 		SET @bool = 14;
@@ -3252,12 +3248,14 @@ VALUES
 
 
 SELECT nom_uni_apren, nombre_plan, nom_periodo, nom_carrera, nom_grupo
-FROM uni_apren_plan_per_car_grup uappcg
+    FROM uni_apren_plan_per_car_grup uappcg
 INNER JOIN unidad_aprendizaje a on uappcg.id_uni_apren = a.id_uni_apren
 INNER JOIN plan_estudios pe2 on uappcg.id_plan = pe2.id_plan
 INNER JOIN periodo p2 on uappcg.id_periodo = p2.id_periodo
 INNER JOIN carrera c2 on uappcg.id_carrera = c2.id_carrera
-INNER JOIN grupo g2 on uappcg.id_grupo = g2.id_grupo;
+INNER JOIN grupo g2 on uappcg.id_grupo = g2.id_grupo
+    WHERE nom_grupo = '2CM1' and nom_periodo = 'Nivel 1'
+    ORDER BY nom_periodo, nom_uni_apren ASC;
 
 
 
@@ -3279,4 +3277,20 @@ DECLARE @bool SMALLINT;
 
 
 
+
+CREATE TABLE #usuario_sesion
+(
+    id INTEGER PRIMARY KEY IDENTITY,
+    id_usuario BIGINT
+);
+
+INSERT INTO #usuario_sesion
+( id_usuario )VALUES( null );
+
+DELETE FROM estudiante
+WHERE id_est > 0;
+
+
+    SELECT * from v_inicio_sesion
+WHERE nombre_usuario = 'ZmRiN2Q1YzcwMWEzYjRhOTk4MWU5OGZkNDg2ZDIyYjUxYjUxZjJlOTE2MDU1NDBlNTcwODFkNDQwNTczYzAwOQ==';
 

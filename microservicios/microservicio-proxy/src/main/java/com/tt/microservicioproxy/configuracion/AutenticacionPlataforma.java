@@ -1,5 +1,7 @@
 package com.tt.microservicioproxy.configuracion;
 
+import java.security.Key;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,10 +17,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tt.microservicioproxy.JsonAjax.InicioSesionAjax;
-import com.tt.microservicioproxy.jwt.LlaveHMAC512;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,18 +28,20 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AutenticacionPlataforma extends UsernamePasswordAuthenticationFilter {
     private AuthenticationManager manager;
     private Gson obj;
+    private Key llave;
 
-    public AutenticacionPlataforma(AuthenticationManager manager)
+    public AutenticacionPlataforma(AuthenticationManager manager, String LLAVE_SESIONES_ENV)
     {
         this.manager = manager;
         obj = new Gson();
+        this.llave = Keys.hmacShaKeyFor(Base64.getDecoder().decode(LLAVE_SESIONES_ENV));
     }
+
     protected void successfulAuthentication(HttpServletRequest request, 
                                             HttpServletResponse response, 
                                             FilterChain chain,
                                             Authentication authResult) 
     {
-
         String usuario = ((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername();
 
         try {
@@ -53,7 +57,7 @@ public class AutenticacionPlataforma extends UsernamePasswordAuthenticationFilte
                         .setSubject(usuario)
                         .setIssuedAt(new Date())
                         .setExpiration(new Date(System.currentTimeMillis() + 3600000))
-                        .signWith(LlaveHMAC512.LLAVE_SESIONES)
+                        .signWith(this.llave)
                         .compact();
                         
             resp.put("token", token);

@@ -1,8 +1,6 @@
 package com.tt.microserviciocryptografia.servicios;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -32,8 +30,6 @@ public class FirmaSAT {
     private String rutaPrivada;
     @Value("${llaves.ruta.publica}")
     private String rutaPublica;
-    @Value("${llaves.contrasena}")
-    private String contrasena;
     private PrivateKey privada;
     private PublicKey publica;
     private Cipher cifrador;
@@ -42,7 +38,7 @@ public class FirmaSAT {
     public void iniciar()
     {
         try {
-            this.privada = this.crearLlavePrivada(this.leerLlave());
+            this.privada = this.crearLlavePrivada();
             this.publica = this.crearLlavePublica();
             this.cifrador = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         } catch (Exception e) {
@@ -109,18 +105,19 @@ public class FirmaSAT {
 
     private PublicKey crearLlavePublica() throws Exception
     {
+        byte crudo[] = Base64.getDecoder().decode(Base64.getDecoder().decode(this.rutaPublica));
+        ByteArrayInputStream array = new ByteArrayInputStream(crudo);
         CertificateFactory facCert = CertificateFactory.getInstance("X.509");
-        FileInputStream ent = new FileInputStream(rutaPublica);
-        X509Certificate cert = (X509Certificate) facCert.generateCertificate(ent);
+        X509Certificate cert = (X509Certificate) facCert.generateCertificate(array);
         PublicKey publica = cert.getPublicKey();
-
-        ent.close();
 
         return publica;
     }
 
-    private PrivateKey crearLlavePrivada(String contendido) throws Exception
+    private PrivateKey crearLlavePrivada() throws Exception
     {
+        byte contenidoCrudo[] = Base64.getDecoder().decode(rutaPrivada);
+        String contendido = new String(contenidoCrudo, StandardCharsets.UTF_8);
         PrivateKey privada = null;
         StringReader lec = new StringReader(contendido);
         PEMParser par = new PEMParser(lec);
@@ -132,22 +129,6 @@ public class FirmaSAT {
         privada = facLlave.generatePrivate(specLlave);
 
         return privada;
-    }
-
-    private String leerLlave() throws Exception
-    {
-        String contenido = "", linea = "";
-
-        Process proceso = Runtime.getRuntime().exec("openssl rsa -in " +this.rutaPrivada+ " -passin pass:"+this.contrasena+" -text");
-        BufferedReader lec = new BufferedReader(new InputStreamReader(proceso.getInputStream()));
-
-        while( (linea = lec.readLine()) != null )
-            contenido += linea+"\n";
-
-        lec.close();
-        proceso.waitFor();
-
-        return contenido;
     }
 
     private byte[] getMezclarArrayByte(byte uno[], byte dos[]) throws Exception

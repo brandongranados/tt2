@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,8 @@ import org.springframework.web.filter.CorsFilter;
 public class Configuracion {
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
+    @Value("${sesiones.llavehmac}")
+    private String LLAVE_SESIONES_ENV;
 
     @Bean
     public Provider bouncyCastleProvider()
@@ -62,26 +65,18 @@ public class Configuracion {
                     .permitAll()
                 .requestMatchers(HttpMethod.POST, "/estudiante/getVerificarConstancia")
                     .permitAll()
-                
-                .requestMatchers(HttpMethod.POST, "/admin/**")
-                    .permitAll()
-                .requestMatchers(HttpMethod.POST, "/personalGestionEscolar/**")
-                    .permitAll()
-                .requestMatchers(HttpMethod.POST, "/auditor/**")
-                    .permitAll()
                 .requestMatchers(HttpMethod.POST, "/estudiante/**")
                     .hasRole("ESTUDIANTE")
-                .anyRequest().permitAll()
-                //.requestMatchers(HttpMethod.POST, "/admin/**")
-                  //  .hasRole("ADMIN")
-                //.requestMatchers(HttpMethod.POST, "/personalGestionEscolar/**")
-                  //  .hasRole("PAAE")
-                //.requestMatchers(HttpMethod.POST, "/auditor/**")
-                //    .hasRole("AUDITOR")
-                //.anyRequest().authenticated()
+                .requestMatchers(HttpMethod.POST, "/admin/**")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/personalGestionEscolar/**")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/personalGestionEscolar/**")
+                    .hasRole("PAAE")
+                .anyRequest().authenticated()
                     .and()
-                .addFilter(new AutenticacionPlataforma(authenticationConfiguration.getAuthenticationManager()))
-                .addFilter(new ValidarToken(authenticationConfiguration.getAuthenticationManager()))
+                .addFilter(new AutenticacionPlataforma(authenticationConfiguration.getAuthenticationManager(), LLAVE_SESIONES_ENV))
+                .addFilter(new ValidarToken(authenticationConfiguration.getAuthenticationManager(), LLAVE_SESIONES_ENV))
                 .csrf(config -> config.disable())
                 .sessionManagement(managment -> managment.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> cors.configurationSource(configuracionCors()))

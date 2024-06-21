@@ -1,0 +1,446 @@
+#SERVICIOS DE KUBERNETES DONDE SE CONFIGURA EL 
+#DNS INTERNO DE KUBERNETES CON SU CONFIGURACION DE RED
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicio-proxy
+spec:
+  type: LoadBalancer
+  selector:
+    app: servicio-proxy
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9090
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicio-excel
+spec:
+  selector:
+    app: servicio-excel
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 4040
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicio-admin
+spec:
+  selector:
+    app: servicio-admin
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 33333
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicio-paae
+spec:
+  selector:
+    app: servicio-paae
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5050
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicio-bd
+spec:
+  selector:
+    app: servicio-bd
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 50000
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicio-estudiante
+spec:
+  selector:
+    app: servicio-estudiante
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5555
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicio-qr
+spec:
+  selector:
+    app: servicio-qr
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3030
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicio-cryptografia
+spec:
+  selector:
+    app: servicio-cryptografia
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 2020
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicio-front
+spec:
+  type: LoadBalancer
+  selector:
+    app: servicio-front
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+
+
+#DESPLIEGUES DE KUBERMNETES DONDE SE ESPECICA LA 
+#IMAGEN DE DOCKER A USAR Y LA CANTIDAD DE REPLICAS
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: despliegue-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicio-proxy
+  template:
+    metadata:
+      labels:
+        app: servicio-proxy
+    spec:
+      containers:
+        - name: contenedor-proxy
+          image: brandongranados/microservicio-proxy:latest
+          ports:
+            - containerPort: 9090
+          env:
+            - name: LLAVE_SESIONES
+              value: "base64( LLAVE HMAC-512 )"
+            - name: CORREOS
+              value: "example@exmaple.com"
+            - name: CONTRASENA_CORREO
+              value: "CONTRASENA_CORREO"
+            - name: REGISTRO_PERSONAL_APOYO_ADMIN
+              value: "http://servicio-admin/admin/setPersonalApoyo"
+            - name: BAJA_PERSONAL_ADMIN
+              value: "http://servicio-admin/admin/setBajaPersonalApoyo"
+            - name: LISTA_PERSONAL_ADMIN
+              value: "http://servicio-admin/admin/setListaPersonalApoyo"
+            - name: PAAE_ALTA_MASIVA
+              value: "http://servicio-paae/personalGestionEscolar/altaEstudiantes"
+            - name: PAAE_EDICION_MASIVA
+              value: "http://servicio-paae/personalGestionEscolar/editaEstudiantes"
+            - name: PAAE_BAJA_MASIVA
+              value: "http://servicio-paae/personalGestionEscolar/bajaEstudiantes"
+            - name: PAAE_MAPEO_MATERIA_EST_MASIVA
+              value: "http://servicio-paae/personalGestionEscolar/mapearMateriaEstudiantes"
+            - name: PAAE_LISTA_ESTUDIANTES
+              value: "http://servicio-paae/personalGestionEscolar/listaEstudiantes"
+            - name: PAAE_EXPEDIENTE_ESTUDIANTE
+              value: "http://servicio-paae/personalGestionEscolar/expedienteEstudiante"
+            - name: INICIO_SESION
+              value: "http://servicio-bd/datosInicioSesion"
+            - name: REGISTRO_ESTUDIANTE_VALIDA_CORREO
+              value: "http://servicio-bd/registroEstudiante"
+            - name: VALIDA_TOKEN_REG_EST
+              value: "http://servicio-bd/validaTokenRegEst"
+            - name: REGISTRO_RESTABLECER
+              value: "http://servicio-bd/registroRestablecer"
+            - name: VALIDA_RESTABLECER
+              value: "http://servicio-bd/validaRestablecer"
+            - name: IMPRIMIR_CONSTANCIAS_ESTUDIOS
+              value: "http://servicio-estudiante/estudiantes/constanciaEstudios"
+            - name: IMPRIMIR_CONSTANCIAS_INSCRIPCION
+              value: "http://servicio-estudiante/estudiantes/constanciaInscripcion"
+            - name: IMPRIMIR_CONSTANCIAS_BECAS
+              value: "http://servicio-estudiante/estudiantes/constanciaBecas"
+            - name: IMPRIMIR_CONSTANCIAS_SERVICIO
+              value: "http://servicio-estudiante/estudiantes/constanciaServicio"
+            - name: IMPRIMIR_CONSTANCIAS_VERIFICAR
+              value: "http://servicio-estudiante/estudiantes/verificaConstancia"
+            - name: EJEMPLO_CARGA_MASIVA_ESTU
+              value: "http://servicio-excel/documentosExcel/ejemCargaMasivaEstu"
+            - name: CARGA_MASIVA_ESTU
+              value: "http://servicio-excel/documentosExcel/cargaMasivaEstu"
+            - name: REINSCRIPCION_MASIVA_ESTU
+              value: "http://servicio-excel/documentosExcel/reinscripcionMasivaEstu"
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: despliegue-excel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicio-excel
+  template:
+    metadata:
+      labels:
+        app: servicio-excel
+    spec:
+      containers:
+        - name: contenedor-excel
+          image: brandongranados/microservicio-excel:latest
+          ports:
+            - containerPort: 4040
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: despliegue-admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicio-admin
+  template:
+    metadata:
+      labels:
+        app: servicio-admin
+    spec:
+      containers:
+        - name: contenedor-admin
+          image: brandongranados/microservicio-admin:latest
+          ports:
+            - containerPort: 33333
+          env:
+            - name: REGISTRO_PERSONAL_APOYO
+              value: "http://servicio-bd/admin/setRegistarPersonalApoyo"
+            - name: BAJA_PERSONAL
+              value: "http://servicio-bd/admin/setEliminarPersonalApoyo"
+            - name: LISTA_PERSONAL
+              value: "http://servicio-bd/admin/getListaPersonal"
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: despliegue-paae
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicio-paae
+  template:
+    metadata:
+      labels:
+        app: servicio-paae
+    spec:
+      containers:
+        - name: contenedor-paae
+          image: brandongranados/microservicio-paee:latest
+          ports:
+            - containerPort: 5050
+          env:
+            - name: PAAE_NUEVOS_ESTUDIANTES
+              value: "http://servicio-bd/personalGestionEscolar/setNuevoEstudianteMasiva"
+            - name: EDITA_ESTUDIANTE
+              value: "http://servicio-bd/personalGestionEscolar/setActulizaEstudianteMasiva"
+            - name: BAJA_ESTUDIANTE
+              value: "http://servicio-bd/personalGestionEscolar/setBajaEstudianteMasiva"
+            - name: MAPEO_MATERIAS_ESTUDIANTE
+              value: "http://servicio-bd/personalGestionEscolar/setMapMatGrupEstMasiva"
+            - name: LISTA_ESTUDIANTES
+              value: "http://servicio-bd/personalGestionEscolar/getListaEstudiantes"
+            - name: EXPEDIENTE_DATOS_ESTUDIANTES
+              value: "http://servicio-bd/personalGestionEscolar/getExpedienteDatos"
+            - name: EXPEDIENTE_DOCS_ESTUDIANTES
+              value: "http://servicio-bd/personalGestionEscolar/getExpedienteDocs"
+            - name: RUTA_DOCUMENTOS_EST
+              value: "/media/expediente/expedientes/"
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: despliegue-bd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicio-bd
+  template:
+    metadata:
+      labels:
+        app: servicio-bd
+    spec:
+      containers:
+        - name: contenedor-bd
+          image: brandongranados/base-datos:latest
+          ports:
+            - containerPort: 50000
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: despliegue-estudiante
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicio-estudiante
+  template:
+    metadata:
+      labels:
+        app: servicio-estudiante
+    spec:
+      containers:
+        - name: contenedor-estudiante
+          image: brandongranados/microservicio-estudiante2:latest
+          ports:
+            - containerPort: 5555
+          env:
+            # Archivos de Jasper
+            - name: CONSTANCIA_ESTUDIOS
+              value: "/media/expediente/jasper/estudios.jasper"
+            - name: CONSTANCIA_INSCRIPCION
+              value: "/media/expediente/jasper/inscripcion.jasper"
+            - name: CONSTANCIA_BECAS
+              value: "/media/expediente/jasper/becas.jasper"
+            - name: CONSTANCIA_SERVICIO
+              value: "/media/expediente/jasper/servicio.jasper"
+
+            # Endpoints servicio base de datos
+            - name: CONSTANCIA_ESTUDIOS_DATOS
+              value: "http://servicio-bd/estudiante/getDatosConstanciaEstudios"
+            - name: SEMESTRE_ACTIVO
+              value: "http://servicio-bd/estudiante/getSemestreActivo"
+            - name: INICIO_SESION
+              value: "http://servicio-bd/datosInicioSesion"
+            - name: CONSTANCIA_SOLICITADA
+              value: "http://servicio-bd/estudiante/setRegistarConstanciaSolicitada"
+
+            # Endpoints servicio QR
+            - name: QR_CREA
+              value: "http://servicio-qr/getCodigoQR"
+
+            # Endpoints servicio criptografía
+            - name: FIRMA_SAT_FIRMA
+              value: "http://servicio-cryptografia/getContenidoFirmado"
+            - name: FIRMA_SAT_VERIFICACION
+              value: "http://servicio-cryptografia/getVerificacionContenido"
+
+            # Ruta verificación constancias
+            - name: VERIFICA_CONSTANCIA
+              value: "http://sagedd-ipn.xyz/validarConstancia"
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: despliegue-qr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicio-qr
+  template:
+    metadata:
+      labels:
+        app: servicio-qr
+    spec:
+      containers:
+        - name: contenedor-qr
+          image: brandongranados/microservicio-qr:latest
+          ports:
+            - containerPort: 3030
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: despliegue-cryptografia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicio-cryptografia
+  template:
+    metadata:
+      labels:
+        app: servicio-cryptografia
+    spec:
+      containers:
+        - name: contenedor-cryptografia
+          image: brandongranados/microservicio-cryptografia:latest
+          ports:
+            - containerPort: 2020
+          env:
+            #DATOS SAT
+            - name: LLAVE_SAT_PRIVADA
+              value: "base64(base64(LLAVE PRIVADA SAT))"
+            - name: LLAVE_SAT_PUBLICA
+              value: "base64(LLAVE PUBLICA SAT)"
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: despliegue-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicio-front
+  template:
+    metadata:
+      labels:
+        app: servicio-front
+    spec:
+      containers:
+        - name: contenedor-front
+          image: brandongranados/tt-front:latest
+          ports:
+            - containerPort: 3000
