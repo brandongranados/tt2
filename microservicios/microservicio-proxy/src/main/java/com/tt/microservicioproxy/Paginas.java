@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tt.microservicioproxy.JsonAjax.AjaxAltaPeersonal;
 import com.tt.microservicioproxy.JsonAjax.AjaxArrayMasivaEstu;
 import com.tt.microservicioproxy.JsonAjax.AjaxBajaPersonal;
-import com.tt.microservicioproxy.JsonAjax.AjaxConstanciaEstudios;
 import com.tt.microservicioproxy.JsonAjax.AjaxConstanciaUsuario;
 import com.tt.microservicioproxy.JsonAjax.AjaxDocFirSAT;
 import com.tt.microservicioproxy.JsonAjax.AjaxExcelCargaEstuMas;
