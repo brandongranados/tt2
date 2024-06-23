@@ -553,8 +553,9 @@ let useAjax = () => {
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.ALTA_ESTUDIANTES, datos, {
-                headers: {
+                headers:{
                     'Content-Type': 'application/json',
+                    Authorization: Authorization
                 }
             });
     
@@ -621,8 +622,9 @@ let useAjax = () => {
             setEspera(true);
 
             await ajax.post(rutas.ALTA_ESTUDIANTES, datos, {
-                headers: {
+                headers:{
                     'Content-Type': 'application/json',
+                    Authorization: Authorization
                 }
             });
 
@@ -656,8 +658,9 @@ let useAjax = () => {
         try {
 
             await ajax.post(rutas.MAPEO_MATERIAS_ESTUDIANTES, datos2, {
-                headers: {
+                headers:{
                     'Content-Type': 'application/json',
+                    Authorization: Authorization
                 }
             });
     
@@ -811,8 +814,9 @@ let useAjax = () => {
 
         try {
             let resp = await ajax.post(rutas.EDICION_ESTUDIANTES, datos, {
-                headers: {
+                headers:{
                     'Content-Type': 'application/json',
+                    Authorization: Authorization
                 }
             });
 
@@ -849,8 +853,9 @@ let useAjax = () => {
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.BAJA_ESTUDIANTES, datos, {
-                headers: {
+                headers:{
                     'Content-Type': 'application/json',
+                    Authorization: Authorization
                 }
             });
 
@@ -876,8 +881,9 @@ let useAjax = () => {
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.MAPEO_MATERIAS_ESTUDIANTES, datos, {
-                headers: {
+                headers:{
                     'Content-Type': 'application/json',
+                    Authorization: Authorization
                 }
             });
 
@@ -903,8 +909,9 @@ let useAjax = () => {
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.LISTA_ESTUDIANTES, datos, {
-                headers: {
+                headers:{
                     'Content-Type': 'application/json',
+                    Authorization: Authorization
                 }
             });
             return resp.data;
@@ -928,8 +935,9 @@ let useAjax = () => {
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.EXPEDIENTE_ESTUDIANTE, datos, {
-                headers: {
+                headers:{
                     'Content-Type': 'application/json',
+                    Authorization: Authorization
                 }
             });
 
@@ -957,8 +965,9 @@ let useAjax = () => {
         setEspera(true);
         try {
             await ajax.post(rutas.ALTA_PERSONAL, datos, {
-                headers: {
+                headers:{
                     'Content-Type': 'application/json',
+                    Authorization: Authorization
                 }
             });
     
@@ -995,8 +1004,9 @@ let useAjax = () => {
         setEspera(true);
         try {
             let resp = await ajax.post(rutas.LISTA_PERSONAL, datos, {
-                headers: {
+                headers:{
                     'Content-Type': 'application/json',
+                    Authorization: Authorization
                 }
             });
             return await resp.data;
@@ -1049,8 +1059,9 @@ let useAjax = () => {
 
         try {
             await ajax.post(rutas.BAJA_PERSONAL, datos, {
-                headers: {
+                headers:{
                     'Content-Type': 'application/json',
+                    Authorization: Authorization
                 }
             });
 
