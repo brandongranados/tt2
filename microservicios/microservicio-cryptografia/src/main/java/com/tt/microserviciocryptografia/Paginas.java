@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tt.microserviciocryptografia.ajax.AjaxDocFirSAT;
 import com.tt.microserviciocryptografia.ajax.AjaxFirmas;
+import com.tt.microserviciocryptografia.ajax.AjaxParamResp;
 import com.tt.microserviciocryptografia.servicios.FirmaSAT;
 import com.tt.microserviciocryptografia.servicios.LlavesSAT;
 
@@ -52,15 +53,17 @@ public class Paginas {
     @PostMapping("/getCadenaParLlaves")
     public ResponseEntity getCadenaParLlaves(@RequestBody AjaxFirmas firmas)
     {
-        try {
-            firmas = llaveSat.getCadenaParLlaves(firmas);
+        AjaxParamResp salida = null;
 
-            if( firmas == null )
+        try {
+            salida = llaveSat.getCadenaParLlaves(firmas);
+
+            if( salida == null )
                 throw new Exception();
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(firmas);
+        return ResponseEntity.ok(salida);
     }
 }
