@@ -1,23 +1,16 @@
 package com.tt.microserviciocryptografia.servicios;
 
-import java.io.ByteArrayInputStream;
-import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.HashMap;
 
 import javax.crypto.Cipher;
-
-import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
-import org.bouncycastle.openssl.PEMKeyPair;
-import org.bouncycastle.openssl.PEMParser;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,8 +31,8 @@ public class FirmaSAT {
     public void iniciar()
     {
         try {
-            this.privada = this.crearLlavePrivada();
             this.publica = this.crearLlavePublica();
+            this.privada = this.crearLlavePrivada();
             this.cifrador = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         } catch (Exception e) {
             this.privada = null;
@@ -71,7 +64,6 @@ public class FirmaSAT {
 
         return new String((byte[])doc.get(1), StandardCharsets.UTF_8);
     }
-
 
     private byte[] getFirmaDigital(byte crudo[])throws Exception
     {
@@ -105,30 +97,20 @@ public class FirmaSAT {
 
     private PublicKey crearLlavePublica() throws Exception
     {
-        byte crudo[] = Base64.getDecoder().decode(Base64.getDecoder().decode(this.rutaPublica));
-        ByteArrayInputStream array = new ByteArrayInputStream(crudo);
-        CertificateFactory facCert = CertificateFactory.getInstance("X.509");
-        X509Certificate cert = (X509Certificate) facCert.generateCertificate(array);
-        PublicKey publica = cert.getPublicKey();
+        byte crudo[] = Base64.getDecoder().decode(this.rutaPublica);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(crudo);
 
-        return publica;
+        return keyFactory.generatePublic(keySpec);
     }
 
     private PrivateKey crearLlavePrivada() throws Exception
     {
-        byte contenidoCrudo[] = Base64.getDecoder().decode(rutaPrivada);
-        String contendido = new String(contenidoCrudo, StandardCharsets.UTF_8);
-        PrivateKey privada = null;
-        StringReader lec = new StringReader(contendido);
-        PEMParser par = new PEMParser(lec);
-        PEMKeyPair pares = (PEMKeyPair)par.readObject();
-        PrivateKeyInfo obj = (PrivateKeyInfo)pares.getPrivateKeyInfo();
-        PKCS8EncodedKeySpec specLlave = new PKCS8EncodedKeySpec(obj.getEncoded());
-        KeyFactory facLlave = KeyFactory.getInstance("RSA");
+        byte crudo[] = Base64.getDecoder().decode(this.rutaPrivada);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(crudo);
 
-        privada = facLlave.generatePrivate(specLlave);
-
-        return privada;
+        return keyFactory.generatePrivate(keySpec);
     }
 
     private byte[] getMezclarArrayByte(byte uno[], byte dos[]) throws Exception
