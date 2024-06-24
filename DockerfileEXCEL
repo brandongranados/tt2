@@ -1,6 +1,9 @@
 FROM ubuntu:latest
 
 RUN apt-get update && apt-get install -y openjdk-17-jdk
+RUN mkdir -p /media/expediente/excelEjemplo
+WORKDIR /media/expediente/excelEjemplo
+copy PlanCargaMasivaEstu.xlsx .
 
 WORKDIR /home
 
