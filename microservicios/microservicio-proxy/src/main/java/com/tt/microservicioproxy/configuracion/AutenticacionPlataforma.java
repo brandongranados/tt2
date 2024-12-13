@@ -106,6 +106,6 @@ public class AutenticacionPlataforma extends UsernamePasswordAuthenticationFilte
             unsuccessfulAuthentication(request, response, null);
             return null;
         }
-        return this.getAuthenticationManager().authenticate(respFiltro);
+        return manager.authenticate(respFiltro);
     } 
 }
